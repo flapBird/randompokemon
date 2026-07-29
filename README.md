@@ -4,7 +4,7 @@ Production-ready Next.js App Router website for [randompokemon.xyz](https://rand
 
 ## Requirements
 
-- Node.js 22.13 or newer
+- Node.js 24.x
 
 ## Local development
 
