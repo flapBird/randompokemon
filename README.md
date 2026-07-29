@@ -1,6 +1,6 @@
 # Random Pokémon Generator
 
-Production-ready Next.js App Router website for [randompokemon.xyz](https://randompokemon.xyz). It generates reproducible Pokémon picks and teams with local Generation 1–9 data.
+Production-ready Next.js App Router website for [randompokemon.xyz](https://randompokemon.xyz), configured for native Vercel deployment. It generates reproducible Pokémon picks and teams with local Generation 1–9 data.
 
 ## Requirements
 
@@ -43,7 +43,7 @@ The generator script normalizes Generation 1–9 species, approved regional form
 
 The project can be imported directly into Vercel:
 
-1. Connect the repository.
+1. Import the GitHub repository in Vercel, or run `vercel link` from this directory.
 2. Keep the framework preset as Next.js.
 3. Use `npm run build`.
 4. Add `randompokemon.xyz` in the Vercel project domain settings and configure the DNS records Vercel provides.

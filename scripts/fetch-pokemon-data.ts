@@ -119,7 +119,7 @@ const records = Dex.species.all()
       },
       bst: species.bst,
       evolutionStage: evolutionStage(species.name),
-      fullyEvolved: species.evos.length === 0,
+      fullyEvolved: (species.evos?.length ?? 0) === 0,
       isStarter: starterNames.has(slug),
       isLegendary: tags.has("Restricted Legendary") || tags.has("Sub-Legendary"),
       isMythical: tags.has("Mythical"),

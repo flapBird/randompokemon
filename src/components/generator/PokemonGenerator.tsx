@@ -44,6 +44,12 @@ function teamText(results: GeneratedPokemon[]) {
   ].join("\n");
 }
 
+function savedGenerationName(item: SavedGeneration) {
+  return "name" in item && typeof item.name === "string" && item.name.trim()
+    ? item.name
+    : item.seed;
+}
+
 export function PokemonGenerator({
   initialFilters,
   pageMode = "standard",
@@ -314,7 +320,7 @@ export function PokemonGenerator({
             <div className="saved-list">
               {(libraryTab === "recent" ? recent : favorites).length ? (libraryTab === "recent" ? recent : favorites).map((item) => (
                 <div className="saved-item" key={item.id}>
-                  <div><strong>{"name" in item && item.name ? item.name : item.seed}</strong><span>{item.pokemonIds.length} Pokémon · {new Date(item.createdAt).toLocaleDateString()}</span></div>
+                  <div><strong>{savedGenerationName(item)}</strong><span>{item.pokemonIds.length} Pokémon · {new Date(item.createdAt).toLocaleDateString()}</span></div>
                   <div><button onClick={() => restoreSaved(item)}>Restore</button><button aria-label={`Delete saved team ${item.seed}`} onClick={() => libraryTab === "recent" ? setRecent(storage.removeRecent(item.id)) : setFavorites(storage.removeFavorite(item.id))}>Delete</button></div>
                 </div>
               )) : <p className="empty-saved">No {libraryTab} saved yet.</p>}
