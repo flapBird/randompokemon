@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Faq, type FaqItem } from "@/components/content/Faq";
 import { JsonLd } from "@/components/content/JsonLd";
 import { PokemonGenerator } from "@/components/generator/PokemonGenerator";
@@ -34,13 +33,8 @@ export default function TeamGeneratorPage() {
         breadcrumbSchema([["Home", "/"], ["Random Pokémon Team Generator", "/random-pokemon-team-generator"]]),
       ]} />
       <section className="subpage-hero">
-        <nav className="breadcrumbs" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span><span>Team Generator</span></nav>
-        <span className="eyebrow">BUILD SIX · KEEP YOUR FAVORITES</span>
         <h1>Random Pokémon<br /><em>Team Generator</em></h1>
         <p>Create a random team of six, lock the members that work, reroll individual slots, and spot shared weaknesses before your next challenge.</p>
-        <div className="feature-strip">
-          <span>Lock every slot</span><span>Smart Team scoring</span><span>Weakness analysis</span><span>Seed sharing</span>
-        </div>
       </section>
       <PokemonGenerator initialFilters={TEAM_FILTERS} pageMode="team" />
       <div className="content-wrap">

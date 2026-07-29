@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Faq, type FaqItem } from "@/components/content/Faq";
 import { JsonLd } from "@/components/content/JsonLd";
 import { PokemonGenerator } from "@/components/generator/PokemonGenerator";
@@ -34,11 +33,8 @@ export default function StarterGeneratorPage() {
         breadcrumbSchema([["Home", "/"], ["Random Pokémon Starter Generator", "/random-pokemon-starter-generator"]]),
       ]} />
       <section className="subpage-hero starter-hero">
-        <nav className="breadcrumbs" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span><span>Starter Generator</span></nav>
-        <span className="eyebrow">YOUR JOURNEY STARTS HERE</span>
         <h1>Random Pokémon<br /><em>Starter Generator</em></h1>
         <p>Pick a random starter by generation or type for your next playthrough, Nuzlocke, random run, or friendly challenge.</p>
-        <div className="starter-types" aria-label="Classic starter types"><span data-type="grass">Grass</span><span data-type="fire">Fire</span><span data-type="water">Water</span></div>
       </section>
       <PokemonGenerator initialFilters={STARTER_FILTERS} pageMode="starter" />
       <div className="content-wrap">
