@@ -18,7 +18,7 @@ function makeSeed() {
   if (typeof crypto !== "undefined" && "getRandomValues" in crypto) {
     const values = new Uint32Array(2);
     crypto.getRandomValues(values);
-    return createReadableSeed(() => (values[0] ^ values[1]) / 0xffffffff);
+    return createReadableSeed(createSeededRandom(`${values[0]}-${values[1]}`));
   }
   return createReadableSeed();
 }
@@ -71,6 +71,7 @@ export function PokemonGenerator({
   const [favorites, setFavorites] = useState<FavoriteTeam[]>([]);
   const [libraryTab, setLibraryTab] = useState<"recent" | "favorites">("recent");
   const [favoriteName, setFavoriteName] = useState("");
+  const [customizeOpen, setCustomizeOpen] = useState(false);
   const initialized = useRef(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pool = useMemo(() => filterPokemon(dataset, filters), [dataset, filters]);
@@ -81,9 +82,10 @@ export function PokemonGenerator({
     toastTimer.current = setTimeout(() => setToast(""), 2800);
   }, []);
 
-  const syncUrl = useCallback((nextSeed: string, nextFilters: GeneratorFilters, nextResults: GeneratedPokemon[]) => {
-    const url = createShareUrl(nextSeed, { ...nextFilters, count: nextResults.length || nextFilters.count }, nextResults.map((entry) => entry.pokemon.slug));
-    window.history.replaceState({}, "", url);
+  const clearUrlState = useCallback(() => {
+    if (window.location.search) {
+      window.history.replaceState({}, "", window.location.pathname);
+    }
   }, []);
 
   const addRecent = useCallback((nextSeed: string, nextFilters: GeneratorFilters, nextResults: GeneratedPokemon[]) => {
@@ -115,7 +117,7 @@ export function PokemonGenerator({
         setSeedInput(nextSeed);
         setResults(nextResults);
         setFilters(nextFilters);
-        syncUrl(nextSeed, nextFilters, nextResults);
+        clearUrlState();
         if (save) addRecent(nextSeed, nextFilters, nextResults);
       } catch (generationError) {
         setError(generationError instanceof Error ? generationError.message : "Something went wrong while generating Pokémon.");
@@ -123,7 +125,7 @@ export function PokemonGenerator({
         setLoading(false);
       }
     }, 120);
-  }, [addRecent, syncUrl]);
+  }, [addRecent, clearUrlState]);
 
   const runGeneration = useCallback((nextFilters = filters, requestedSeed?: string, save = true) => {
     generateFrom(dataset, nextFilters, requestedSeed, save);
@@ -173,7 +175,7 @@ export function PokemonGenerator({
     setResults(next);
     setSeed(nextSeed);
     setSeedInput(nextSeed);
-    syncUrl(nextSeed, { ...filters, count: next.length }, next);
+    clearUrlState();
   };
 
   const onSingleReroll = (index: number) => {
@@ -244,7 +246,7 @@ export function PokemonGenerator({
     setSeed(item.seed);
     setSeedInput(item.seed);
     setResults(hydrated);
-    syncUrl(item.seed, item.filters, hydrated);
+    clearUrlState();
     window.scrollTo({ top: document.getElementById("generator-results")?.offsetTop ?? 0, behavior: "smooth" });
     showToast("Saved generation restored.");
   };
@@ -257,44 +259,49 @@ export function PokemonGenerator({
 
   return (
     <section className="generator-shell" aria-label="Random Pokémon generator">
-      {pageMode === "standard" && (
-        <div className="quick-section">
-          <div className="section-label"><span>01</span><div><h2>Start with a mode</h2><p>Choose a shortcut, then fine-tune anything below.</p></div></div>
-          <QuickModes active={activeQuickMode} onSelect={quickSelect} />
-        </div>
-      )}
-      <div className="controls-section">
-        <div className="section-label"><span>{pageMode === "standard" ? "02" : "01"}</span><div><h2>{pageMode === "starter" ? "Choose your starter pool" : "Set your filters"}</h2><p>{loadingData ? "Loading the local Pokédex…" : `${pool.length.toLocaleString()} Pokémon currently match.`}</p></div></div>
-        <FilterControls filters={filters} onChange={(next) => { setFilters(next); setActiveQuickMode(null); setError(""); }} pageMode={pageMode} />
-        {error && <div className="inline-error" role="alert"><span aria-hidden="true">!</span><p>{error}</p><button onClick={() => setError("")} aria-label="Dismiss error">×</button></div>}
-        <div className="generate-panel">
-          <label className="seed-field">Seed
-            <input value={seedInput} onChange={(event) => setSeedInput(event.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 32))} placeholder="Leave blank for a new seed" aria-describedby="seed-help" />
-            <small id="seed-help">Use the same seed and filters to reproduce a roll.</small>
-          </label>
-          <button className="generate-button" onClick={() => runGeneration(filters, seedInput || undefined)} disabled={loading || loadingData}>
-            <span aria-hidden="true">{loading ? "···" : "✦"}</span>
-            {loading ? "Generating…" : filters.count > 1 ? "Generate Random Team" : filters.starterOnly ? "Pick a Random Starter" : "Generate Random Pokémon"}
+      <div className="instant-generator">
+        <div className="instant-generator-actions">
+          <button
+            className="generate-button primary-generate"
+            onClick={() => {
+              setSeedInput("");
+              runGeneration(filters);
+            }}
+            disabled={loading || loadingData}
+          >
+            {loading
+              ? "Generating…"
+              : filters.starterOnly
+                ? "Pick a Random Starter"
+                : filters.count > 1
+                  ? "Generate Random Team"
+                  : "Generate Random Pokémon"}
+          </button>
+          <button
+            className="customize-button"
+            type="button"
+            aria-expanded={customizeOpen}
+            aria-controls="generator-customization"
+            onClick={() => setCustomizeOpen((open) => !open)}
+          >
+            <span aria-hidden="true">⚙</span>
+            {customizeOpen ? "Hide Filters" : "Customize Filters"}
           </button>
         </div>
       </div>
 
+      {error && <div className="inline-error generator-error" role="alert"><span aria-hidden="true">!</span><p>{error}</p><button onClick={() => setError("")} aria-label="Dismiss error">×</button></div>}
+
+      {loadingData && (
+        <div className="results-loading" role="status" aria-live="polite">
+          <span className="loading-mark" aria-hidden="true">✦</span>
+          <div><strong>Building your first team…</strong><p>Loading Generation 1–9 from the local Pokédex.</p></div>
+        </div>
+      )}
+
       {results.length > 0 && (
         <div id="generator-results" className="results-section">
-          <div className="results-heading">
-            <div><span className="eyebrow">SEED {seed}</span><h2>{results.length > 1 ? "Your random team" : "Your random Pokémon"}</h2><p>Lock favorites, reroll one slot, or remix every unlocked card.</p></div>
-            <button className="secondary-button new-seed" onClick={() => { setSeedInput(""); runGeneration(filters); }}>New Seed</button>
-          </div>
-          <div className="generator-toolbar" aria-label="Team actions">
-            <button onClick={onRerollUnlocked} disabled={results.every((entry) => entry.locked)}><span aria-hidden="true">↻</span>Reroll Unlocked</button>
-            {results.length < 6 && <button onClick={addRandom}><span aria-hidden="true">＋</span>Add Random Pokémon</button>}
-            <button onClick={() => copyText(teamText(results), "Team copied to clipboard.")}><span aria-hidden="true">▣</span>Copy Team</button>
-            <button onClick={() => copyText(createShareUrl(seed, { ...filters, count: results.length }, results.map((entry) => entry.pokemon.slug)), "Share link copied.")}><span aria-hidden="true">↗</span>Copy Share Link</button>
-          </div>
-          <div className="favorite-save">
-            <label>Favorite name <input value={favoriteName} onChange={(event) => setFavoriteName(event.target.value.slice(0, 40))} placeholder="Optional team name" /></label>
-            <button onClick={saveFavorite}>♡ Save Team</button>
-          </div>
+          <h2 className="sr-only">{results.length > 1 ? "Your random Pokémon team" : "Your random Pokémon"}</h2>
           <div className="pokemon-grid">
             {results.map((result, index) => (
               <PokemonCard
@@ -308,7 +315,17 @@ export function PokemonGenerator({
               />
             ))}
           </div>
+          <div className="generator-toolbar post-grid-toolbar" aria-label="Team actions">
+            <button onClick={onRerollUnlocked} disabled={results.every((entry) => entry.locked)}><span aria-hidden="true">↻</span>Reroll Unlocked</button>
+            {results.length < 6 && <button onClick={addRandom}><span aria-hidden="true">＋</span>Add Random Pokémon</button>}
+            <button onClick={() => copyText(teamText(results), "Team copied to clipboard.")}><span aria-hidden="true">▣</span>Copy Team</button>
+            <button onClick={() => copyText(createShareUrl(seed, { ...filters, count: results.length }, results.map((entry) => entry.pokemon.slug)), "Share link copied.")}><span aria-hidden="true">↗</span>Copy Share Link</button>
+          </div>
           {results.length > 1 && <TeamAnalysis team={results} />}
+          <div className="favorite-save">
+            <label>Favorite name <input value={favoriteName} onChange={(event) => setFavoriteName(event.target.value.slice(0, 40))} placeholder="Optional team name" /></label>
+            <button onClick={saveFavorite}>♡ Save Team</button>
+          </div>
           <div className="library">
             <div className="library-header">
               <div><h2>Your saved rolls</h2><p>Stored only in this browser.</p></div>
@@ -329,6 +346,55 @@ export function PokemonGenerator({
           </div>
         </div>
       )}
+
+      <div className="generator-customization t-acc" data-open={customizeOpen}>
+        <button
+          className="customization-trigger"
+          type="button"
+          aria-expanded={customizeOpen}
+          aria-controls="generator-customization"
+          onClick={() => setCustomizeOpen((open) => !open)}
+        >
+          <span>
+            <strong>Customize your generator</strong>
+            <small>Quick modes, generations, types, special categories, and seed.</small>
+          </span>
+          <span className="customization-trigger-action">{customizeOpen ? "Close filters" : "Open filters"}</span>
+          <span className="t-acc-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div className="t-acc-panel" id="generator-customization">
+          <div className="t-acc-panel-inner" inert={!customizeOpen ? true : undefined} aria-hidden={!customizeOpen}>
+            <div className="customization-inner">
+              {pageMode === "standard" && (
+                <div className="quick-section">
+                  <div className="section-label"><span>01</span><div><h2>Choose a quick mode</h2><p>Use a preset, then fine-tune it below.</p></div></div>
+                  <QuickModes active={activeQuickMode} onSelect={quickSelect} />
+                </div>
+              )}
+              <div className="controls-section">
+                <div className="section-label"><span>{pageMode === "standard" ? "02" : "01"}</span><div><h2>{pageMode === "starter" ? "Choose your starter pool" : "Set your filters"}</h2><p>{loadingData ? "Loading the local Pokédex…" : `${pool.length.toLocaleString()} Pokémon currently match.`}</p></div></div>
+                <FilterControls filters={filters} onChange={(next) => { setFilters(next); setActiveQuickMode(null); setError(""); }} pageMode={pageMode} />
+                <div className="generate-panel">
+                  <label className="seed-field">Seed
+                    <input value={seedInput} onChange={(event) => setSeedInput(event.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 32))} placeholder="Leave blank for a new seed" aria-describedby="seed-help" />
+                    <small id="seed-help">Use the same seed and filters to reproduce a roll.</small>
+                  </label>
+                  <button
+                    className="generate-button"
+                    onClick={() => {
+                      runGeneration(filters, seedInput || undefined);
+                      setCustomizeOpen(false);
+                    }}
+                    disabled={loading || loadingData}
+                  >
+                    {loading ? "Generating…" : "Apply Filters & Generate"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className={`toast ${toast ? "show" : ""}`} role="status" aria-live="polite">{toast}<span aria-hidden="true">✓</span></div>
     </section>
   );

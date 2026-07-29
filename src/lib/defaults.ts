@@ -9,7 +9,7 @@ const categoryDefaults = {
 } as const;
 
 export const STANDARD_FILTERS: GeneratorFilters = {
-  count: 1,
+  count: 6,
   generations: [],
   types: [],
   typeMatch: "any",

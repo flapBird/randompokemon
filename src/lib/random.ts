@@ -83,7 +83,18 @@ export function rerollUnlocked(
   seed: string,
 ) {
   const locked = current.filter((entry) => entry.locked);
-  const next = generatePokemon(pool, { ...filters, count: current.length }, `${seed}-REROLL`, locked);
+  const currentSlugs = new Set(current.map((entry) => entry.pokemon.slug));
+  const freshPool = pool.filter((entry) => !currentSlugs.has(entry.slug));
+  const replacementCount = current.length - locked.length;
+  const canReplaceEverySlot = filters.allowDuplicates
+    ? freshPool.length > 0
+    : freshPool.length >= replacementCount;
+  const next = generatePokemon(
+    canReplaceEverySlot ? freshPool : pool,
+    { ...filters, count: current.length },
+    `${seed}-REROLL`,
+    locked,
+  );
   let replacementIndex = 0;
   return current.map((entry) => (entry.locked ? entry : next[replacementIndex++]));
 }
@@ -95,8 +106,10 @@ export function rerollAt(
   filters: GeneratorFilters,
   seed: string,
 ) {
-  const occupied = new Set(current.filter((_, slot) => slot !== index).map((entry) => entry.pokemon.slug));
-  const available = filters.allowDuplicates ? pool : pool.filter((entry) => !occupied.has(entry.slug));
+  const excluded = filters.allowDuplicates
+    ? new Set([current[index].pokemon.slug])
+    : new Set(current.map((entry) => entry.pokemon.slug));
+  const available = pool.filter((entry) => !excluded.has(entry.slug));
   if (!available.length) throw new Error("No different Pokémon is available for this slot with the current filters.");
   const random = createSeededRandom(`${seed}-SLOT-${index}`);
   const replacement = toGenerated(pickOne(available, random), random);

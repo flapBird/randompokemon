@@ -31,9 +31,6 @@ export default function Home() {
           <span className="eyebrow">FAST · FILTERABLE · SHAREABLE</span>
           <h1>Random Pokémon<br /><em>Generator</em></h1>
           <p>Generate one random Pokémon or build a complete team with custom generations, types, regions, and special filters.</p>
-          <div className="hero-points" aria-label="Generator features">
-            <span>1–6 Pokémon</span><span>Gen 1–9</span><span>Seed sharing</span>
-          </div>
         </div>
         <div className="hero-motif" aria-hidden="true">
           <div className="motif-ring"><span>?</span></div>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { generatePokemon, rerollAt, rerollUnlocked } from "../src/lib/random";
-import { createSeededRandom } from "../src/lib/seeded-random";
+import { createReadableSeed, createSeededRandom, isValidSeed } from "../src/lib/seeded-random";
 import { filters, generated, pool } from "./fixtures";
 
 describe("seeded random generation", () => {
@@ -14,6 +14,11 @@ describe("seeded random generation", () => {
     const two = createSeededRandom("HOENN-98765");
     expect(Array.from({ length: 5 }, one)).not.toEqual(Array.from({ length: 5 }, two));
   });
+  it("creates a valid readable seed from a seeded random source", () => {
+    const seed = createReadableSeed(createSeededRandom("browser-entropy"));
+    expect(seed).toMatch(/^(KANTO|JOHTO|HOENN|SINNOH|UNOVA|KALOS|ALOLA|GALAR|PALDEA)-\d{5}$/);
+    expect(isValidSeed(seed)).toBe(true);
+  });
   it("does not generate duplicate Pokémon when duplicates are disabled", () => {
     const result = generatePokemon(pool, { ...filters, count: 6, allowDuplicates: false }, "UNOVA-10101");
     expect(new Set(result.map((entry) => entry.pokemon.slug)).size).toBe(6);
@@ -22,6 +27,12 @@ describe("seeded random generation", () => {
     const current = [generated(pool[0], true), generated(pool[1]), generated(pool[2])];
     const result = rerollUnlocked(current, pool, { ...filters, count: 3 }, "ALOLA-22222");
     expect(result[0]).toBe(current[0]);
+  });
+  it("does not immediately return previously unlocked Pokémon when alternatives exist", () => {
+    const current = [generated(pool[0]), generated(pool[1]), generated(pool[2])];
+    const previous = new Set(current.map((entry) => entry.pokemon.slug));
+    const result = rerollUnlocked(current, pool, { ...filters, count: 3 }, "KALOS-24242");
+    expect(result.every((entry) => !previous.has(entry.pokemon.slug))).toBe(true);
   });
   it("single-card reroll does not change other positions", () => {
     const current = [generated(pool[0]), generated(pool[1]), generated(pool[2])];
