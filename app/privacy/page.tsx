@@ -17,9 +17,9 @@ export default function PrivacyPage() {
       <h2>Information stored in your browser</h2>
       <p>RandomPokemon.xyz uses localStorage for your theme preference, up to ten recent generations, and up to twenty favorite teams. This information remains in your browser and can be removed from the generator or by clearing site data.</p>
       <h2>Server logs and analytics</h2>
-      <p>Our hosting provider may process standard technical information such as IP address, browser type, requested pages, and timestamps to operate and secure the site. If privacy-friendly analytics are added later, this policy will be updated before collection begins.</p>
+      <p>Our hosting provider may process standard technical information such as IP address, browser type, requested pages, and timestamps to operate and secure the site. We also use Google Analytics to understand page visits, sessions, approximate location, and browser or device information. We do not send saved teams, filter selections, or custom names to Google Analytics.</p>
       <h2>Cookies</h2>
-      <p>The first version does not use advertising cookies or account cookies. Browser storage is used only for the features described above.</p>
+      <p>Google Analytics may use first-party cookies, including the <code>_ga</code> cookie, to distinguish visitors and sessions. The site does not use account cookies or advertising cookies of its own. You can block or remove analytics cookies through your browser settings.</p>
       <h2>External images</h2>
       <p>Pokémon artwork is loaded from public sprite hosts. Those providers may receive standard request information when your browser loads an image.</p>
       <h2>Your choices</h2>

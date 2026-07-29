@@ -28,10 +28,14 @@ export function GeneratorFilters({
   filters,
   onChange,
   pageMode,
+  seedInput,
+  onSeedInputChange,
 }: {
   filters: GeneratorFilters;
   onChange: (filters: GeneratorFilters) => void;
   pageMode: "standard" | "team" | "starter";
+  seedInput: string;
+  onSeedInputChange: (value: string) => void;
 }) {
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const update = <K extends keyof GeneratorFilters>(key: K, value: GeneratorFilters[K]) => onChange({ ...filters, [key]: value });
@@ -65,31 +69,17 @@ export function GeneratorFilters({
               {(["any", "grass", "fire", "water"] as const).map((type) => <button key={type} type="button" className={filters.starterType === type ? "selected" : ""} onClick={() => update("starterType", type)}>{title(type)}</button>)}
             </div>
           </fieldset>
-          <div className="toggle-grid">
-            <Toggle checked={filters.includePikachu} onChange={(value) => update("includePikachu", value)} label="Include Pikachu" />
-            <Toggle checked={filters.includeEevee} onChange={(value) => update("includeEevee", value)} label="Include Eevee" />
-          </div>
         </div>
       ) : (
         <>
           <div className="filter-card">
-            <div className="filter-heading"><span>Team setup</span><small>Choose how many Pokémon to roll.</small></div>
+            <div className="filter-heading"><span>Team size</span><small>Choose how many Pokémon to generate.</small></div>
             <fieldset>
               <legend>Generate count</legend>
               <div className="count-selector segmented">
                 {[1, 2, 3, 4, 5, 6].map((count) => <button type="button" key={count} onClick={() => update("count", count)} className={filters.count === count ? "selected" : ""} aria-pressed={filters.count === count}>{count}</button>)}
               </div>
             </fieldset>
-            {filters.count > 1 && (
-              <fieldset>
-                <div className="legend-row"><legend>Generation style</legend><span className="help-tip" title="Smart Team samples multiple valid teams and favors type variety.">?</span></div>
-                <div className="segmented">
-                  <button type="button" className={filters.teamMode === "random" ? "selected" : ""} onClick={() => update("teamMode", "random")}>Pure Random</button>
-                  <button type="button" className={filters.teamMode === "smart" ? "selected" : ""} onClick={() => update("teamMode", "smart")}>Smart Team</button>
-                </div>
-                {filters.teamMode === "smart" && <p className="field-note">Smart Team improves type variety and balance, but it does not create a competitive battle team.</p>}
-              </fieldset>
-            )}
           </div>
           <div className="filter-card">
             <div className="filter-heading"><span>Generation</span><small>Select one or more. None means all generations.</small></div>
@@ -101,72 +91,108 @@ export function GeneratorFilters({
           <div className="filter-card type-filter">
             <div className="filter-heading horizontal">
               <div><span>Type</span><small>Pick any type combination.</small></div>
-              <div className="mini-segmented" role="group" aria-label="Type matching mode">
-                <button type="button" className={filters.typeMatch === "any" ? "selected" : ""} onClick={() => update("typeMatch", "any")}>Match Any</button>
-                <button type="button" className={filters.typeMatch === "all" ? "selected" : ""} onClick={() => update("typeMatch", "all")}>Match All</button>
-              </div>
+              {filters.types.length >= 2 && (
+                <div className="mini-segmented" role="group" aria-label="Type matching mode">
+                  <button type="button" className={filters.typeMatch === "any" ? "selected" : ""} onClick={() => update("typeMatch", "any")}>Match Any</button>
+                  <button type="button" className={filters.typeMatch === "all" ? "selected" : ""} onClick={() => update("typeMatch", "all")}>Match All</button>
+                </div>
+              )}
             </div>
             <div className="type-selector" role="group" aria-label="Filter by Pokémon type">
               {POKEMON_TYPES.map((type) => <button type="button" key={type} data-type={type} className={filters.types.includes(type) ? "selected" : ""} onClick={() => toggleType(type)} aria-pressed={filters.types.includes(type)}><span className="type-dot" />{title(type)}</button>)}
             </div>
-            {filters.typeMatch === "all" && <p className="field-note">Match All supports up to two types because Pokémon have at most two types.</p>}
-          </div>
-          <div className="filter-card">
-            <div className="filter-heading"><span>Special Pokémon</span><small>Control rare Pokémon and alternate forms.</small></div>
-            <div className="toggle-grid">
-              <Toggle checked={filters.includeLegendaries} onChange={(value) => onChange({ ...filters, includeLegendaries: value, legendaryOnly: value ? filters.legendaryOnly : false })} label="Include Legendaries" />
-              <Toggle checked={filters.includeMythicals} onChange={(value) => update("includeMythicals", value)} label="Include Mythicals" />
-              <Toggle checked={filters.includeForms} onChange={(value) => update("includeForms", value)} label="Include Forms" />
-              <Toggle checked={filters.fullyEvolvedOnly} onChange={(value) => update("fullyEvolvedOnly", value)} label="Fully Evolved Only" />
-              <Toggle checked={filters.allowDuplicates} onChange={(value) => update("allowDuplicates", value)} label="Allow Duplicate Pokémon" />
-            </div>
+            {filters.typeMatch === "all" && filters.types.length >= 2 && <p className="field-note">Match All requires both selected types.</p>}
           </div>
         </>
       )}
-      {pageMode !== "starter" && (
-        <div className="advanced-wrap t-acc" data-open={advancedOpen}>
-          <button type="button" className="advanced-trigger" onClick={() => setAdvancedOpen((value) => !value)} aria-expanded={advancedOpen} aria-controls="advanced-filters">
-            <span><strong>Advanced Filters</strong><small>Region, evolution stage, base stats, and categories</small></span>
-            <span className="chevron t-acc-chevron" aria-hidden="true">⌄</span>
-          </button>
-          <div id="advanced-filters" className="advanced-panel t-acc-panel">
-            <div className="advanced-inner t-acc-panel-inner">
-              <fieldset>
-                <legend>Region</legend>
-                <div className="chip-grid">
-                  <button type="button" className={!filters.regions.length ? "selected" : ""} onClick={() => update("regions", [])}>All Regions</button>
-                  {regions.map((region) => <button type="button" key={region} className={filters.regions.includes(region) ? "selected" : ""} onClick={() => toggleRegion(region)}>{title(region)}</button>)}
-                </div>
-              </fieldset>
-              <div className="advanced-grid">
-                <label>Evolution stage
-                  <select value={filters.evolutionStage} onChange={(event) => update("evolutionStage", event.target.value as GeneratorFilters["evolutionStage"])}>
-                    <option value="any">Any Stage</option><option value="basic">Basic</option><option value="middle">Middle Evolution</option><option value="final">Final Evolution</option>
-                  </select>
-                </label>
-                <label>Min BST
-                  <input type="number" min="100" max="800" value={filters.minBst} onChange={(event) => update("minBst", Number(event.target.value))} />
-                </label>
-                <label>Max BST
-                  <input type="number" min="100" max="800" value={filters.maxBst} onChange={(event) => update("maxBst", Number(event.target.value))} />
-                </label>
-              </div>
-              <fieldset>
-                <legend>Special categories</legend>
-                <div className="category-grid">
-                  {(Object.keys(specialLabels) as SpecialCategory[]).map((key) => (
-                    <label key={key}>{specialLabels[key]}
-                      <select value={filters.categories[key]} onChange={(event) => category(key, event.target.value as CategoryRule)}>
-                        <option value="any">Any</option><option value="include">Only</option><option value="exclude">Exclude</option>
+      <div className="advanced-wrap t-acc" data-open={advancedOpen}>
+        <button type="button" className="advanced-trigger" onClick={() => setAdvancedOpen((value) => !value)} aria-expanded={advancedOpen} aria-controls="advanced-filters">
+          <span>
+            <strong>More Filters</strong>
+            <small>{pageMode === "starter" ? "Partner starters and reproducible seed" : "Team style, special Pokémon, region, stats, and seed"}</small>
+          </span>
+          <span className="chevron t-acc-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div id="advanced-filters" className="advanced-panel t-acc-panel" hidden={!advancedOpen}>
+          <div className="advanced-inner t-acc-panel-inner" inert={!advancedOpen ? true : undefined} aria-hidden={!advancedOpen}>
+            <div className="advanced-content">
+              {pageMode === "starter" ? (
+                <fieldset>
+                  <legend>Partner starters</legend>
+                  <div className="toggle-grid">
+                    <Toggle checked={filters.includePikachu} onChange={(value) => update("includePikachu", value)} label="Include Pikachu" />
+                    <Toggle checked={filters.includeEevee} onChange={(value) => update("includeEevee", value)} label="Include Eevee" />
+                  </div>
+                </fieldset>
+              ) : (
+                <>
+                  {filters.count > 1 && (
+                    <fieldset>
+                      <div className="legend-row"><legend>Team generation style</legend><span className="help-tip" title="Smart Team samples multiple valid teams and favors type variety.">?</span></div>
+                      <div className="segmented">
+                        <button type="button" className={filters.teamMode === "random" ? "selected" : ""} onClick={() => update("teamMode", "random")}>Pure Random</button>
+                        <button type="button" className={filters.teamMode === "smart" ? "selected" : ""} onClick={() => update("teamMode", "smart")}>Smart Team</button>
+                      </div>
+                      {filters.teamMode === "smart" && <p className="field-note">Smart Team improves variety and balance, but it does not create a competitive battle team.</p>}
+                    </fieldset>
+                  )}
+                  <fieldset>
+                    <legend>Special Pokémon</legend>
+                    <div className="toggle-grid">
+                    <Toggle checked={filters.includeLegendaries} onChange={(value) => onChange({ ...filters, includeLegendaries: value, legendaryOnly: value ? filters.legendaryOnly : false })} label="Include Legendaries" />
+                    <Toggle checked={filters.includeMythicals} onChange={(value) => update("includeMythicals", value)} label="Include Mythicals" />
+                    <Toggle checked={filters.includeForms} onChange={(value) => update("includeForms", value)} label="Include Forms" />
+                    <Toggle checked={filters.fullyEvolvedOnly} onChange={(value) => update("fullyEvolvedOnly", value)} label="Fully Evolved Only" />
+                    <Toggle checked={filters.allowDuplicates} onChange={(value) => update("allowDuplicates", value)} label="Allow Duplicate Pokémon" />
+                    </div>
+                  </fieldset>
+                  <fieldset>
+                    <legend>Region</legend>
+                    <div className="chip-grid">
+                      <button type="button" className={!filters.regions.length ? "selected" : ""} onClick={() => update("regions", [])}>All Regions</button>
+                      {regions.map((region) => <button type="button" key={region} className={filters.regions.includes(region) ? "selected" : ""} onClick={() => toggleRegion(region)}>{title(region)}</button>)}
+                    </div>
+                  </fieldset>
+                  <div className="advanced-grid">
+                    <label>Evolution stage
+                      <select value={filters.evolutionStage} onChange={(event) => update("evolutionStage", event.target.value as GeneratorFilters["evolutionStage"])}>
+                        <option value="any">Any Stage</option><option value="basic">Basic</option><option value="middle">Middle Evolution</option><option value="final">Final Evolution</option>
                       </select>
                     </label>
-                  ))}
-                </div>
-              </fieldset>
+                    <label>Min BST
+                      <input type="number" min="100" max="800" value={filters.minBst} onChange={(event) => update("minBst", Number(event.target.value))} />
+                    </label>
+                    <label>Max BST
+                      <input type="number" min="100" max="800" value={filters.maxBst} onChange={(event) => update("maxBst", Number(event.target.value))} />
+                    </label>
+                  </div>
+                  <fieldset>
+                    <legend>Special categories</legend>
+                    <div className="category-grid">
+                      {(Object.keys(specialLabels) as SpecialCategory[]).map((key) => (
+                        <label key={key}>{specialLabels[key]}
+                          <select value={filters.categories[key]} onChange={(event) => category(key, event.target.value as CategoryRule)}>
+                            <option value="any">Any</option><option value="include">Only</option><option value="exclude">Exclude</option>
+                          </select>
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+                </>
+              )}
+              <label className="filter-seed">Seed
+                <input
+                  value={seedInput}
+                  onChange={(event) => onSeedInputChange(event.target.value)}
+                  placeholder="Leave blank for a new seed"
+                  aria-describedby={`seed-help-${pageMode}`}
+                />
+                <small id={`seed-help-${pageMode}`}>Optional. Use the same seed and filters to reproduce a roll.</small>
+              </label>
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

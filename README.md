@@ -15,6 +15,14 @@ npm run dev
 
 Open the local URL printed by the development server.
 
+Copy `.env.example` to `.env.local` and add the GA4 Measurement ID when analytics is needed:
+
+```bash
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+```
+
+The Google tag is omitted entirely when the variable is empty or invalid.
+
 ## Validation
 
 ```bash
@@ -46,6 +54,7 @@ The project can be imported directly into Vercel:
 1. Import the GitHub repository in Vercel, or run `vercel link` from this directory.
 2. Keep the framework preset as Next.js.
 3. Use `npm run build`.
-4. Add `randompokemon.xyz` in the Vercel project domain settings and configure the DNS records Vercel provides.
+4. Add `NEXT_PUBLIC_GA_MEASUREMENT_ID` in Vercel project environment variables for Production, Preview, or both.
+5. Add `randompokemon.xyz` in the Vercel project domain settings and configure the DNS records Vercel provides.
 
-No environment variables, database, or server-side data service are required.
+No database or server-side data service is required. Analytics is optional and is enabled only when its environment variable is configured.
