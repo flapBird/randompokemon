@@ -1,60 +1,70 @@
 # Random Pokémon Generator
 
-Production-ready Next.js App Router website for [randompokemon.xyz](https://randompokemon.xyz), configured for native Vercel deployment. It generates reproducible Pokémon picks and teams with local Generation 1–9 data.
+Website: https://randompokemon.xyz
 
-## Requirements
+Random Pokémon Generator is a modern, mobile-friendly tool for generating individual Pokémon, complete teams, and random starters. It is designed for casual playthroughs, Nuzlocke challenges, themed runs, friendly challenges, and anyone who needs a quick random Pokémon picker.
+
+## Main Features
+
+- Generate one to six random Pokémon.
+- Generate a complete team of six by default.
+- Filter Pokémon by generation, type, region, evolution stage, base stat total, and special category.
+- Choose between Pure Random and Smart Team generation.
+- Lock team members and reroll only the remaining slots.
+- Reroll or remove an individual Pokémon without changing the rest of the team.
+- Switch between normal and shiny artwork.
+- View Pokémon types, abilities, nature, stats, generation, region, and category details.
+- Analyze team type distribution, shared weaknesses, resistances, and average base stat total.
+- Reproduce the same result with a Seed.
+- Copy a shareable team link or formatted team text.
+- Save recent generations and favorite teams in local browser storage.
+- Use dedicated Team Generator and Starter Generator modes.
+- Use the generator on desktop, tablet, and mobile devices.
+- Switch between light and dark themes.
+- Track page visits with optional Google Analytics integration.
+
+## Technology
+
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- Vitest
+- Local Generation 1–9 Pokémon dataset
+- Vercel deployment
+
+## Local Development
+
+Requirements:
 
 - Node.js 24.x
+- npm
 
-## Local development
+Install dependencies and start the development server:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the local URL printed by the development server.
+Create a production build:
 
-Copy `.env.example` to `.env.local` and add the GA4 Measurement ID when analytics is needed:
+```bash
+npm run build
+```
+
+Run validation:
+
+```bash
+npm run lint
+npm test
+```
+
+## Optional Google Analytics
+
+Set the following environment variable to enable GA4 page-view tracking:
 
 ```bash
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 ```
 
-The Google tag is omitted entirely when the variable is empty or invalid.
-
-## Validation
-
-```bash
-npm run lint
-npm test
-npm run build
-```
-
-## Pokémon data
-
-The browser reads the checked-in static file at `public/data/pokemon.json`; `src/data/pokemon.json` is the normalized source copy. The app never downloads the full Pokédex from a third party at runtime. To refresh the data from PokéAPI metadata and the versioned `@pkmn/dex` package:
-
-```bash
-npm run data:update
-```
-
-If PokéAPI is unavailable, rebuild from the local package data:
-
-```bash
-npm run data:update:offline
-```
-
-The generator script normalizes Generation 1–9 species, approved regional forms, Mega Evolutions, Gigantamax forms, abilities, stats, starter status, and special categories.
-
-## Deployment
-
-The project can be imported directly into Vercel:
-
-1. Import the GitHub repository in Vercel, or run `vercel link` from this directory.
-2. Keep the framework preset as Next.js.
-3. Use `npm run build`.
-4. Add `NEXT_PUBLIC_GA_MEASUREMENT_ID` in Vercel project environment variables for Production, Preview, or both.
-5. Add `randompokemon.xyz` in the Vercel project domain settings and configure the DNS records Vercel provides.
-
-No database or server-side data service is required. Analytics is optional and is enabled only when its environment variable is configured.
+Google Analytics is not loaded when the variable is empty or invalid.
