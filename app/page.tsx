@@ -8,7 +8,6 @@ import { baseSchemas } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "Random Pokémon Generator – Create a Pokémon or Team",
   description: "Generate a random Pokémon or build a complete team with filters for generation, type, region, evolution, and legendary status.",
-  alternates: { canonical: "/" },
 };
 
 const faq: FaqItem[] = [
@@ -25,6 +24,7 @@ const faq: FaqItem[] = [
 export default function Home() {
   return (
     <>
+      <link rel="canonical" href="https://randompokemon.xyz/" />
       <JsonLd data={baseSchemas(faq)} />
       <section className="hero">
         <div className="hero-copy">

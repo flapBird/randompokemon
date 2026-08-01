@@ -1,6 +1,6 @@
 import type { FaqItem } from "@/components/content/Faq";
 
-export const siteUrl = "https://randompokemon.xyz";
+export const siteUrl = "https://randompokemon.xyz/";
 
 export function baseSchemas(faq: FaqItem[]) {
   return [
@@ -45,7 +45,7 @@ export function breadcrumbSchema(items: Array<[string, string]>) {
       "@type": "ListItem",
       position: index + 1,
       name,
-      item: `${siteUrl}${path}`,
+      item: `${siteUrl}${path.replace(/^\//, "")}`,
     })),
   };
 }
