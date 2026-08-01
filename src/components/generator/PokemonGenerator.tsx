@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { NATURES } from "@/data/natures";
-import { filterPokemon } from "@/lib/filters";
+import { filterPokemon, generationRegionConflictMessage } from "@/lib/filters";
 import { generatePokemon, rerollAt, rerollUnlocked } from "@/lib/random";
 import { createReadableSeed, createSeededRandom, isValidSeed, pickOne, randomInt } from "@/lib/seeded-random";
 import { storage } from "@/lib/storage";
@@ -50,6 +50,39 @@ function savedGenerationName(item: SavedGeneration) {
     : item.seed;
 }
 
+function displayToken(value: string) {
+  return value[0].toUpperCase() + value.slice(1);
+}
+
+function savedFilterSummary(item: SavedGeneration) {
+  const { filters } = item;
+  const parts = [item.pageMode === "starter" ? "Starter" : filters.count > 1 ? `Team of ${filters.count}` : "Single pick"];
+  if (filters.generations.length) parts.push(filters.generations.map((generation) => `Gen ${generation}`).join(" + "));
+  else parts.push("All generations");
+  if (filters.types.length) parts.push(filters.types.map(displayToken).join(" + "));
+  if (filters.regions.length) parts.push(filters.regions.map(displayToken).join(" + "));
+  if (filters.teamMode === "smart" && filters.count > 1) parts.push("Smart");
+  return parts.join(" · ");
+}
+
+function savedPokemonPreview(item: SavedGeneration, dataset: PokemonRecord[]) {
+  const names = item.pokemonIds.slice(0, 3).map((slug) => dataset.find((entry) => entry.slug === slug)?.name ?? displayToken(slug));
+  return `${names.join(", ")}${item.pokemonIds.length > 3 ? ` +${item.pokemonIds.length - 3}` : ""}`;
+}
+
+function cloneFilters(filters: GeneratorFilters): GeneratorFilters {
+  return {
+    ...filters,
+    generations: [...filters.generations],
+    types: [...filters.types],
+    regions: [...filters.regions],
+    categories: { ...filters.categories },
+  };
+}
+
+type SavedSource = "recent" | "favorites";
+type DeletedSaved = { item: SavedGeneration; source: SavedSource; wasActive: boolean };
+
 export function PokemonGenerator({
   initialFilters,
   pageMode = "standard",
@@ -71,14 +104,21 @@ export function PokemonGenerator({
   const [favorites, setFavorites] = useState<FavoriteTeam[]>([]);
   const [libraryTab, setLibraryTab] = useState<"recent" | "favorites">("recent");
   const [favoriteName, setFavoriteName] = useState("");
+  const [activeSavedKey, setActiveSavedKey] = useState<string | null>(null);
+  const [deletedSaved, setDeletedSaved] = useState<DeletedSaved | null>(null);
+  const [confirmClearRecent, setConfirmClearRecent] = useState(false);
   const initialized = useRef(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pool = useMemo(() => filterPokemon(dataset, filters), [dataset, filters]);
 
-  const showToast = useCallback((message: string) => {
+  const showToast = useCallback((message: string, keepUndo = false) => {
     setToast(message);
+    if (!keepUndo) setDeletedSaved(null);
     if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToast(""), 2800);
+    toastTimer.current = setTimeout(() => {
+      setToast("");
+      setDeletedSaved(null);
+    }, keepUndo ? 5000 : 2800);
   }, []);
 
   const clearUrlState = useCallback(() => {
@@ -107,6 +147,8 @@ export function PokemonGenerator({
       try {
         if (!source.length) throw new Error("Pokémon data is still loading. Please try again in a moment.");
         if (nextFilters.minBst > nextFilters.maxBst) throw new Error("Minimum BST cannot be greater than maximum BST.");
+        const generationRegionConflict = generationRegionConflictMessage(nextFilters);
+        if (generationRegionConflict) throw new Error(generationRegionConflict);
         const nextPool = filterPokemon(source, nextFilters);
         if (!nextPool.length) throw new Error("No Pokémon match these filters. Try selecting more generations or removing some restrictions.");
         const nextSeed = requestedSeed?.trim().toUpperCase() || makeSeed();
@@ -116,6 +158,7 @@ export function PokemonGenerator({
         setSeedInput(nextSeed);
         setResults(nextResults);
         setFilters(nextFilters);
+        setActiveSavedKey(null);
         clearUrlState();
         if (save) addRecent(nextSeed, nextFilters, nextResults);
       } catch (generationError) {
@@ -174,6 +217,7 @@ export function PokemonGenerator({
     setResults(next);
     setSeed(nextSeed);
     setSeedInput(nextSeed);
+    setActiveSavedKey(null);
     clearUrlState();
   };
 
@@ -237,7 +281,7 @@ export function PokemonGenerator({
     showToast("Team saved to favorites.");
   };
 
-  const restoreSaved = (item: SavedGeneration) => {
+  const restoreSaved = (item: SavedGeneration, source: SavedSource) => {
     const restored = item.pokemonIds.map((slug) => dataset.find((entry) => entry.slug === slug)).filter(Boolean) as PokemonRecord[];
     if (!restored.length) return setError("This saved team could not be restored with the current data version.");
     const hydrated = hydratePokemon(restored, item.seed);
@@ -245,14 +289,49 @@ export function PokemonGenerator({
     setSeed(item.seed);
     setSeedInput(item.seed);
     setResults(hydrated);
+    setActiveSavedKey(`${source}:${item.id}`);
     clearUrlState();
     window.scrollTo({ top: document.getElementById("generator-results")?.offsetTop ?? 0, behavior: "smooth" });
-    showToast("Saved generation restored.");
+    showToast(`${savedGenerationName(item)} restored.`);
+  };
+
+  const resetFilters = () => {
+    setFilters(cloneFilters(initialFilters));
+    setSeedInput("");
+    setActiveQuickMode(pageMode === "team" ? "team" : pageMode === "starter" ? "starter" : null);
+    setActiveSavedKey(null);
+    setError("");
+    showToast("Filters reset to page defaults.");
+  };
+
+  const deleteSaved = (item: SavedGeneration, source: SavedSource) => {
+    const key = `${source}:${item.id}`;
+    const wasActive = activeSavedKey === key;
+    if (source === "recent") setRecent(storage.removeRecent(item.id));
+    else setFavorites(storage.removeFavorite(item.id));
+    if (wasActive) setActiveSavedKey(null);
+    setDeletedSaved({ item, source, wasActive });
+    showToast("Saved roll deleted.", true);
+  };
+
+  const undoSavedDelete = () => {
+    if (!deletedSaved) return;
+    const { item, source, wasActive } = deletedSaved;
+    if (source === "recent") {
+      const saved = storage.saveRecent(item);
+      if (saved) setRecent(saved);
+    } else {
+      const saved = storage.saveFavorite(item as FavoriteTeam);
+      if (saved) setFavorites(saved);
+    }
+    if (wasActive) setActiveSavedKey(`${source}:${item.id}`);
+    showToast("Deletion undone.");
   };
 
   const quickSelect = (mode: QuickMode, transform: (current: GeneratorFilters) => GeneratorFilters) => {
     setActiveQuickMode(mode);
     setFilters((current) => transform(current));
+    setActiveSavedKey(null);
     setError("");
   };
 
@@ -261,26 +340,29 @@ export function PokemonGenerator({
       <div className="instant-generator">
         <FilterControls
           filters={filters}
-          onChange={(next) => { setFilters(next); setActiveQuickMode(null); setError(""); }}
+          onChange={(next) => { setFilters(next); setActiveQuickMode(null); setActiveSavedKey(null); setError(""); }}
           pageMode={pageMode}
           seedInput={seedInput}
-          onSeedInputChange={(value) => setSeedInput(value.toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 32))}
+          onSeedInputChange={(value) => { setSeedInput(value.toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 32)); setActiveSavedKey(null); }}
           activeQuickMode={activeQuickMode}
           onQuickSelect={quickSelect}
         />
-        <button
-          className="generate-button primary-generate"
-          onClick={() => runGeneration(filters, seedInput && seedInput !== seed ? seedInput : undefined)}
-          disabled={loading || loadingData}
-        >
-          {loading
-            ? "Generating…"
-            : filters.starterOnly
-              ? "Pick Random Starter"
-              : filters.count > 1
-                ? "Generate Team"
-                : "Generate Pokémon"}
-        </button>
+        <div className="generator-primary-actions">
+          <button type="button" className="reset-filters-button" onClick={resetFilters}>Reset</button>
+          <button
+            className="generate-button primary-generate"
+            onClick={() => runGeneration(filters, seedInput && seedInput !== seed ? seedInput : undefined)}
+            disabled={loading || loadingData}
+          >
+            {loading
+              ? "Generating…"
+              : filters.starterOnly
+                ? "Pick Random Starter"
+                : filters.count > 1
+                  ? "Generate Team"
+                  : "Generate Pokémon"}
+          </button>
+        </div>
       </div>
 
       {error && <div className="inline-error generator-error" role="alert"><span aria-hidden="true">!</span><p>{error}</p><button onClick={() => setError("")} aria-label="Dismiss error">×</button></div>}
@@ -328,19 +410,43 @@ export function PokemonGenerator({
               </div>
             </div>
             <div className="saved-list">
-              {(libraryTab === "recent" ? recent : favorites).length ? (libraryTab === "recent" ? recent : favorites).map((item) => (
-                <div className="saved-item" key={item.id}>
-                  <div><strong>{savedGenerationName(item)}</strong><span>{item.pokemonIds.length} Pokémon · {new Date(item.createdAt).toLocaleDateString()}</span></div>
-                  <div><button onClick={() => restoreSaved(item)}>Restore</button><button aria-label={`Delete saved team ${item.seed}`} onClick={() => libraryTab === "recent" ? setRecent(storage.removeRecent(item.id)) : setFavorites(storage.removeFavorite(item.id))}>Delete</button></div>
-                </div>
-              )) : <p className="empty-saved">No {libraryTab} saved yet.</p>}
+              {(libraryTab === "recent" ? recent : favorites).length ? (libraryTab === "recent" ? recent : favorites).map((item) => {
+                const savedKey = `${libraryTab}:${item.id}`;
+                const isLoaded = activeSavedKey === savedKey;
+                return (
+                  <div className={isLoaded ? "saved-item loaded" : "saved-item"} key={item.id} aria-current={isLoaded ? "true" : undefined}>
+                    <div className="saved-item-copy">
+                      <div className="saved-item-title"><strong>{savedGenerationName(item)}</strong>{isLoaded && <span className="loaded-badge">Currently loaded</span>}</div>
+                      <span>{new Date(item.createdAt).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+                      <small>{savedFilterSummary(item)}</small>
+                      <small className="saved-preview">{savedPokemonPreview(item, dataset)}</small>
+                    </div>
+                    <div>
+                      <button onClick={() => restoreSaved(item, libraryTab)} disabled={isLoaded}>{isLoaded ? "Loaded" : "Restore"}</button>
+                      <button aria-label={`Delete saved roll ${item.seed}`} onClick={() => deleteSaved(item, libraryTab)}>Delete</button>
+                    </div>
+                  </div>
+                );
+              }) : <p className="empty-saved">No {libraryTab} saved yet.</p>}
             </div>
-            {libraryTab === "recent" && recent.length > 0 && <button className="text-button danger" onClick={() => { storage.clearRecent(); setRecent([]); }}>Clear generation history</button>}
+            {libraryTab === "recent" && recent.length > 0 && (
+              confirmClearRecent ? (
+                <div className="clear-history-confirm" role="group" aria-label="Confirm clearing recent generations">
+                  <span>Clear all recent rolls?</span>
+                  <button className="text-button" onClick={() => setConfirmClearRecent(false)}>Cancel</button>
+                  <button className="text-button danger" onClick={() => { storage.clearRecent(); setRecent([]); setConfirmClearRecent(false); if (activeSavedKey?.startsWith("recent:")) setActiveSavedKey(null); showToast("Generation history cleared."); }}>Clear all</button>
+                </div>
+              ) : <button className="text-button danger" onClick={() => setConfirmClearRecent(true)}>Clear generation history</button>
+            )}
           </div>
         </div>
       )}
 
-      <div className={`toast ${toast ? "show" : ""}`} role="status" aria-live="polite">{toast}<span aria-hidden="true">✓</span></div>
+      <div className={`toast ${toast ? "show" : ""}`} role="status" aria-live="polite">
+        <span className="toast-message">{toast}</span>
+        {deletedSaved && <button type="button" onClick={undoSavedDelete}>Undo</button>}
+        {!deletedSaved && <span className="toast-check" aria-hidden="true">✓</span>}
+      </div>
     </section>
   );
 }

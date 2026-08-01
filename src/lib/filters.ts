@@ -9,6 +9,28 @@ const categoryField: Record<SpecialCategory, keyof PokemonRecord> = {
   gigantamax: "isGigantamax",
 };
 
+export const REGION_GENERATION: Record<string, number> = {
+  kanto: 1,
+  johto: 2,
+  hoenn: 3,
+  sinnoh: 4,
+  unova: 5,
+  kalos: 6,
+  alola: 7,
+  galar: 8,
+  hisui: 8,
+  paldea: 9,
+};
+
+export function generationRegionConflictMessage(filters: GeneratorFilters) {
+  if (!filters.generations.length || !filters.regions.length) return null;
+  const regionGenerations = [...new Set(filters.regions.map((region) => REGION_GENERATION[region]).filter(Boolean))].sort();
+  if (regionGenerations.some((generation) => filters.generations.includes(generation))) return null;
+  const regionNames = filters.regions.map((region) => region[0].toUpperCase() + region.slice(1)).join(", ");
+  const generationNames = regionGenerations.map((generation) => `Generation ${generation}`).join(" or ");
+  return `Generation and Region do not overlap. ${regionNames} Pokémon belong to ${generationNames}. Change one of these filters or reset them.`;
+}
+
 export function filterPokemon(pokemon: PokemonRecord[], filters: GeneratorFilters) {
   if (filters.minBst > filters.maxBst) return [];
   return pokemon.filter((entry) => {

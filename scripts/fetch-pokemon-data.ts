@@ -26,6 +26,7 @@ const starterNames = new Set([
 
 const regions = ["", "Kanto", "Johto", "Hoenn", "Sinnoh", "Unova", "Kalos", "Alola", "Galar", "Paldea"];
 const allowedForm = /(alola|galar|hisui|paldea|mega|gmax)$/i;
+const hisuiNativeSpecies = new Set(["wyrdeer", "kleavor", "ursaluna", "basculegion", "sneasler", "overqwil", "enamorus"]);
 
 type ApiMeta = { height: number; category: string };
 
@@ -95,6 +96,7 @@ const records = Dex.species.all()
     const isMega = Boolean(species.isMega) || /mega/i.test(species.forme);
     const isGigantamax = /gmax/i.test(species.forme);
     const isRegionalForm = /(alola|galar|hisui|paldea)/i.test(species.forme);
+    const region = /hisui/i.test(species.forme) || hisuiNativeSpecies.has(slug) ? "Hisui" : regions[species.gen] ?? "Unknown";
     const stats = species.baseStats;
     const baseSprite = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${species.num}.png`;
     const baseShiny = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/${species.num}.png`;
@@ -103,7 +105,7 @@ const records = Dex.species.all()
       slug,
       name: species.name,
       generation: species.gen,
-      region: regions[species.gen] ?? "Unknown",
+      region,
       types: species.types.map((type) => type.toLowerCase()),
       primaryType: species.types[0].toLowerCase(),
       abilities: Object.values(species.abilities).filter(Boolean),

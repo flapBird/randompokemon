@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { filterPokemon } from "../src/lib/filters";
+import { filterPokemon, generationRegionConflictMessage } from "../src/lib/filters";
 import { filters, pool } from "./fixtures";
 
 describe("filterPokemon", () => {
@@ -27,5 +27,11 @@ describe("filterPokemon", () => {
   });
   it("limits the candidate pool to starters", () => {
     expect(filterPokemon(pool, { ...filters, starterOnly: true }).every((entry) => entry.isStarter)).toBe(true);
+  });
+  it("explains a generation and region conflict", () => {
+    expect(generationRegionConflictMessage({ ...filters, generations: [1, 2], regions: ["kalos"] })).toContain("Generation 6");
+  });
+  it("allows a region when at least one selected generation overlaps", () => {
+    expect(generationRegionConflictMessage({ ...filters, generations: [2, 6], regions: ["kalos"] })).toBeNull();
   });
 });

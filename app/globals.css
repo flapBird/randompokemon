@@ -234,6 +234,20 @@ img { max-width: 100%; }
   background: var(--surface);
 }
 .primary-generate { min-width: 172px; white-space: nowrap; }
+.generator-primary-actions { display: flex; align-items: stretch; gap: 8px; }
+.reset-filters-button {
+  min-width: 72px;
+  min-height: 58px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface-raised);
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+}
+.reset-filters-button:hover { border-color: var(--border-strong); background: var(--surface-soft); color: var(--ink); }
 .generator-error { margin: 18px 38px 0; }
 .results-loading {
   min-height: 180px;
@@ -685,11 +699,19 @@ button:disabled { opacity: .42; cursor: not-allowed; }
 .library-header h2 { font-size: 28px; }
 .saved-list { display: grid; gap: 8px; margin-top: 18px; }
 .saved-item { display: flex; justify-content: space-between; align-items: center; gap: 15px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-raised); }
+.saved-item.loaded { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
 .saved-item strong, .saved-item span { display: block; }
 .saved-item strong { font-size: 12px; }
 .saved-item span { color: var(--ink-soft); font-size: 10px; }
+.saved-item-copy { min-width: 0; }
+.saved-item-title { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.saved-item-title .loaded-badge { width: fit-content; padding: 3px 7px; border-radius: 99px; background: var(--accent); color: white; font-size: 9px; font-weight: 850; letter-spacing: .03em; text-transform: uppercase; }
+.saved-item small { display: block; margin-top: 3px; color: var(--ink); font-size: 10px; }
+.saved-item .saved-preview { color: var(--ink-soft); }
 .saved-item > div:last-child { display: flex; gap: 6px; }
 .saved-item button { min-height: 34px; padding: 6px 9px; }
+.clear-history-confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; color: var(--ink-soft); font-size: 11px; }
+.clear-history-confirm .text-button { margin-top: 0; }
 .empty-saved { padding: 20px; text-align: center; color: var(--ink-soft); font-size: 13px; }
 .text-button { margin-top: 10px; border: 0; background: transparent; }
 .danger { color: var(--accent); }
@@ -714,8 +736,11 @@ button:disabled { opacity: .42; cursor: not-allowed; }
   pointer-events: none;
   transition: opacity 250ms ease, transform 250ms cubic-bezier(.22, 1, .36, 1);
 }
-.toast.show { opacity: 1; transform: translate(-50%, 0); }
-.toast span { width: 19px; height: 19px; display: grid; place-items: center; border-radius: 50%; background: var(--lime); color: #172019; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.toast .toast-message { width: auto; height: auto; display: block; background: transparent; color: inherit; }
+.toast .toast-check { width: 19px; height: 19px; display: grid; place-items: center; border-radius: 50%; background: var(--lime); color: #172019; }
+.toast button { min-height: 30px; padding: 4px 9px; border: 1px solid color-mix(in srgb, var(--surface) 35%, transparent); border-radius: 8px; background: transparent; color: inherit; cursor: pointer; font-size: 11px; font-weight: 850; }
+.toast button:hover { background: color-mix(in srgb, var(--surface) 14%, transparent); }
 
 .modal-backdrop { position: fixed; z-index: 90; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(10, 18, 12, .68); backdrop-filter: blur(5px); }
 .modal-panel { width: min(720px, 100%); max-height: min(820px, 92vh); overflow: auto; padding: 24px; border: 1px solid var(--border); border-radius: 20px; background: var(--surface); box-shadow: 0 28px 80px rgba(0, 0, 0, .26); }
@@ -884,6 +909,7 @@ button:disabled { opacity: .42; cursor: not-allowed; }
   .motif-ring { width: 190px; }
   .motif-ring span { width: 88px; font-size: 55px; }
   .instant-generator { grid-template-columns: 1fr; }
+  .generator-primary-actions { display: grid; grid-template-columns: auto minmax(0, 1fr); }
   .primary-generate { width: 100%; }
   .filter-dropdown { position: static; }
   .filter-menu, .filter-dropdown-more .filter-menu { right: 0; left: 0; width: auto; }

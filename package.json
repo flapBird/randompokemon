@@ -12,8 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "data:update": "node scripts/fetch-pokemon-data.ts",
-    "data:update:offline": "node scripts/fetch-pokemon-data.ts --offline"
+    "data:update": "tsx scripts/fetch-pokemon-data.ts",
+    "data:update:offline": "tsx scripts/fetch-pokemon-data.ts --offline"
   },
   "dependencies": {
     "next": "16.2.6",
