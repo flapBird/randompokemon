@@ -39,7 +39,9 @@ export const TEAM_FILTERS: GeneratorFilters = {
 
 export const STARTER_FILTERS: GeneratorFilters = {
   ...STANDARD_FILTERS,
+  count: 1,
   starterOnly: true,
   includeLegendaries: false,
   includeMythicals: false,
+  teamMode: "random",
 };

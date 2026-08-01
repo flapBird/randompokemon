@@ -25,7 +25,7 @@ export default function PrivacyPage() {
       <h2>Your choices</h2>
       <p>You can use the generator without saving favorites. Clear recent history inside the app, or clear site data in your browser to remove all locally stored information.</p>
       <h2>Contact</h2>
-      <p>Questions about this policy can be sent to privacy@randompokemon.xyz.</p>
+      <p>Questions about this policy can be sent to <span aria-label="privacy at randompokemon dot xyz">privacy<span aria-hidden="true">@</span>randompokemon.xyz</span>.</p>
     </article>
   );
 }

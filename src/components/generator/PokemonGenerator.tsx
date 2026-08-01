@@ -12,7 +12,7 @@ import type { PokemonRecord } from "@/types/pokemon";
 import { PokemonCard } from "../pokemon/PokemonCard";
 import { TeamAnalysis } from "../team/TeamAnalysis";
 import { GeneratorFilters as FilterControls } from "./GeneratorFilters";
-import { QuickModes, type QuickMode } from "./QuickModes";
+import type { QuickMode } from "./QuickModes";
 
 function makeSeed() {
   if (typeof crypto !== "undefined" && "getRandomValues" in crypto) {
@@ -71,7 +71,6 @@ export function PokemonGenerator({
   const [favorites, setFavorites] = useState<FavoriteTeam[]>([]);
   const [libraryTab, setLibraryTab] = useState<"recent" | "favorites">("recent");
   const [favoriteName, setFavoriteName] = useState("");
-  const [customizeOpen, setCustomizeOpen] = useState(false);
   const initialized = useRef(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pool = useMemo(() => filterPokemon(dataset, filters), [dataset, filters]);
@@ -260,71 +259,28 @@ export function PokemonGenerator({
   return (
     <section className="generator-shell" aria-label="Random Pokémon generator">
       <div className="instant-generator">
-        <div className="instant-generator-actions">
-          <button
-            className="generate-button primary-generate"
-            onClick={() => {
-              setSeedInput("");
-              runGeneration(filters);
-            }}
-            disabled={loading || loadingData}
-          >
-            {loading
-              ? "Generating…"
-              : filters.starterOnly
-                ? "Pick a Random Starter"
-                : filters.count > 1
-                  ? "Generate Random Team"
-                  : "Generate Random Pokémon"}
-          </button>
-          <button
-            className="customize-button"
-            type="button"
-            aria-expanded={customizeOpen}
-            aria-controls="generator-customization"
-            onClick={() => setCustomizeOpen((open) => !open)}
-          >
-            <span aria-hidden="true">⚙</span>
-            {customizeOpen ? "Hide Filters" : "Customize Filters"}
-          </button>
-        </div>
-      </div>
-
-      <div className="generator-customization t-acc" data-open={customizeOpen}>
-        <div className="t-acc-panel" id="generator-customization">
-          <div className="t-acc-panel-inner" inert={!customizeOpen ? true : undefined} aria-hidden={!customizeOpen}>
-            <div className="customization-inner">
-              {pageMode === "standard" && (
-                <div className="quick-section">
-                  <div className="section-label"><span>01</span><div><h2>Quick presets</h2><p>Choose a preset or set your own filters below.</p></div></div>
-                  <QuickModes active={activeQuickMode} onSelect={quickSelect} />
-                </div>
-              )}
-              <div className="controls-section">
-                <div className="section-label"><span>{pageMode === "standard" ? "02" : "01"}</span><div><h2>{pageMode === "starter" ? "Starter filters" : "Custom filters"}</h2><p>{loadingData ? "Loading the local Pokédex…" : `${pool.length.toLocaleString()} Pokémon currently match.`}</p></div></div>
-                <FilterControls
-                  filters={filters}
-                  onChange={(next) => { setFilters(next); setActiveQuickMode(null); setError(""); }}
-                  pageMode={pageMode}
-                  seedInput={seedInput}
-                  onSeedInputChange={(value) => setSeedInput(value.toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 32))}
-                />
-                <div className="filter-apply">
-                  <button
-                    className="generate-button"
-                    onClick={() => {
-                      runGeneration(filters, seedInput || undefined);
-                      setCustomizeOpen(false);
-                    }}
-                    disabled={loading || loadingData}
-                  >
-                    {loading ? "Generating…" : "Apply Filters & Generate"}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <FilterControls
+          filters={filters}
+          onChange={(next) => { setFilters(next); setActiveQuickMode(null); setError(""); }}
+          pageMode={pageMode}
+          seedInput={seedInput}
+          onSeedInputChange={(value) => setSeedInput(value.toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 32))}
+          activeQuickMode={activeQuickMode}
+          onQuickSelect={quickSelect}
+        />
+        <button
+          className="generate-button primary-generate"
+          onClick={() => runGeneration(filters, seedInput && seedInput !== seed ? seedInput : undefined)}
+          disabled={loading || loadingData}
+        >
+          {loading
+            ? "Generating…"
+            : filters.starterOnly
+              ? "Pick Random Starter"
+              : filters.count > 1
+                ? "Generate Team"
+                : "Generate Pokémon"}
+        </button>
       </div>
 
       {error && <div className="inline-error generator-error" role="alert"><span aria-hidden="true">!</span><p>{error}</p><button onClick={() => setError("")} aria-label="Dismiss error">×</button></div>}
