@@ -2,6 +2,32 @@ import type { FaqItem } from "@/components/content/Faq";
 
 export const siteUrl = "https://randompokemon.xyz/";
 
+export function organizationSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${siteUrl}#organization`,
+    name: "RandomPokemon.xyz",
+    url: siteUrl,
+    logo: `${siteUrl}favicon.svg`,
+    description: "An independent, fan-made random Pokémon generator project.",
+  };
+}
+
+export function webApplicationSchema(name: string, path: string, description: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name,
+    applicationCategory: "GameApplication",
+    operatingSystem: "Any",
+    url: `${siteUrl}${path.replace(/^\//, "")}`,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    description,
+    publisher: { "@id": `${siteUrl}#organization` },
+  };
+}
+
 export function baseSchemas(faq: FaqItem[]) {
   return [
     {
@@ -10,17 +36,10 @@ export function baseSchemas(faq: FaqItem[]) {
       name: "Random Pokémon Generator",
       url: siteUrl,
       description: "A fast, filterable random Pokémon picker and team generator.",
+      publisher: { "@id": `${siteUrl}#organization` },
     },
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      name: "Random Pokémon Generator",
-      applicationCategory: "GameApplication",
-      operatingSystem: "Any",
-      url: siteUrl,
-      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-      description: "Generate, lock, reroll, analyze, save, and share random Pokémon teams.",
-    },
+    organizationSchema(),
+    webApplicationSchema("Random Pokémon Generator", "/", "Generate, lock, reroll, analyze, save, and share random Pokémon teams."),
     faqSchema(faq),
   ];
 }
@@ -47,5 +66,35 @@ export function breadcrumbSchema(items: Array<[string, string]>) {
       name,
       item: `${siteUrl}${path.replace(/^\//, "")}`,
     })),
+  };
+}
+
+export function collectionSchema(name: string, path: string, description: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name,
+    url: `${siteUrl}${path.replace(/^\//, "")}`,
+    description,
+    publisher: { "@id": `${siteUrl}#organization` },
+  };
+}
+
+export function pokemonSchema(entry: {
+  name: string;
+  slug: string;
+  description: string;
+  image: string;
+  category: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Thing",
+    name: entry.name,
+    url: `${siteUrl}pokemon/${entry.slug}`,
+    description: entry.description,
+    image: entry.image,
+    additionalType: entry.category,
+    isPartOf: { "@type": "WebSite", name: "RandomPokemon.xyz", url: siteUrl },
   };
 }

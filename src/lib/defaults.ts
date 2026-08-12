@@ -28,12 +28,6 @@ export const STANDARD_FILTERS: GeneratorFilters = {
   starterType: "any",
   includePikachu: false,
   includeEevee: false,
-  teamMode: "random",
-};
-
-export const TEAM_FILTERS: GeneratorFilters = {
-  ...STANDARD_FILTERS,
-  count: 6,
   teamMode: "smart",
 };
 
@@ -43,5 +37,39 @@ export const STARTER_FILTERS: GeneratorFilters = {
   starterOnly: true,
   includeLegendaries: false,
   includeMythicals: false,
+  teamMode: "random",
+};
+
+export const LEGENDARY_FILTERS: GeneratorFilters = {
+  ...STANDARD_FILTERS,
+  count: 1,
+  includeLegendaries: true,
+  legendaryOnly: true,
+  teamMode: "random",
+};
+
+export const SHINY_FILTERS: GeneratorFilters = {
+  ...STANDARD_FILTERS,
+  count: 1,
+  includeLegendaries: true,
+  includeMythicals: true,
+  teamMode: "random",
+};
+
+export const KANTO_FILTERS: GeneratorFilters = {
+  ...STANDARD_FILTERS,
+  generations: [1],
+  regions: ["kanto"],
+};
+
+export const PALDEA_FILTERS: GeneratorFilters = {
+  ...STANDARD_FILTERS,
+  generations: [9],
+  regions: ["paldea"],
+};
+
+export const NUZLOCKE_FILTERS: GeneratorFilters = {
+  ...STANDARD_FILTERS,
+  count: 1,
   teamMode: "random",
 };

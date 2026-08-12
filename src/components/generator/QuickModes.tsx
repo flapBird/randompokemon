@@ -5,12 +5,11 @@ import type { GeneratorFilters } from "@/types/generator";
 export type QuickMode = "random" | "team" | "starter" | "monotype" | "no-legendaries" | "legendary";
 
 export const QUICK_MODES: Array<{ id: QuickMode; icon: string; label: string; note: string }> = [
-  { id: "random", icon: "✦", label: "Completely Random", note: "One pick, every generation" },
-  { id: "team", icon: "⌘", label: "Team of 6", note: "Six unique picks" },
-  { id: "starter", icon: "♧", label: "Random Starter", note: "Main-series starters" },
+  { id: "random", icon: "✦", label: "Pure Random Team", note: "Six picks, no balancing" },
+  { id: "team", icon: "⌘", label: "Smart Team of 6", note: "More varied by default" },
   { id: "monotype", icon: "◒", label: "Monotype Team", note: "One shared type" },
   { id: "no-legendaries", icon: "◇", label: "No Legendaries", note: "Regular Pokémon only" },
-  { id: "legendary", icon: "♛", label: "Legendary Only", note: "One legendary pick" },
+  { id: "legendary", icon: "♛", label: "Legendary Team", note: "Six legendary picks" },
 ];
 
 export function applyQuickMode(mode: QuickMode, filters: GeneratorFilters): GeneratorFilters {
@@ -20,12 +19,12 @@ export function applyQuickMode(mode: QuickMode, filters: GeneratorFilters): Gene
     legendaryOnly: false,
     categories: { paradox: "any", ultraBeast: "any", regionalForm: "any", mega: "any", gigantamax: "any" } as const,
   };
-  if (mode === "random") return { ...base, count: 1, generations: [], types: [], includeLegendaries: true, includeMythicals: true, fullyEvolvedOnly: false, teamMode: "random" };
-  if (mode === "team") return { ...base, count: 6, allowDuplicates: false, includeLegendaries: false, includeMythicals: false, generations: [] };
+  if (mode === "random") return { ...base, count: 6, generations: [], types: [], includeLegendaries: true, includeMythicals: true, fullyEvolvedOnly: false, teamMode: "random" };
+  if (mode === "team") return { ...base, count: 6, allowDuplicates: false, includeLegendaries: false, includeMythicals: false, generations: [], teamMode: "smart" };
   if (mode === "starter") return { ...base, count: 1, starterOnly: true, includeLegendaries: false, includeMythicals: false, teamMode: "random" };
   if (mode === "monotype") return { ...base, count: 6, types: filters.types.length ? [filters.types[0]] : ["fire"], typeMatch: "any", allowDuplicates: false };
   if (mode === "no-legendaries") return { ...base, includeLegendaries: false, includeMythicals: false };
-  return { ...base, count: 1, includeLegendaries: true, includeMythicals: false, legendaryOnly: true, teamMode: "random" };
+  return { ...base, count: 6, includeLegendaries: true, includeMythicals: false, legendaryOnly: true, teamMode: "smart" };
 }
 
 export function QuickModes({

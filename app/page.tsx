@@ -1,18 +1,21 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Faq, type FaqItem } from "@/components/content/Faq";
 import { JsonLd } from "@/components/content/JsonLd";
 import { PokemonGenerator } from "@/components/generator/PokemonGenerator";
 import { STANDARD_FILTERS } from "@/lib/defaults";
 import { baseSchemas } from "@/lib/seo";
+import { createStaticGeneration } from "@/lib/static-generation";
 
 export const metadata: Metadata = {
-  title: "Random Pokémon Generator – Create a Pokémon or Team",
-  description: "Generate a random Pokémon or build a complete team with filters for generation, type, region, evolution, and legendary status.",
+  title: { absolute: "Random Pokémon Generator – All 1,025 Pokémon, Gen 1–9" },
+  description: "Generate 1–6 random Pokémon from all nine generations. Filter by type, region, evolution, Legendary status, forms, and base stats. Free, no signup.",
+  alternates: { canonical: "/" },
 };
 
 const faq: FaqItem[] = [
   { question: "How does the random Pokémon generator work?", answer: "It filters a local Generation 1–9 dataset using your settings, then uses a seeded random number generator to select every result evenly from the matching pool." },
-  { question: "Can I generate a full team of six?", answer: "Yes. Set the count to six or choose Team of 6. You can lock individual members and reroll only the remaining slots." },
+  { question: "Does the generator create a full team of six?", answer: "Yes. The homepage starts with six Pokémon. You can lock individual members, reroll only the remaining slots, or change the team size when you want a smaller challenge." },
   { question: "Can I choose a specific generation or type?", answer: "Yes. Select one or more generations and Pokémon types. Match Any accepts either selected type, while Match All requires both." },
   { question: "Can I exclude Legendary Pokémon?", answer: "Yes. Legendary and Mythical Pokémon are excluded by default. You can include either category separately or use the No Legendaries quick mode." },
   { question: "What is Smart Team mode?", answer: "Smart Team samples several valid random teams and favors type and evolution variety with fewer shared weaknesses. It is not a competitive team builder." },
@@ -22,36 +25,63 @@ const faq: FaqItem[] = [
 ];
 
 export default function Home() {
+  const initialGeneration = createStaticGeneration(STANDARD_FILTERS, "WELCOME-TEAM");
+
   return (
     <>
-      <link rel="canonical" href="https://randompokemon.xyz/" />
       <JsonLd data={baseSchemas(faq)} />
-      <section className="hero">
+      <section className="hero home-hero">
         <div className="hero-copy">
-          <span className="eyebrow">FAST · FILTERABLE · SHAREABLE</span>
-          <h1>Random Pokémon<br /><em>Generator</em></h1>
-          <p>Generate one random Pokémon or build a complete team with custom generations, types, regions, and special filters.</p>
-        </div>
-        <div className="hero-motif" aria-hidden="true">
-          <div className="motif-ring"><span>?</span></div>
-          <p>Who will you get?</p>
+          <h1>Random Pokémon <em>Generator</em></h1>
+          <p>Generate 1–6 random Pokémon from all 1,025 species across Generations 1–9, then lock favorites, reroll slots, and share the exact seed.</p>
         </div>
       </section>
-      <PokemonGenerator initialFilters={STANDARD_FILTERS} />
+      <PokemonGenerator
+        initialFilters={STANDARD_FILTERS}
+        initialResults={initialGeneration.results}
+        initialSeed={initialGeneration.seed}
+      />
       <div className="content-wrap">
         <section className="content-section split-content">
           <div><span className="eyebrow">THE TOOL</span><h2>What is a random Pokémon generator?</h2></div>
           <div>
-            <p>A random Pokémon generator is a quick way to turn more than a thousand possible picks into one useful surprise. This one goes further than a basic picker: you can narrow the pool, build a team, keep good rolls, replace weak links, and send the exact result to a friend.</p>
+            <p>A random Pokémon generator is a quick way to turn 1,025 main species across nine generations into one pick or a complete team. Narrow the pool when you want, keep good rolls, replace weak links, and send the exact result to a friend.</p>
             <p>The generator runs from local data, so there is no long chain of API requests while you use it. That keeps each reroll quick on desktop and mobile.</p>
           </div>
         </section>
         <section className="content-section">
           <div className="content-heading"><span className="eyebrow">THREE STEPS</span><h2>How to generate a random Pokémon</h2></div>
           <div className="steps-grid">
-            <article><span>01</span><h3>Choose a mode</h3><p>Start completely random, pick a starter, create a monotype squad, or jump straight to six.</p></article>
+            <article><span>01</span><h3>Choose a style</h3><p>Start with a Smart Team, switch to Pure Random, or create a monotype squad.</p></article>
             <article><span>02</span><h3>Shape the pool</h3><p>Filter by generation, type, region, evolution, stats, and special Pokémon categories.</p></article>
             <article><span>03</span><h3>Keep and remix</h3><p>Lock favorite cards, reroll the rest, inspect weaknesses, and copy a permanent seed link.</p></article>
+          </div>
+        </section>
+        <section className="content-section">
+          <div className="content-heading"><span className="eyebrow">FILTERS EXPLAINED</span><h2>Control the pool without losing the surprise</h2><p>Every restriction is applied before the seeded roll, so the generator never swaps in a Pokémon outside the rules you selected.</p></div>
+          <div className="use-grid filter-explainer-grid">
+            <article><h3>Generations and regions</h3><p>Choose one or more generations, regions, or an overlapping combination such as Generation 1 and Kanto.</p></article>
+            <article><h3>Types and matching</h3><p>Match Any accepts either selected type. Match All requires a dual-type Pokémon containing both.</p></article>
+            <article><h3>Legendary and Mythical</h3><p>Both are excluded initially and controlled separately, including a dedicated Legendary-only option.</p></article>
+            <article><h3>Evolution and base stats</h3><p>Limit by evolution stage, require fully evolved Pokémon, or set a minimum and maximum BST.</p></article>
+            <article><h3>Forms and categories</h3><p>Decide whether regional forms, Mega Evolutions, Gigantamax forms, Paradox Pokémon, and Ultra Beasts are eligible.</p></article>
+            <article><h3>Seeds and team modes</h3><p>Pure Random selects uniformly. Smart Team samples valid rolls for more variety and fewer shared weaknesses.</p></article>
+          </div>
+        </section>
+        <section className="content-section">
+          <div className="content-heading"><span className="eyebrow">COMPLETE COVERAGE</span><h2>All Pokémon generations covered</h2><p>The bundled dataset covers every main species from Bulbasaur through Pecharunt, plus supported regional, Mega, and Gigantamax forms.</p></div>
+          <div className="generation-table-wrap">
+            <table className="generation-table">
+              <caption className="sr-only">Pokémon generations, regions, and National Pokédex ranges</caption>
+              <thead><tr><th>Generation</th><th>Main region</th><th>National Pokédex</th></tr></thead>
+              <tbody>
+                {[
+                  ["Gen 1", "Kanto", "#001–151"], ["Gen 2", "Johto", "#152–251"], ["Gen 3", "Hoenn", "#252–386"],
+                  ["Gen 4", "Sinnoh", "#387–493"], ["Gen 5", "Unova", "#494–649"], ["Gen 6", "Kalos", "#650–721"],
+                  ["Gen 7", "Alola", "#722–809"], ["Gen 8", "Galar & Hisui", "#810–905"], ["Gen 9", "Paldea", "#906–1025"],
+                ].map(([generation, region, range]) => <tr key={generation}><th scope="row">{generation}</th><td>{region}</td><td>{range}</td></tr>)}
+              </tbody>
+            </table>
           </div>
         </section>
         <section className="content-section split-content">
@@ -74,6 +104,19 @@ export default function Home() {
               ["Monotype challenges", "Pick one shared type while keeping the rest of the team surprising."],
               ["Creative prompts", "Roll a mascot, drawing subject, story character, or trivia pick."],
             ].map(([title, copy]) => <article key={title}><h3>{title}</h3><p>{copy}</p></article>)}
+          </div>
+        </section>
+        <section className="content-section">
+          <div className="content-heading"><span className="eyebrow">SPECIALIZED GENERATORS</span><h2>Start with a focused Pokémon pool</h2><p>Each page opens with purpose-built defaults and a static, shareable first result.</p></div>
+          <div className="use-grid related-generator-grid">
+            {[
+              ["/random-pokemon-legendary-generator", "Legendary Pokémon Generator", "Roll one Legendary or expand the count into a full team."],
+              ["/random-shiny-pokemon-generator", "Shiny Pokémon Generator", "Choose from all 1,025 species with shiny artwork enabled."],
+              ["/random-nuzlocke-pokemon-generator", "Nuzlocke Pokémon Generator", "Create a reproducible encounter for custom challenge rules."],
+              ["/random-pokemon-starter-generator", "Starter Generator", "Pick a traditional Grass, Fire, or Water first partner."],
+              ["/kanto-pokemon-generator", "Kanto Generator", "Build from Pokédex #001–151 and Generation 1."],
+              ["/paldea-pokemon-generator", "Paldea Generator", "Build from Generation 9 species #906–1025."],
+            ].map(([href, title, copy]) => <article key={href}><h3><Link href={href}>{title}</Link></h3><p>{copy}</p></article>)}
           </div>
         </section>
         <Faq items={faq} />

@@ -6,7 +6,7 @@
  * @pkmn/dex. `--offline` skips the network request and is useful in CI or when
  * refreshing the bundled data without an internet connection.
  */
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Dex } from "@pkmn/dex";
@@ -25,7 +25,7 @@ const starterNames = new Set([
 ]);
 
 const regions = ["", "Kanto", "Johto", "Hoenn", "Sinnoh", "Unova", "Kalos", "Alola", "Galar", "Paldea"];
-const allowedForm = /(alola|galar|hisui|paldea|mega|gmax)$/i;
+const allowedForm = /(alola|galar|hisui|paldea|mega(?:-[xy])?|gmax)$/i;
 const hisuiNativeSpecies = new Set(["wyrdeer", "kleavor", "ursaluna", "basculegion", "sneasler", "overqwil", "enamorus"]);
 
 type ApiMeta = { height: number; category: string };
@@ -43,6 +43,7 @@ async function fetchPokeApiMetadata() {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ query }),
+    signal: AbortSignal.timeout(20_000),
   });
   if (!response.ok) throw new Error(`PokéAPI returned ${response.status}`);
   const body = await response.json() as {
@@ -62,13 +63,34 @@ async function fetchPokeApiMetadata() {
   return result;
 }
 
+function assertMetadataQuality(metadata: Map<number, ApiMeta>) {
+  const entries = [...metadata.values()];
+  const heightVariety = new Set(entries.map((item) => item.height)).size;
+  const categoryVariety = new Set(entries.map((item) => item.category)).size;
+  if (metadata.size < 1000 || heightVariety < 50 || categoryVariety < 100) {
+    throw new Error(`PokéAPI metadata quality check failed (${metadata.size} records, ${heightVariety} heights, ${categoryVariety} categories).`);
+  }
+}
+
+async function readExistingMetadata() {
+  const existing = JSON.parse(await readFile(publicOutputPath, "utf8")) as Array<{ id: number; isDefaultForm: boolean; height: number; category: string }>;
+  const metadata = new Map<number, ApiMeta>();
+  existing.filter((item) => item.isDefaultForm).forEach((item) => metadata.set(item.id, { height: item.height, category: item.category }));
+  assertMetadataQuality(metadata);
+  return metadata;
+}
+
 let apiMetadata = new Map<number, ApiMeta>();
-if (!offline) {
+if (offline) {
+  apiMetadata = await readExistingMetadata();
+  console.log(`Reused ${apiMetadata.size} validated local metadata records.`);
+} else {
   try {
     apiMetadata = await fetchPokeApiMetadata();
+    assertMetadataQuality(apiMetadata);
     console.log(`Fetched ${apiMetadata.size} PokéAPI species records.`);
   } catch (error) {
-    console.warn(`PokéAPI metadata was unavailable; using safe local fallbacks. ${String(error)}`);
+    throw new Error(`PokéAPI metadata was unavailable; the existing dataset was left unchanged. ${String(error)}`);
   }
 }
 
@@ -82,11 +104,25 @@ function evolutionStage(speciesName: string): 1 | 2 | 3 {
   return stage as 1 | 2 | 3;
 }
 
+function evolutionMethod(species: ReturnType<typeof Dex.species.get>) {
+  if (!species.prevo) return null;
+  const parts: string[] = [];
+  if (species.evoType === "useItem" && species.evoItem) parts.push(`Use ${species.evoItem}`);
+  else if (species.evoType === "trade") parts.push("Trade");
+  else if (species.evoType === "levelFriendship") parts.push("Level up with high friendship");
+  else if (species.evoType === "levelHold" && species.evoItem) parts.push(`Level up while holding ${species.evoItem}`);
+  else if (species.evoType === "other") parts.push("Special evolution");
+  else if (species.evoLevel) parts.push(`Level ${species.evoLevel}`);
+  else parts.push("Level up");
+  if (species.evoCondition) parts.push(species.evoCondition);
+  return parts.join(" ");
+}
+
 const records = Dex.species.all()
   .filter((species) => {
     if (!species.exists || species.num < 1 || species.num > 1025 || species.isNonstandard === "CAP") return false;
     if (!species.forme) return true;
-    return allowedForm.test(species.forme) && !species.battleOnly;
+    return allowedForm.test(species.forme) && (!species.battleOnly || /mega/i.test(species.forme));
   })
   .map((species) => {
     const slug = species.id;
@@ -121,6 +157,9 @@ const records = Dex.species.all()
       },
       bst: species.bst,
       evolutionStage: evolutionStage(species.name),
+      preEvolution: species.prevo ? Dex.species.get(species.prevo).id : null,
+      evolutions: (species.evos ?? []).map((evolution) => Dex.species.get(evolution).id),
+      evolutionMethod: evolutionMethod(species),
       fullyEvolved: (species.evos?.length ?? 0) === 0,
       isStarter: starterNames.has(slug),
       isLegendary: tags.has("Restricted Legendary") || tags.has("Sub-Legendary"),
@@ -137,6 +176,9 @@ const records = Dex.species.all()
     };
   })
   .sort((a, b) => a.id - b.id || Number(b.isDefaultForm) - Number(a.isDefaultForm) || a.slug.localeCompare(b.slug));
+
+const megaCount = records.filter((record) => record.isMega).length;
+if (megaCount < 40) throw new Error(`Dataset quality check failed: expected Mega Evolutions, found ${megaCount}.`);
 
 await mkdir(dirname(outputPath), { recursive: true });
 await mkdir(dirname(publicOutputPath), { recursive: true });

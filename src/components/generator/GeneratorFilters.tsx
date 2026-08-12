@@ -14,6 +14,7 @@ const specialLabels: Record<SpecialCategory, string> = {
   mega: "Mega Evolutions",
   gigantamax: "Gigantamax Forms",
 };
+const formCategories = new Set<SpecialCategory>(["regionalForm", "mega", "gigantamax"]);
 type MenuId = "preset" | "count" | "generation" | "type" | "region" | "starter-type" | "more";
 
 function Toggle({ checked, onChange, label, disabled }: { checked: boolean; onChange: (value: boolean) => void; label: string; disabled?: boolean }) {
@@ -141,7 +142,16 @@ export function GeneratorFilters({
     update("types", exists ? filters.types.filter((item) => item !== type) : [...filters.types, type]);
   };
   const toggleRegion = (region: string) => update("regions", filters.regions.includes(region) ? filters.regions.filter((item) => item !== region) : [...filters.regions, region]);
-  const category = (key: SpecialCategory, value: CategoryRule) => update("categories", { ...filters.categories, [key]: value });
+  const category = (key: SpecialCategory, value: CategoryRule) => onChange({
+    ...filters,
+    includeForms: value === "include" && formCategories.has(key) ? true : filters.includeForms,
+    categories: { ...filters.categories, [key]: value },
+  });
+  const includeForms = (value: boolean) => onChange({
+    ...filters,
+    includeForms: value,
+    categories: value ? filters.categories : { ...filters.categories, regionalForm: "any", mega: "any", gigantamax: "any" },
+  });
   const generationSummary = filters.generations.length ? filters.generations.length === 1 ? `Gen ${filters.generations[0]}` : `${filters.generations.length} generations` : "All generations";
   const typeSummary = filters.types.length ? filters.types.length === 1 ? title(filters.types[0]) : `${filters.types.length} types` : "Any type";
   const regionSummary = filters.regions.length ? filters.regions.length === 1 ? title(filters.regions[0]) : `${filters.regions.length} regions` : "All regions";
@@ -189,7 +199,7 @@ export function GeneratorFilters({
         <FilterDropdown id="count" label="Team size" value={`${filters.count} Pokémon`} openMenu={openMenu} closingMenu={closingMenu} onToggle={toggleMenu}>
           <div className="filter-menu-heading"><strong>Team size</strong><span>Generate between one and six Pokémon.</span></div>
           <div className="segmented count-selector">
-            {[1, 2, 3, 4, 5, 6].map((count) => <button type="button" key={count} className={filters.count === count ? "selected" : ""} onClick={() => { update("count", count); beginClose("count", true); }}>{count}</button>)}
+            {[1, 2, 3, 4, 5, 6].map((count) => <button type="button" key={count} className={filters.count === count ? "selected" : ""} aria-pressed={filters.count === count} onClick={() => { update("count", count); beginClose("count", true); }}>{count}</button>)}
           </div>
         </FilterDropdown>
       )}
@@ -197,8 +207,8 @@ export function GeneratorFilters({
       <FilterDropdown id="generation" label="Generation" value={generationSummary} openMenu={openMenu} closingMenu={closingMenu} onToggle={toggleMenu} wide>
         <div className="filter-menu-heading"><strong>Generation</strong><span>Select one or more. All is the default.</span></div>
         <div className="chip-grid compact filter-menu-chips" role="group" aria-label="Filter by generation">
-          <button type="button" className={!filters.generations.length ? "selected" : ""} onClick={() => update("generations", [])}>All</button>
-          {Array.from({ length: 9 }, (_, index) => index + 1).map((gen) => <button type="button" key={gen} className={filters.generations.includes(gen) ? "selected" : ""} onClick={() => toggleNumber(gen)}>Gen {gen}</button>)}
+          <button type="button" className={!filters.generations.length ? "selected" : ""} aria-pressed={!filters.generations.length} onClick={() => update("generations", [])}>All</button>
+          {Array.from({ length: 9 }, (_, index) => index + 1).map((gen) => <button type="button" key={gen} className={filters.generations.includes(gen) ? "selected" : ""} aria-pressed={filters.generations.includes(gen)} onClick={() => toggleNumber(gen)}>Gen {gen}</button>)}
         </div>
         {done("generation")}
       </FilterDropdown>
@@ -207,7 +217,7 @@ export function GeneratorFilters({
         <FilterDropdown id="starter-type" label="Starter type" value={title(filters.starterType)} openMenu={openMenu} closingMenu={closingMenu} onToggle={toggleMenu}>
           <div className="filter-menu-heading"><strong>Starter type</strong><span>Choose a classic starter type.</span></div>
           <div className="filter-option-list simple-options">
-            {(["any", "grass", "fire", "water"] as const).map((type) => <button type="button" key={type} className={filters.starterType === type ? "filter-option selected" : "filter-option"} onClick={() => { update("starterType", type); beginClose("starter-type", true); }}><strong>{title(type)}</strong></button>)}
+            {(["any", "grass", "fire", "water"] as const).map((type) => <button type="button" key={type} className={filters.starterType === type ? "filter-option selected" : "filter-option"} aria-pressed={filters.starterType === type} onClick={() => { update("starterType", type); beginClose("starter-type", true); }}><strong>{title(type)}</strong></button>)}
           </div>
         </FilterDropdown>
       ) : (
@@ -223,7 +233,7 @@ export function GeneratorFilters({
               {POKEMON_TYPES.map((type) => <button type="button" key={type} data-type={type} className={filters.types.includes(type) ? "selected" : ""} onClick={() => toggleType(type)} aria-pressed={filters.types.includes(type)}><span className="type-dot" />{title(type)}</button>)}
             </div>
             {filters.types.length >= 2 && (
-              <div className="filter-menu-inline"><span>Type match</span><div className="mini-segmented"><button type="button" className={filters.typeMatch === "any" ? "selected" : ""} onClick={() => update("typeMatch", "any")}>Any</button><button type="button" className={filters.typeMatch === "all" ? "selected" : ""} onClick={() => onChange({ ...filters, typeMatch: "all", types: filters.types.slice(0, 2) })}>All</button></div></div>
+              <div className="filter-menu-inline"><span>Type match</span><div className="mini-segmented"><button type="button" className={filters.typeMatch === "any" ? "selected" : ""} aria-pressed={filters.typeMatch === "any"} onClick={() => update("typeMatch", "any")}>Any</button><button type="button" className={filters.typeMatch === "all" ? "selected" : ""} aria-pressed={filters.typeMatch === "all"} onClick={() => onChange({ ...filters, typeMatch: "all", types: filters.types.slice(0, 2) })}>All</button></div></div>
             )}
             {filters.typeMatch === "all" && filters.types.length >= 2 && <p className="field-note">Match All allows up to two selected types.</p>}
             {done("type")}
@@ -232,8 +242,8 @@ export function GeneratorFilters({
           <FilterDropdown id="region" label="Region" value={regionSummary} openMenu={openMenu} closingMenu={closingMenu} onToggle={toggleMenu} wide>
             <div className="filter-menu-heading"><strong>Region</strong><span>Select one or more regions.</span></div>
             <div className="chip-grid filter-menu-chips">
-              <button type="button" className={!filters.regions.length ? "selected" : ""} onClick={() => update("regions", [])}>All Regions</button>
-              {regions.map((region) => <button type="button" key={region} className={filters.regions.includes(region) ? "selected" : ""} onClick={() => toggleRegion(region)}>{title(region)}</button>)}
+              <button type="button" className={!filters.regions.length ? "selected" : ""} aria-pressed={!filters.regions.length} onClick={() => update("regions", [])}>All Regions</button>
+              {regions.map((region) => <button type="button" key={region} className={filters.regions.includes(region) ? "selected" : ""} aria-pressed={filters.regions.includes(region)} onClick={() => toggleRegion(region)}>{title(region)}</button>)}
             </div>
             {done("region")}
           </FilterDropdown>
@@ -253,7 +263,7 @@ export function GeneratorFilters({
               {filters.count > 1 && (
                 <fieldset className="menu-section">
                   <legend>Team generation style</legend>
-                  <div className="segmented"><button type="button" className={filters.teamMode === "random" ? "selected" : ""} onClick={() => update("teamMode", "random")}>Pure Random</button><button type="button" className={filters.teamMode === "smart" ? "selected" : ""} onClick={() => update("teamMode", "smart")}>Smart Team</button></div>
+                  <div className="segmented"><button type="button" className={filters.teamMode === "random" ? "selected" : ""} aria-pressed={filters.teamMode === "random"} onClick={() => update("teamMode", "random")}>Pure Random</button><button type="button" className={filters.teamMode === "smart" ? "selected" : ""} aria-pressed={filters.teamMode === "smart"} onClick={() => update("teamMode", "smart")}>Smart Team</button></div>
                   {filters.teamMode === "smart" && <p className="field-note">Improves variety and balance, but does not create a competitive team.</p>}
                 </fieldset>
               )}
@@ -262,13 +272,13 @@ export function GeneratorFilters({
                 <div className="toggle-grid">
                   <Toggle checked={filters.includeLegendaries} onChange={(value) => onChange({ ...filters, includeLegendaries: value, legendaryOnly: value ? filters.legendaryOnly : false })} label="Include Legendaries" />
                   <Toggle checked={filters.includeMythicals} onChange={(value) => update("includeMythicals", value)} label="Include Mythicals" />
-                  <Toggle checked={filters.includeForms} onChange={(value) => update("includeForms", value)} label="Include Forms" />
+                  <Toggle checked={filters.includeForms} onChange={includeForms} label="Include Forms" />
                   <Toggle checked={filters.fullyEvolvedOnly} onChange={(value) => update("fullyEvolvedOnly", value)} label="Fully Evolved Only" />
                   <Toggle checked={filters.allowDuplicates} onChange={(value) => update("allowDuplicates", value)} label="Allow Duplicate Pokémon" />
                 </div>
               </fieldset>
               <div className="advanced-grid menu-section">
-                <label>Evolution stage<select value={filters.evolutionStage} onChange={(event) => update("evolutionStage", event.target.value as GeneratorFilters["evolutionStage"])}><option value="any">Any Stage</option><option value="basic">Basic</option><option value="middle">Middle Evolution</option><option value="final">Final Evolution</option></select></label>
+                <label>Evolution stage<select value={filters.evolutionStage} onChange={(event) => update("evolutionStage", event.target.value as GeneratorFilters["evolutionStage"])}><option value="any">Any Stage</option><option value="basic">Basic / Single Stage</option><option value="middle">Middle Evolution</option><option value="final">Fully Evolved</option></select></label>
                 <label>Min BST<input type="number" min="100" max="800" value={filters.minBst} onChange={(event) => update("minBst", Number(event.target.value))} /></label>
                 <label>Max BST<input type="number" min="100" max="800" value={filters.maxBst} onChange={(event) => update("maxBst", Number(event.target.value))} /></label>
               </div>

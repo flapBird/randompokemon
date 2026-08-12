@@ -43,8 +43,9 @@ export function filterPokemon(pokemon: PokemonRecord[], filters: GeneratorFilter
     if (filters.fullyEvolvedOnly && !entry.fullyEvolved) return false;
     if (entry.bst < filters.minBst || entry.bst > filters.maxBst) return false;
     if (filters.evolutionStage !== "any") {
-      const stage = filters.evolutionStage === "basic" ? 1 : filters.evolutionStage === "middle" ? 2 : 3;
-      if (entry.evolutionStage !== stage) return false;
+      if (filters.evolutionStage === "basic" && entry.evolutionStage !== 1) return false;
+      if (filters.evolutionStage === "middle" && (entry.evolutionStage === 1 || entry.fullyEvolved)) return false;
+      if (filters.evolutionStage === "final" && !entry.fullyEvolved) return false;
     }
     if (filters.types.length) {
       const matches = filters.types.map((type) => entry.types.includes(type));

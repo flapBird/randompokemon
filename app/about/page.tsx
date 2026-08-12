@@ -23,6 +23,8 @@ export default function AboutPage() {
       <p>Each generation uses a stable seeded random number generator. The seed, filters, and mode determine the result. Shared URLs also carry the current picks so a team remains intact after locks and rerolls.</p>
       <h2>Data and privacy</h2>
       <p>The app reads a bundled Generation 1–9 dataset instead of downloading the full Pokédex while you use it. Recent rolls, theme preferences, and favorite teams stay in your browser. There is no account system.</p>
+      <h2>How the project is maintained</h2>
+      <p>RandomPokemon.xyz is maintained as an independent fan project. The dataset is built from versioned battle data and validated PokéAPI metadata, with automated checks for species coverage and supported forms. See the <Link href="/credits">Credits &amp; Data Sources</Link> page for the exact sources and the <Link href="/contact">Contact</Link> page to report an issue.</p>
       <h2>Fan-made disclaimer</h2>
       <p>RandomPokemon.xyz is an unofficial fan-made tool and is not affiliated with, endorsed by, or sponsored by Nintendo, Game Freak, Creatures Inc., or The Pokémon Company.</p>
       <p>Pokémon and Pokémon character names are trademarks of Nintendo, Game Freak, Creatures Inc., and The Pokémon Company.</p>

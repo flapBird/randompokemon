@@ -1,0 +1,28 @@
+# RandomPokemon.xyz
+
+> RandomPokemon.xyz is a free, independent, unofficial fan-made random Pokémon picker and team generator covering the 1,025 main species from Generations 1–9.
+
+## Main generators
+
+- [Random Pokémon Generator](https://randompokemon.xyz/): Generate 1–6 Pokémon, apply filters, lock and reroll members, inspect team weaknesses, save locally, and share a seeded result.
+- [Starter Generator](https://randompokemon.xyz/random-pokemon-starter-generator): Pick from traditional Grass, Fire, and Water starters, with optional Pikachu and Eevee.
+- [Legendary Generator](https://randompokemon.xyz/random-pokemon-legendary-generator): Select from Pokémon classified as Legendary.
+- [Shiny Generator](https://randompokemon.xyz/random-shiny-pokemon-generator): Select a species with shiny artwork enabled; this does not simulate in-game shiny odds.
+- [Nuzlocke Generator](https://randompokemon.xyz/random-nuzlocke-pokemon-generator): Create a game-agnostic, reproducible custom encounter rule.
+- [Kanto Generator](https://randompokemon.xyz/kanto-pokemon-generator): Generate from Generation 1 species #001–151.
+- [Paldea Generator](https://randompokemon.xyz/paldea-pokemon-generator): Generate from Generation 9 species #906–1025.
+
+## Project information
+
+- [About](https://randompokemon.xyz/about)
+- [Credits and data sources](https://randompokemon.xyz/credits)
+- [Contact](https://randompokemon.xyz/contact)
+- [Privacy](https://randompokemon.xyz/privacy)
+- [Terms](https://randompokemon.xyz/terms)
+
+## Data notes
+
+- Species and battle data are normalized from the open-source @pkmn data ecosystem.
+- Height and English species-category metadata come from PokéAPI.
+- Default sprites come from the PokéAPI sprites repository; supported alternate forms may use Pokémon Showdown sprites.
+- The site does not provide game-specific encounter tables, movesets, levels, or competitive team recommendations.

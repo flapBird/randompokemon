@@ -46,7 +46,11 @@ export const storage = {
     write(FAVORITES_KEY, next);
     return next;
   },
-  clearRecent() {
-    write<SavedGeneration>(RECENT_KEY, []);
+  clearRecent(pageMode?: SavedGeneration["pageMode"]) {
+    const next = pageMode ? read<SavedGeneration>(RECENT_KEY).filter((entry) => {
+      const storedMode = entry.pageMode ?? "standard";
+      return pageMode === "standard" ? storedMode !== "standard" && storedMode !== "team" : storedMode !== pageMode;
+    }) : [];
+    write<SavedGeneration>(RECENT_KEY, next);
   },
 };

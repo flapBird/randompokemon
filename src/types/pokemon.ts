@@ -29,6 +29,9 @@ export interface PokemonRecord {
   stats: PokemonStats;
   bst: number;
   evolutionStage: 1 | 2 | 3;
+  preEvolution: string | null;
+  evolutions: string[];
+  evolutionMethod: string | null;
   fullyEvolved: boolean;
   isStarter: boolean;
   isLegendary: boolean;

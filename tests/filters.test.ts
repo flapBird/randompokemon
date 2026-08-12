@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { filterPokemon, generationRegionConflictMessage } from "../src/lib/filters";
+import { pokemon } from "./fixtures";
 import { filters, pool } from "./fixtures";
 
 describe("filterPokemon", () => {
@@ -20,6 +21,21 @@ describe("filterPokemon", () => {
   });
   it("filters fully evolved Pokémon", () => {
     expect(filterPokemon(pool, { ...filters, fullyEvolvedOnly: true }).every((entry) => entry.fullyEvolved)).toBe(true);
+  });
+  it("treats every terminal evolution as final regardless of chain length", () => {
+    const stages = [
+      pokemon(20, "Raticate", ["normal"], { evolutionStage: 2, fullyEvolved: true }),
+      pokemon(59, "Arcanine", ["fire"], { evolutionStage: 2, fullyEvolved: true }),
+      pokemon(133, "Eevee", ["normal"], { evolutionStage: 1, fullyEvolved: false }),
+    ];
+    expect(filterPokemon(stages, { ...filters, evolutionStage: "final" }).map((entry) => entry.name)).toEqual(["Raticate", "Arcanine"]);
+  });
+  it("does not mix terminal two-stage Pokémon into middle evolutions", () => {
+    const stages = [
+      pokemon(2, "Ivysaur", ["grass"], { evolutionStage: 2, fullyEvolved: false }),
+      pokemon(20, "Raticate", ["normal"], { evolutionStage: 2, fullyEvolved: true }),
+    ];
+    expect(filterPokemon(stages, { ...filters, evolutionStage: "middle" }).map((entry) => entry.name)).toEqual(["Ivysaur"]);
   });
   it("applies a BST range", () => {
     const result = filterPokemon(pool, { ...filters, minBst: 550, maxBst: 590 });

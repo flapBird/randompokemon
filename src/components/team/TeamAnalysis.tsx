@@ -1,8 +1,19 @@
 import { analyzeTeam, title } from "@/lib/team-analysis";
 import type { GeneratedPokemon } from "@/types/generator";
+import type { PokemonType } from "@/types/pokemon";
 import { TypeBadge } from "../pokemon/TypeBadge";
 
-export function TeamAnalysis({ team }: { team: GeneratedPokemon[] }) {
+export function TeamAnalysis({
+  team,
+  selectedWeakness,
+  onSelectWeakness,
+  onRerollWeakness,
+}: {
+  team: GeneratedPokemon[];
+  selectedWeakness: PokemonType | null;
+  onSelectWeakness: (type: PokemonType | null) => void;
+  onRerollWeakness: (type: PokemonType) => void;
+}) {
   const analysis = analyzeTeam(team);
   return (
     <section className="team-analysis" aria-labelledby="team-analysis-heading">
@@ -26,7 +37,7 @@ export function TeamAnalysis({ team }: { team: GeneratedPokemon[] }) {
         </div>
         <div className="analysis-card">
           <h3>Shared weaknesses</h3>
-          {analysis.weaknesses.length ? <ul>{analysis.weaknesses.map((item) => <li key={item.type}><span>{title(item.type)}</span><strong>{item.count} weak</strong></li>)}</ul> : <p>No major shared weaknesses.</p>}
+          {analysis.weaknesses.length ? <ul>{analysis.weaknesses.map((item) => <li key={item.type}><button type="button" className={selectedWeakness === item.type ? "analysis-link selected" : "analysis-link"} aria-pressed={selectedWeakness === item.type} onClick={() => onSelectWeakness(selectedWeakness === item.type ? null : item.type)}><span>{title(item.type)}</span><strong>{item.count} weak</strong></button></li>)}</ul> : <p>No major shared weaknesses.</p>}
         </div>
         <div className="analysis-card">
           <h3>Team resistances</h3>
@@ -36,6 +47,12 @@ export function TeamAnalysis({ team }: { team: GeneratedPokemon[] }) {
       <div className="team-tips" aria-label="Team tips">
         {analysis.tips.map((tip) => <p key={tip}><span aria-hidden="true">◇</span>{tip}</p>)}
       </div>
+      {selectedWeakness && (
+        <div className="analysis-focus" role="status">
+          <span>Cards weak to {title(selectedWeakness)} are highlighted.</span>
+          <button type="button" onClick={() => onRerollWeakness(selectedWeakness)}>Reroll highlighted unlocked slots</button>
+        </div>
+      )}
     </section>
   );
 }

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Faq, type FaqItem } from "@/components/content/Faq";
 import { JsonLd } from "@/components/content/JsonLd";
 import { PokemonGenerator } from "@/components/generator/PokemonGenerator";
 import { STARTER_FILTERS } from "@/lib/defaults";
-import { breadcrumbSchema, faqSchema } from "@/lib/seo";
+import { breadcrumbSchema, faqSchema, organizationSchema, webApplicationSchema } from "@/lib/seo";
+import { createStaticGeneration } from "@/lib/static-generation";
 
 export const metadata: Metadata = {
   title: "Random Pokémon Starter Generator – Pick a Starter",
@@ -26,17 +28,27 @@ const faq: FaqItem[] = [
 ];
 
 export default function StarterGeneratorPage() {
+  const initialGeneration = createStaticGeneration(STARTER_FILTERS, "WELCOME-STARTER");
+
   return (
     <>
       <JsonLd data={[
+        organizationSchema(),
+        webApplicationSchema("Random Pokémon Starter Generator", "/random-pokemon-starter-generator", "Pick a random starter by generation or type for a playthrough, Nuzlocke, or friendly challenge."),
         faqSchema(faq),
         breadcrumbSchema([["Home", "/"], ["Random Pokémon Starter Generator", "/random-pokemon-starter-generator"]]),
       ]} />
       <section className="subpage-hero starter-hero">
-        <h1>Random Pokémon<br /><em>Starter Generator</em></h1>
+        <nav className="breadcrumbs" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span><span>Starter Generator</span></nav>
+        <h1>Random Pokémon <em>Starter Generator</em></h1>
         <p>Pick a random starter by generation or type for your next playthrough, Nuzlocke, random run, or friendly challenge.</p>
       </section>
-      <PokemonGenerator initialFilters={STARTER_FILTERS} pageMode="starter" />
+      <PokemonGenerator
+        initialFilters={STARTER_FILTERS}
+        initialResults={initialGeneration.results}
+        initialSeed={initialGeneration.seed}
+        pageMode="starter"
+      />
       <div className="content-wrap">
         <section className="content-section">
           <div className="content-heading"><span className="eyebrow">ONE FAIR PICK</span><h2>Choose a starter without overthinking it</h2><p>Set your eligible games, choose a classic starter type if you want, and let the seed make the final call.</p></div>

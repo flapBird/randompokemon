@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { GeneratedPokemon } from "@/types/generator";
 import { TypeBadge } from "./TypeBadge";
 import { PokemonDetails } from "./PokemonDetails";
@@ -12,6 +13,7 @@ export function PokemonCard({
   onReroll,
   onShiny,
   onRemove,
+  highlighted = false,
 }: {
   result: GeneratedPokemon;
   index: number;
@@ -19,13 +21,14 @@ export function PokemonCard({
   onReroll: () => void;
   onShiny: () => void;
   onRemove: () => void;
+  highlighted?: boolean;
 }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [imageError, setImageError] = useState(false);
   const { pokemon } = result;
   const image = result.shiny ? pokemon.shinySprite : pokemon.sprite;
   return (
-    <article className="pokemon-card result-enter" data-locked={result.locked} style={{ "--card-accent": `var(--type-${pokemon.primaryType})` } as React.CSSProperties}>
+    <article className="pokemon-card result-enter" data-locked={result.locked} data-highlighted={highlighted} style={{ "--card-accent": `var(--type-${pokemon.primaryType})` } as React.CSSProperties}>
       <div className="card-topline">
         <span className="slot-label">Slot {index + 1}</span>
         <span className="dex-number">#{String(pokemon.id).padStart(4, "0")}</span>
@@ -71,6 +74,7 @@ export function PokemonCard({
         <button onClick={onShiny} aria-label={`Show ${result.shiny ? "normal" : "shiny"} ${pokemon.name}`} title="Toggle normal or shiny artwork"><span aria-hidden="true">✦</span>{result.shiny ? "Normal" : "Shiny"}</button>
         <button onClick={onRemove} aria-label={`Remove ${pokemon.name}`} title="Remove this Pokémon"><span aria-hidden="true">−</span>Remove</button>
         <button onClick={() => setDetailsOpen(true)} aria-label={`View details for ${pokemon.name}`} title="View base stats and details"><span aria-hidden="true">i</span>Details</button>
+        {pokemon.isDefaultForm && <Link href={`/pokemon/${pokemon.slug}`} aria-label={`Open ${pokemon.name} Pokédex page`} title={`Open ${pokemon.name} Pokédex page`}><span aria-hidden="true">↗</span>Pokédex</Link>}
       </div>
       <PokemonDetails result={result} open={detailsOpen} onClose={() => setDetailsOpen(false)} />
     </article>

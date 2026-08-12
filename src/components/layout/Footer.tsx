@@ -10,9 +10,19 @@ export function Footer() {
         </div>
         <div className="footer-links">
           <Link href="/">Generator</Link>
-          <Link href="/random-pokemon-team-generator">Team Generator</Link>
+          <Link href="/pokemon">Pokédex</Link>
+          <Link href="/shiny-pokemon">Shiny Pokédex</Link>
+          <Link href="/legendary-pokemon">Legendary Pokémon List</Link>
+          <Link href="/starter-pokemon">Starter Pokémon List</Link>
           <Link href="/random-pokemon-starter-generator">Starter Generator</Link>
+          <Link href="/random-pokemon-legendary-generator">Legendary Generator</Link>
+          <Link href="/random-shiny-pokemon-generator">Shiny Generator</Link>
+          <Link href="/random-nuzlocke-pokemon-generator">Nuzlocke Generator</Link>
+          <Link href="/kanto-pokemon-generator">Kanto Generator</Link>
+          <Link href="/paldea-pokemon-generator">Paldea Generator</Link>
           <Link href="/about">About</Link>
+          <Link href="/credits">Credits & Data</Link>
+          <Link href="/contact">Contact</Link>
           <Link href="/privacy">Privacy</Link>
           <Link href="/terms">Terms</Link>
         </div>

@@ -42,10 +42,19 @@ export interface GeneratedPokemon {
   shiny: boolean;
 }
 
+export interface SavedPokemonSnapshot {
+  slug: string;
+  ability: string;
+  nature: string;
+  locked: boolean;
+  shiny: boolean;
+}
+
 export interface SavedGeneration {
   id: string;
   seed: string;
   pokemonIds: string[];
+  members?: SavedPokemonSnapshot[];
   createdAt: string;
   pageMode: "standard" | "team" | "starter";
   filters: GeneratorFilters;

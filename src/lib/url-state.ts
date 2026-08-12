@@ -1,9 +1,10 @@
-import type { GeneratorFilters, SpecialCategory } from "@/types/generator";
+import type { GeneratedPokemon, GeneratorFilters, SavedPokemonSnapshot, SpecialCategory } from "@/types/generator";
 import { POKEMON_TYPES } from "@/types/pokemon";
 
 const bool = (value: string | null, fallback: boolean) => value === null ? fallback : value === "1";
 const numbers = (value: string | null, min: number, max: number) =>
   (value ?? "").split(",").map(Number).filter((item) => Number.isInteger(item) && item >= min && item <= max);
+const REGIONS = new Set(["kanto", "johto", "hoenn", "sinnoh", "unova", "kalos", "alola", "galar", "hisui", "paldea"]);
 
 export function readUrlState(search: string, defaults: GeneratorFilters) {
   const params = new URLSearchParams(search);
@@ -28,7 +29,7 @@ export function readUrlState(search: string, defaults: GeneratorFilters) {
     includeForms: bool(params.get("forms"), defaults.includeForms),
     fullyEvolvedOnly: bool(params.get("evolved"), defaults.fullyEvolvedOnly),
     allowDuplicates: bool(params.get("dupes"), defaults.allowDuplicates),
-    regions: (params.get("region") ?? "").split(",").filter(Boolean).slice(0, 9),
+    regions: (params.get("region") ?? "").split(",").filter((region) => REGIONS.has(region)).slice(0, 10),
     evolutionStage: ["any", "basic", "middle", "final"].includes(params.get("stage") ?? "") ? params.get("stage") as GeneratorFilters["evolutionStage"] : defaults.evolutionStage,
     minBst: Number.isFinite(minBst) && minBst >= 100 && minBst <= 800 ? minBst : defaults.minBst,
     maxBst: Number.isFinite(maxBst) && maxBst >= 100 && maxBst <= 800 ? maxBst : defaults.maxBst,
@@ -37,16 +38,25 @@ export function readUrlState(search: string, defaults: GeneratorFilters) {
     starterType: ["any", "grass", "fire", "water"].includes(params.get("starterType") ?? "") ? params.get("starterType") as GeneratorFilters["starterType"] : defaults.starterType,
     includePikachu: bool(params.get("pikachu"), defaults.includePikachu),
     includeEevee: bool(params.get("eevee"), defaults.includeEevee),
-    teamMode: params.get("mode") === "smart" ? "smart" : "random",
+    teamMode: params.get("mode") === "smart" ? "smart" : params.get("mode") === "random" ? "random" : defaults.teamMode,
   };
+  const ids = (params.get("ids") ?? "").split(",").filter(Boolean).slice(0, 6);
+  const abilities = params.getAll("ability").slice(0, 6);
+  const natures = params.getAll("nature").slice(0, 6);
+  const shiny = new Set(numbers(params.get("shiny"), 0, 5));
+  const locked = new Set(numbers(params.get("locked"), 0, 5));
+  const members: SavedPokemonSnapshot[] | undefined = abilities.length === ids.length && natures.length === ids.length
+    ? ids.map((slug, index) => ({ slug, ability: abilities[index], nature: natures[index], shiny: shiny.has(index), locked: locked.has(index) }))
+    : undefined;
   return {
     seed: params.get("seed"),
-    ids: (params.get("ids") ?? "").split(",").filter(Boolean).slice(0, 6),
+    ids,
+    members,
     filters,
   };
 }
 
-export function createShareUrl(seed: string, filters: GeneratorFilters, ids: string[]) {
+export function createShareUrl(seed: string, filters: GeneratorFilters, results: GeneratedPokemon[]) {
   const params = new URLSearchParams();
   params.set("seed", seed);
   params.set("count", String(filters.count));
@@ -63,7 +73,7 @@ export function createShareUrl(seed: string, filters: GeneratorFilters, ids: str
   if (filters.evolutionStage !== "any") params.set("stage", filters.evolutionStage);
   if (filters.minBst !== 100) params.set("min", String(filters.minBst));
   if (filters.maxBst !== 800) params.set("max", String(filters.maxBst));
-  if (filters.teamMode === "smart") params.set("mode", "smart");
+  params.set("mode", filters.teamMode);
   if (filters.starterOnly) params.set("starter", "1");
   if (filters.starterType !== "any") params.set("starterType", filters.starterType);
   if (filters.includePikachu) params.set("pikachu", "1");
@@ -71,6 +81,16 @@ export function createShareUrl(seed: string, filters: GeneratorFilters, ids: str
   Object.entries(filters.categories).forEach(([category, rule]) => {
     if (rule !== "any") params.set(`cat_${category}`, rule);
   });
-  if (ids.length) params.set("ids", ids.join(","));
+  if (results.length) {
+    params.set("ids", results.map((entry) => entry.pokemon.slug).join(","));
+    results.forEach((entry) => {
+      params.append("ability", entry.ability);
+      params.append("nature", entry.nature);
+    });
+    const shiny = results.flatMap((entry, index) => entry.shiny ? [index] : []);
+    const locked = results.flatMap((entry, index) => entry.locked ? [index] : []);
+    if (shiny.length) params.set("shiny", shiny.join(","));
+    if (locked.length) params.set("locked", locked.join(","));
+  }
   return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
 }

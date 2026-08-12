@@ -7,16 +7,16 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://randompokemon.xyz/"),
   title: {
-    default: "Random Pokémon Generator – Create a Pokémon or Team",
+    default: "Random Pokémon Generator – All 1,025 Pokémon, Gen 1–9",
     template: "%s | RandomPokemon.xyz",
   },
-  description: "Generate a random Pokémon or build a complete team with filters for generation, type, region, evolution, and legendary status.",
+  description: "Generate 1–6 random Pokémon from all nine generations with precise filters, seeded results, locks, rerolls, analysis, and sharing.",
   applicationName: "Random Pokémon Generator",
   openGraph: {
     type: "website",
     siteName: "Random Pokémon Generator",
-    title: "Random Pokémon Generator – Create a Pokémon or Team",
-    description: "Build, lock, reroll, analyze, and share your next random Pokémon team.",
+    title: "Random Pokémon Generator – All 1,025 Pokémon, Gen 1–9",
+    description: "Build, lock, reroll, analyze, and share a random team from every main species across Generations 1–9.",
     url: "https://randompokemon.xyz/",
     images: [{ url: "/og.png", width: 1200, height: 628, alt: "Random Pokémon Generator — Build. Lock. Reroll. Share." }],
   },
@@ -40,7 +40,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body>
         <Header />
         <main>{children}</main>
