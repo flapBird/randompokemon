@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 };
 
 const related = [
+  { href: "/legendary-pokemon", title: "Legendary Pokémon List", copy: "Browse every Legendary by generation and open detailed Pokédex profiles." },
   { href: "/random-shiny-pokemon-generator", title: "Random Shiny Pokémon", copy: "Roll one Pokémon with its shiny artwork already enabled." },
   { href: "/kanto-pokemon-generator", title: "Kanto Pokémon Generator", copy: "Build a team from the original Generation 1 Pokédex." },
-  { href: "/paldea-pokemon-generator", title: "Paldea Pokémon Generator", copy: "Generate a team from the Generation 9 Paldea Pokédex." },
   { href: "/", title: "Full Team Generator", copy: "Use the complete pool and Smart Team analysis." },
 ];
 

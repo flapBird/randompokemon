@@ -41,10 +41,10 @@ export default function ShinyGeneratorPage() {
       "Some alternate forms use Pokémon Showdown artwork while default species use the PokéAPI sprite repository. Credits and data-source details are published on the Credits page.",
     ]}
     related={[
+      { href: "/shiny-pokemon", title: "Shiny Pokémon Pokédex", copy: "Compare normal and Shiny artwork for all 1,025 species." },
       { href: "/random-pokemon-legendary-generator", title: "Random Legendary Pokémon", copy: "Limit the roll to the Legendary category." },
       { href: "/random-nuzlocke-pokemon-generator", title: "Nuzlocke Pokémon Generator", copy: "Create a reproducible random encounter rule." },
       { href: "/random-pokemon-starter-generator", title: "Starter Generator", copy: "Pick from the traditional starter pool." },
-      { href: "/", title: "Full Team Generator", copy: "Build, analyze, lock, and reroll a complete team." },
     ]}
     faq={[
       { question: "Does this simulate shiny odds?", answer: "No. It randomly selects an eligible species and displays its shiny artwork; it does not reproduce encounter rates from any game." },

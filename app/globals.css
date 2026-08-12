@@ -833,6 +833,8 @@ button:disabled { opacity: .42; cursor: not-allowed; }
 .content-heading { max-width: 660px; margin-bottom: 32px; }
 .content-section h2 { margin: 10px 0 14px; font: 500 clamp(34px, 4vw, 52px)/1.03 Georgia, serif; letter-spacing: -.04em; }
 .content-heading > p, .split-content p { color: var(--ink-soft); }
+.inline-content-link { color: var(--accent-text); font-weight: 750; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent); text-underline-offset: 3px; }
+.inline-content-link:hover { color: var(--accent-hover); text-decoration-color: currentColor; }
 .split-content { display: grid; grid-template-columns: .8fr 1.2fr; gap: 90px; }
 .split-content p:first-child { margin-top: 4px; }
 .split-content p { font-size: 16px; line-height: 1.75; }

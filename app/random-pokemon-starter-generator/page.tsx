@@ -61,7 +61,7 @@ export default function StarterGeneratorPage() {
         </section>
         <section className="content-section split-content">
           <div><span className="eyebrow">THE POOL</span><h2>Main-series starters, clearly filtered</h2></div>
-          <div><p>The core pool includes all twenty-seven traditional Grass, Fire, and Water starters from Generations 1–9. Pikachu and Eevee are optional because they are special partner choices rather than members of the traditional starter trio.</p><p>Every result uses the same card as the full generator, so you can inspect abilities and stats, switch to shiny artwork, save the pick, or share it by seed.</p></div>
+          <div><p>The core pool includes all twenty-seven traditional Grass, Fire, and Water starters from Generations 1–9. Pikachu and Eevee are optional because they are special partner choices rather than members of the traditional starter trio.</p><p>Browse the complete <Link className="inline-content-link" href="/starter-pokemon">Starter Pokémon List</Link> to compare every partner and its evolution family, or inspect the generated card, switch to Shiny artwork, save the pick, and share it by seed.</p></div>
         </section>
         <Faq items={faq} id="starter-faq" />
       </div>

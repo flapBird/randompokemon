@@ -119,6 +119,17 @@ export default function Home() {
             ].map(([href, title, copy]) => <article key={href}><h3><Link href={href}>{title}</Link></h3><p>{copy}</p></article>)}
           </div>
         </section>
+        <section className="content-section">
+          <div className="content-heading"><span className="eyebrow">BROWSE &amp; COMPARE</span><h2>Explore the Pokémon behind each roll</h2><p>Search the full Pokédex, compare Shiny artwork, or browse focused Legendary and starter collections.</p></div>
+          <div className="use-grid related-generator-grid">
+            {[
+              ["/pokemon", "Pokémon Pokédex", "Search by name or generation and open detailed species profiles."],
+              ["/shiny-pokemon", "Shiny Pokémon Pokédex", "Compare standard and Shiny artwork across all 1,025 species."],
+              ["/legendary-pokemon", "Legendary Pokémon List", "Browse the complete Legendary collection from Generations 1–9."],
+              ["/starter-pokemon", "Starter Pokémon List", "Explore all 27 traditional first partners and their evolution families."],
+            ].map(([href, title, copy]) => <article key={href}><h3><Link href={href}>{title}</Link></h3><p>{copy}</p></article>)}
+          </div>
+        </section>
         <Faq items={faq} />
       </div>
     </>

@@ -12,6 +12,32 @@
 - [Kanto Generator](https://randompokemon.xyz/kanto-pokemon-generator): Generate from Generation 1 species #001–151.
 - [Paldea Generator](https://randompokemon.xyz/paldea-pokemon-generator): Generate from Generation 9 species #906–1025.
 
+## Pokédex and collections
+
+- [Pokémon Pokédex](https://randompokemon.xyz/pokemon): Search the Generation 1–9 Pokédex and open species profiles with normal and Shiny artwork, types, abilities, stats, and evolution details.
+- [Shiny Pokémon Pokédex](https://randompokemon.xyz/shiny-pokemon): Compare normal and Shiny artwork for all 1,025 main species. This is an artwork directory, not a Shiny-odds simulator.
+- [Legendary Pokémon List](https://randompokemon.xyz/legendary-pokemon): Browse Pokémon classified as Legendary by generation; Mythical Pokémon are kept separate.
+- [Starter Pokémon List](https://randompokemon.xyz/starter-pokemon): Browse the 27 traditional Grass, Fire, and Water first partners from Generations 1–9.
+
+## Starter guides
+
+- [Generation 5 Starter Pokémon](https://randompokemon.xyz/starter-pokemon/gen-5): Compare Snivy, Tepig, and Oshawott, including Shiny forms and evolution families.
+- [Pokémon X and Y Starters](https://randompokemon.xyz/starter-pokemon/pokemon-x-y): Compare Chespin, Fennekin, and Froakie, including Shiny forms and evolution families.
+
+## Featured Pokémon profiles
+
+- [Pikachu](https://randompokemon.xyz/pokemon/pikachu)
+- [Froakie](https://randompokemon.xyz/pokemon/froakie)
+- [Kyogre](https://randompokemon.xyz/pokemon/kyogre)
+- [Kyurem](https://randompokemon.xyz/pokemon/kyurem)
+- [Lugia](https://randompokemon.xyz/pokemon/lugia)
+- [Reshiram](https://randompokemon.xyz/pokemon/reshiram)
+- [Solgaleo](https://randompokemon.xyz/pokemon/solgaleo)
+- [Yveltal](https://randompokemon.xyz/pokemon/yveltal)
+- [Zapdos](https://randompokemon.xyz/pokemon/zapdos)
+- [Zekrom](https://randompokemon.xyz/pokemon/zekrom)
+- [Zygarde](https://randompokemon.xyz/pokemon/zygarde)
+
 ## Project information
 
 - [About](https://randompokemon.xyz/about)
@@ -25,4 +51,5 @@
 - Species and battle data are normalized from the open-source @pkmn data ecosystem.
 - Height and English species-category metadata come from PokéAPI.
 - Default sprites come from the PokéAPI sprites repository; supported alternate forms may use Pokémon Showdown sprites.
+- The Pokédex contains 1,025 default species plus supported alternate forms. Featured profiles above are the current priority indexable detail pages; other valid species URLs may be crawlable but are marked noindex while their content is expanded.
 - The site does not provide game-specific encounter tables, movesets, levels, or competitive team recommendations.
