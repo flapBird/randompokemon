@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -46,6 +47,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <main>{children}</main>
         <Footer />
         <GoogleAnalytics />
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4183802444188513"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
