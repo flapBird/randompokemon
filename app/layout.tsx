@@ -8,15 +8,15 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://randompokemon.xyz/"),
   title: {
-    default: "Random Pokémon Generator – All 1,025 Pokémon, Gen 1–9",
+    default: "Random Pokémon Generator & Picker – Gen 1–9",
     template: "%s | RandomPokemon.xyz",
   },
-  description: "Generate 1–6 random Pokémon from all nine generations with precise filters, seeded results, locks, rerolls, analysis, and sharing.",
+  description: "Generate or pick one Pokémon or a full Gen 1–9 team with type, region, Legendary, monotype, Smart Team, locks, rerolls, and sharing.",
   applicationName: "Random Pokémon Generator",
   openGraph: {
     type: "website",
     siteName: "Random Pokémon Generator",
-    title: "Random Pokémon Generator – All 1,025 Pokémon, Gen 1–9",
+    title: "Random Pokémon Generator & Picker – Gen 1–9",
     description: "Build, lock, reroll, analyze, and share a random team from every main species across Generations 1–9.",
     url: "https://randompokemon.xyz/",
     images: [{ url: "/og.png", width: 1200, height: 628, alt: "Random Pokémon Generator — Build. Lock. Reroll. Share." }],

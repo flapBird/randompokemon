@@ -98,3 +98,17 @@ export function pokemonSchema(entry: {
     isPartOf: { "@type": "WebSite", name: "RandomPokemon.xyz", url: siteUrl },
   };
 }
+
+export function articleSchema(entry: { title: string; path: string; description: string; datePublished: string; dateModified?: string }) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: entry.title,
+    description: entry.description,
+    datePublished: entry.datePublished,
+    dateModified: entry.dateModified ?? entry.datePublished,
+    mainEntityOfPage: `${siteUrl}${entry.path.replace(/^\//, "")}`,
+    author: { "@id": `${siteUrl}#organization` },
+    publisher: { "@id": `${siteUrl}#organization` },
+  };
+}

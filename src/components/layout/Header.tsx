@@ -11,7 +11,21 @@ const generatorLinks = [
   { href: "/random-pokemon-starter-generator", title: "Starter Generator", copy: "Pick a first partner by generation" },
   { href: "/random-nuzlocke-pokemon-generator", title: "Nuzlocke Generator", copy: "Create a reproducible encounter" },
   { href: "/kanto-pokemon-generator", title: "Kanto Generator", copy: "Generate from the original 151" },
+  { href: "/johto-pokemon-generator", title: "Johto Generator", copy: "Generate from Generation 2" },
+  { href: "/hoenn-pokemon-generator", title: "Hoenn Generator", copy: "Generate from Generation 3" },
+  { href: "/sinnoh-pokemon-generator", title: "Sinnoh Generator", copy: "Generate from Generation 4" },
+  { href: "/unova-pokemon-generator", title: "Unova Generator", copy: "Generate from Generation 5" },
+  { href: "/kalos-pokemon-generator", title: "Kalos Generator", copy: "Generate from Generation 6" },
+  { href: "/alola-pokemon-generator", title: "Alola Generator", copy: "Generate from Generation 7" },
+  { href: "/galar-pokemon-generator", title: "Galar Generator", copy: "Generate from Generation 8" },
   { href: "/paldea-pokemon-generator", title: "Paldea Generator", copy: "Generate from Generation 9" },
+] as const;
+
+const toolLinks = [
+  { href: "/favorite-pokemon-picker", title: "Favorite Pokémon Picker", copy: "Find and share your Top 10" },
+  { href: "/pokemon-type-wheel", title: "Pokémon Type Wheel", copy: "Spin all 18 types" },
+  { href: "/team-planner", title: "Team Planner", copy: "Check coverage and team gaps" },
+  { href: "/compare-pokemon", title: "Compare Pokémon", copy: "Compare stats and matchups" },
 ] as const;
 
 const collectionLinks = [
@@ -20,7 +34,7 @@ const collectionLinks = [
   { href: "/starter-pokemon", title: "Starter Pokémon", copy: "Explore every first-partner trio" },
 ] as const;
 
-type DesktopMenu = "generators" | "collections" | null;
+type DesktopMenu = "tools" | "generators" | "collections" | null;
 
 function NavChevron() {
   return (
@@ -47,11 +61,13 @@ export function Header() {
   const headerRef = useRef<HTMLElement>(null);
   const mobileButtonRef = useRef<HTMLButtonElement>(null);
   const generatorButtonRef = useRef<HTMLButtonElement>(null);
+  const toolButtonRef = useRef<HTMLButtonElement>(null);
   const collectionButtonRef = useRef<HTMLButtonElement>(null);
   const hoverCloseTimer = useRef<number | null>(null);
 
   const isActive = (href: string) => href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
   const generatorActive = generatorLinks.some((item) => isActive(item.href));
+  const toolActive = toolLinks.some((item) => isActive(item.href));
   const collectionActive = collectionLinks.some((item) => isActive(item.href));
   const cancelHoverClose = useCallback(() => {
     if (hoverCloseTimer.current) window.clearTimeout(hoverCloseTimer.current);
@@ -84,7 +100,8 @@ export function Header() {
     };
     const closeFromKeyboard = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
-      if (desktopMenu === "generators") generatorButtonRef.current?.focus();
+      if (desktopMenu === "tools") toolButtonRef.current?.focus();
+      else if (desktopMenu === "generators") generatorButtonRef.current?.focus();
       else if (desktopMenu === "collections") collectionButtonRef.current?.focus();
       else mobileButtonRef.current?.focus();
       closeMenus();
@@ -115,6 +132,10 @@ export function Header() {
         </Link>
 
         <nav className="desktop-nav" aria-label="Main navigation">
+          <div className="desktop-nav-item" onMouseEnter={() => openDesktopMenu("tools")} onMouseLeave={scheduleDesktopClose} onFocus={() => openDesktopMenu("tools")} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) scheduleDesktopClose(); }}>
+            <button ref={toolButtonRef} className={toolActive ? "nav-trigger active" : "nav-trigger"} onClick={() => openDesktopMenu("tools")} aria-expanded={desktopMenu === "tools"} aria-controls="tools-menu"><span className="nav-trigger-label">Tools</span><NavChevron /></button>
+            <div id="tools-menu" className={`nav-mega-menu collection-nav-menu t-dropdown ${desktopMenu === "tools" ? "is-open" : ""}`} data-origin="top-center" aria-hidden={desktopMenu !== "tools"} inert={desktopMenu !== "tools" ? true : undefined}><div className="nav-menu-heading"><span>INTERACTIVE TOOLS</span></div><div className="nav-menu-list">{toolLinks.map((item) => <MenuLink {...item} active={isActive(item.href)} onClick={closeMenus} key={item.href} />)}</div></div>
+          </div>
           <div className="desktop-nav-item" onMouseEnter={() => openDesktopMenu("generators")} onMouseLeave={scheduleDesktopClose} onFocus={() => openDesktopMenu("generators")} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) scheduleDesktopClose(); }}>
             <button ref={generatorButtonRef} className={generatorActive ? "nav-trigger active" : "nav-trigger"} onClick={() => openDesktopMenu("generators")} aria-expanded={desktopMenu === "generators"} aria-controls="generator-menu"><span className="nav-trigger-label">Generators</span><NavChevron /></button>
             <div id="generator-menu" className={`nav-mega-menu generator-nav-menu t-dropdown ${desktopMenu === "generators" ? "is-open" : ""}`} data-origin="top-center" aria-hidden={desktopMenu !== "generators"} inert={desktopMenu !== "generators" ? true : undefined}>
@@ -130,6 +151,7 @@ export function Header() {
               <div className="nav-menu-list">{collectionLinks.map((item) => <MenuLink {...item} active={isActive(item.href)} onClick={closeMenus} key={item.href} />)}</div>
             </div>
           </div>
+          <Link href="/blog" aria-current={isActive("/blog") ? "page" : undefined} onClick={closeMenus}>Blog</Link>
           <Link href="/about" aria-current={pathname === "/about" ? "page" : undefined} onClick={closeMenus}>About</Link>
         </nav>
 
@@ -140,12 +162,15 @@ export function Header() {
       </div>
 
       <nav id="mobile-menu" className={`mobile-nav t-dropdown ${mobileOpen ? "is-open" : ""}`} data-origin="top-right" aria-label="Mobile navigation" aria-hidden={!mobileOpen} inert={!mobileOpen ? true : undefined}>
+        <span className="mobile-nav-label">Tools</span>
+        {toolLinks.map((item) => <Link href={item.href} key={item.href} aria-current={isActive(item.href) ? "page" : undefined} onClick={closeMenus}>{item.title}</Link>)}
         <span className="mobile-nav-label">Generators</span>
         {generatorLinks.map((item) => <Link href={item.href} key={item.href} aria-current={isActive(item.href) ? "page" : undefined} onClick={closeMenus}>{item.title}</Link>)}
         <span className="mobile-nav-label">Browse</span>
         <Link href="/pokemon" aria-current={isActive("/pokemon") ? "page" : undefined} onClick={closeMenus}>Pokédex</Link>
         {collectionLinks.map((item) => <Link href={item.href} key={item.href} aria-current={isActive(item.href) ? "page" : undefined} onClick={closeMenus}>{item.title}</Link>)}
         <span className="mobile-nav-label">Site</span>
+        <Link href="/blog" aria-current={isActive("/blog") ? "page" : undefined} onClick={closeMenus}>Blog</Link>
         <Link href="/about" aria-current={pathname === "/about" ? "page" : undefined} onClick={closeMenus}>About</Link>
       </nav>
     </header>

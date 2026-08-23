@@ -8,8 +8,8 @@ import { baseSchemas } from "@/lib/seo";
 import { createStaticGeneration } from "@/lib/static-generation";
 
 export const metadata: Metadata = {
-  title: { absolute: "Random Pokémon Generator – All 1,025 Pokémon, Gen 1–9" },
-  description: "Generate 1–6 random Pokémon from all nine generations. Filter by type, region, evolution, Legendary status, forms, and base stats. Free, no signup.",
+  title: { absolute: "Random Pokémon Generator & Picker – Gen 1–9" },
+  description: "Use a fast Random Pokémon Generator and picker for Gen 1–9. Generate one Pokémon or a full team with type, region, Legendary, monotype, and Smart Team filters.",
   alternates: { canonical: "/" },
 };
 
@@ -21,6 +21,7 @@ const faq: FaqItem[] = [
   { question: "What is Smart Team mode?", answer: "Smart Team samples several valid random teams and favors type and evolution variety with fewer shared weaknesses. It is not a competitive team builder." },
   { question: "Can I share the same random team with a friend?", answer: "Yes. Copy Share Link includes the seed, filters, mode, and current Pokémon so the same team opens automatically." },
   { question: "Are shiny Pokémon included?", answer: "Every card has a Shiny toggle. It changes only the artwork and never rerolls the Pokémon, ability, nature, or team." },
+  { question: "Is this a Pokémon randomizer?", answer: "It is a browser-based random Pokémon generator and picker. It selects Pokémon and teams but does not modify a game or ROM like a Pokémon game randomizer." },
   { question: "Is this an official Pokémon website?", answer: "No. RandomPokemon.xyz is an independent, unofficial fan-made tool and is not affiliated with Nintendo, Game Freak, Creatures Inc., or The Pokémon Company." },
 ];
 
@@ -43,10 +44,21 @@ export default function Home() {
       />
       <div className="content-wrap">
         <section className="content-section split-content">
-          <div><span className="eyebrow">THE TOOL</span><h2>What is a random Pokémon generator?</h2></div>
+          <div><span className="eyebrow">THE TOOL</span><h2>Random Pokémon picker for Gen 1–9</h2></div>
           <div>
-            <p>A random Pokémon generator is a quick way to turn 1,025 main species across nine generations into one pick or a complete team. Narrow the pool when you want, keep good rolls, replace weak links, and send the exact result to a friend.</p>
+            <p>This random Pokémon generator and picker is a quick way to turn 1,025 main species across nine generations into one pick or a complete team. Generate a random Pokémon, narrow the pool by generation, region, or type, or use monotype and Smart Team modes for a more focused result.</p>
             <p>The generator runs from local data, so there is no long chain of API requests while you use it. That keeps each reroll quick on desktop and mobile.</p>
+          </div>
+        </section>
+        <section className="content-section tools-discovery">
+          <div className="content-heading"><span className="eyebrow">EXPLORE POKÉMON TOOLS</span><h2>Keep exploring after the roll</h2><p>Rank your favorites, spin a type, plan a team, or compare two Pokémon without leaving the shared Pokédex.</p></div>
+          <div className="tool-card-grid">
+            {[
+              ["/favorite-pokemon-picker", "Favorite Pokémon Picker", "Choose head-to-head and build a shareable Top 10.", "PICK"],
+              ["/pokemon-type-wheel", "Pokémon Type Wheel", "Spin all 18 types, then generate a matching Pokémon or team.", "SPIN"],
+              ["/team-planner", "Team Planner", "Choose up to six Pokémon and inspect coverage gaps.", "PLAN"],
+              ["/compare-pokemon", "Compare Pokémon", "Compare stats, types, abilities, and matchups side by side.", "VS"],
+            ].map(([href, title, copy, mark]) => <Link href={href} className="tool-card" key={href}><span>{mark}</span><h3>{title}</h3><p>{copy}</p><strong>Open tool →</strong></Link>)}
           </div>
         </section>
         <section className="content-section">
@@ -115,6 +127,8 @@ export default function Home() {
               ["/random-nuzlocke-pokemon-generator", "Nuzlocke Pokémon Generator", "Create a reproducible encounter for custom challenge rules."],
               ["/random-pokemon-starter-generator", "Starter Generator", "Pick a traditional Grass, Fire, or Water first partner."],
               ["/kanto-pokemon-generator", "Kanto Generator", "Build from Pokédex #001–151 and Generation 1."],
+              ["/johto-pokemon-generator", "Johto Generator", "Build from Generation 2 and the Johto Pokédex."],
+              ["/hoenn-pokemon-generator", "Hoenn Generator", "Build from Generation 3 and the Hoenn Pokédex."],
               ["/paldea-pokemon-generator", "Paldea Generator", "Build from Generation 9 species #906–1025."],
             ].map(([href, title, copy]) => <article key={href}><h3><Link href={href}>{title}</Link></h3><p>{copy}</p></article>)}
           </div>

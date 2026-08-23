@@ -50,6 +50,7 @@ export function readUrlState(search: string, defaults: GeneratorFilters) {
     : undefined;
   return {
     seed: params.get("seed"),
+    anchor: (params.get("pokemon") ?? "").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 60) || null,
     ids,
     members,
     filters,

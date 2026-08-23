@@ -228,7 +228,21 @@ export function PokemonGenerator({
         const parsed = readUrlState(window.location.search, initialFilters);
         if (window.location.search) setActiveQuickMode(null);
         const restored = parsed.ids.map((slug) => loaded.find((entry) => entry.slug === slug)).filter(Boolean) as PokemonRecord[];
-        if (parsed.ids.length && restored.length !== parsed.ids.length) {
+        const anchorPokemon = parsed.anchor ? loaded.find((entry) => entry.slug === parsed.anchor && entry.isDefaultForm) : undefined;
+        if (parsed.anchor && !anchorPokemon) {
+          setError("The Pokémon in this team-building link could not be found. Generate a fresh team instead.");
+        } else if (anchorPokemon) {
+          const nextSeed = parsed.seed && isValidSeed(parsed.seed) ? parsed.seed.toUpperCase() : `AROUND-${anchorPokemon.id}`;
+          const anchor = { ...hydratePokemon([anchorPokemon], nextSeed)[0], locked: true };
+          const nextFilters = { ...parsed.filters, count: Math.max(2, parsed.filters.count), teamMode: "smart" as const };
+          const nextPool = filterPokemon(loaded, nextFilters);
+          const companions = generatePokemon(nextPool, nextFilters, nextSeed, [anchor]);
+          setFilters(nextFilters);
+          setSeed(nextSeed);
+          setSeedInput(nextSeed);
+          setResults([anchor, ...companions]);
+          setActiveQuickMode(null);
+        } else if (parsed.ids.length && restored.length !== parsed.ids.length) {
           setFilters(parsed.filters);
           setSeedInput(parsed.seed && isValidSeed(parsed.seed) ? parsed.seed.toUpperCase() : "");
           setError("This share link is incomplete or out of date. Review the filters, then generate a fresh result.");

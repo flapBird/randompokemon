@@ -22,7 +22,7 @@ export default function PokedexPage() {
       <section className="subpage-hero catalog-hero">
         <nav className="breadcrumbs" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span><span>Pokédex</span></nav>
         <h1>Pokémon <em>Pokédex</em></h1>
-        <p>Find a Pokémon by name, compare its normal and Shiny artwork, and follow its complete evolution family.</p>
+        <p>Find a Pokémon by name, then explore stats, weaknesses, resistances, abilities, evolutions, related species, and team-building shortcuts.</p>
       </section>
       <div className="catalog-wrap"><PokemonDirectory entries={directoryEntries(defaultPokemon)} /></div>
     </>

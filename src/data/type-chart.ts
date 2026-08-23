@@ -30,3 +30,7 @@ export function calculateDefensiveMultiplier(
     1,
   );
 }
+
+export function calculateAttackMultiplier(attackingType: PokemonType, defenderType: PokemonType) {
+  return ATTACK_CHART[attackingType][defenderType] ?? 1;
+}
