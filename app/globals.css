@@ -1314,8 +1314,9 @@ html[data-theme="dark"] .catalog-callout a, html[data-theme="dark"] .directory-m
 .result-share-actions button, .wheel-pool-actions button, .planner-actions button { min-height: 42px; padding: 9px 13px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); cursor: pointer; font-size: 12px; font-weight: 800; }
 
 /* Type wheel */
-.type-wheel-tool { display: grid; grid-template-columns: minmax(340px, .8fr) 1.2fr; gap: 56px; align-items: center; }
-.wheel-stage { position: relative; display: grid; justify-items: center; }
+.type-wheel-tool { display: grid; grid-template-columns: 1.2fr minmax(340px, .8fr); gap: 56px; align-items: center; }
+.wheel-stage { position: relative; order: 2; display: grid; justify-items: center; }
+.wheel-controls { order: 1; }
 .type-wheel { position: relative; width: min(430px, 100%); aspect-ratio: 1; overflow: hidden; border: 10px solid var(--surface); border-radius: 50%; box-shadow: 0 12px 40px rgba(20,35,25,.18); transition: transform 1s cubic-bezier(.16,.75,.18,1); }
 .type-wheel::after { content: ""; position: absolute; inset: 20%; border: 1px solid rgba(255,255,255,.55); border-radius: 50%; background: var(--surface); }
 .type-wheel span { position: absolute; inset: 0; z-index: 1; padding-top: 13px; color: white; text-align: center; font-size: 10px; text-shadow: 0 1px 2px rgba(0,0,0,.45); }
@@ -1445,6 +1446,7 @@ html[data-theme="dark"] .catalog-callout a, html[data-theme="dark"] .directory-m
   .explore-link-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .region-pokemon-group > div { grid-template-columns: repeat(2, 1fr); }
   .type-wheel-tool, .team-planner-tool { grid-template-columns: 1fr; }
+  .wheel-stage, .wheel-controls { order: initial; }
   .related-pokemon-grid { grid-template-columns: repeat(3, 1fr); }
   .favorite-ranking { grid-template-columns: repeat(4, 1fr); }
   .generator-nav-menu { max-height: min(78vh, 650px); overflow-y: auto; }
