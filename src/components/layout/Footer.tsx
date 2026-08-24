@@ -1,40 +1,26 @@
 import Link from "next/link";
 
-const generatorLinks = [
-  ["/", "Random Pokémon Generator"],
-  ["/random-pokemon-starter-generator", "Starter Generator"],
-  ["/random-pokemon-legendary-generator", "Legendary Generator"],
-  ["/random-shiny-pokemon-generator", "Shiny Generator"],
-  ["/random-nuzlocke-pokemon-generator", "Nuzlocke Generator"],
-  ["/kanto-pokemon-generator", "Kanto Generator"],
-  ["/johto-pokemon-generator", "Johto Generator"],
-  ["/hoenn-pokemon-generator", "Hoenn Generator"],
-  ["/sinnoh-pokemon-generator", "Sinnoh Generator"],
-  ["/unova-pokemon-generator", "Unova Generator"],
-  ["/kalos-pokemon-generator", "Kalos Generator"],
-  ["/alola-pokemon-generator", "Alola Generator"],
-  ["/galar-pokemon-generator", "Galar Generator"],
-  ["/paldea-pokemon-generator", "Paldea Generator"],
-] as const;
-
-const toolLinks = [
-  ["/favorite-pokemon-picker", "Favorite Pokémon Picker"],
-  ["/pokemon-type-wheel", "Pokémon Type Wheel"],
+const coreLinks = [
+  ["/#generator", "Generator"],
+  ["/favorite-pokemon-picker", "Favorite Picker"],
+  ["/pokemon-type-wheel", "Type Wheel"],
   ["/team-planner", "Team Planner"],
-  ["/compare-pokemon", "Compare Pokémon"],
   ["/pokemon", "Pokédex"],
-  ["/shiny-pokemon", "Shiny Pokédex"],
-  ["/legendary-pokemon", "Legendary Pokémon List"],
-  ["/starter-pokemon", "Starter Pokémon List"],
-  ["/blog", "Guides"],
 ] as const;
 
-const aboutLinks = [
+const generatorLinks = [
+  ["/random-shiny-pokemon-generator", "Shiny Generator"],
+  ["/random-pokemon-legendary-generator", "Legendary Generator"],
+  ["/random-pokemon-starter-generator", "Starter Generator"],
+  ["/#regions", "All Regions"],
+] as const;
+
+const siteLinks = [
+  ["/blog", "Guides"],
   ["/about", "About"],
-  ["/credits", "Credits & Data"],
   ["/contact", "Contact"],
-  ["/privacy", "Privacy Policy"],
-  ["/terms", "Terms of Use"],
+  ["/privacy", "Privacy"],
+  ["/terms", "Terms"],
 ] as const;
 
 export function Footer() {
@@ -46,7 +32,7 @@ export function Footer() {
           <p>Build a surprising team, keep the picks you love, and share the exact result.</p>
         </div>
         <div className="footer-columns">
-          {[["Generators", generatorLinks], ["Tools", toolLinks], ["About", aboutLinks]].map(([heading, links]) => (
+          {[["Explore", coreLinks], ["Generators", generatorLinks], ["Site", siteLinks]].map(([heading, links]) => (
             <nav className="footer-column" aria-label={heading as string} key={heading as string}>
               <h2>{heading as string}</h2>
               {(links as ReadonlyArray<readonly [string, string]>).map(([href, label]) => <Link href={href} key={href}>{label}</Link>)}

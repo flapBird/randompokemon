@@ -6,4 +6,6 @@ export function proxy(request: NextRequest) {
   return response;
 }
 
-export const config = { matcher: ["/"] };
+// Share, filter, seed, search, and temporary state URLs remain useful to people,
+// but every parameterized HTML route should stay out of the search index.
+export const config = { matcher: ["/((?!api|_next/static|_next/image|.*\\..*).*)"] };

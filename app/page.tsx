@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Faq, type FaqItem } from "@/components/content/Faq";
 import { JsonLd } from "@/components/content/JsonLd";
 import { PokemonGenerator } from "@/components/generator/PokemonGenerator";
+import { REGION_GUIDES } from "@/data/regions";
 import { STANDARD_FILTERS } from "@/lib/defaults";
 import { baseSchemas } from "@/lib/seo";
 import { createStaticGeneration } from "@/lib/static-generation";
@@ -31,7 +32,7 @@ export default function Home() {
   return (
     <>
       <JsonLd data={baseSchemas(faq)} />
-      <section className="hero home-hero">
+      <section className="hero home-hero" id="generator">
         <div className="hero-copy">
           <h1>Random Pokémon <em>Generator</em></h1>
           <p>Generate 1–6 random Pokémon from all 1,025 species across Generations 1–9, then lock favorites, reroll slots, and share the exact seed.</p>
@@ -59,6 +60,35 @@ export default function Home() {
               ["/team-planner", "Team Planner", "Choose up to six Pokémon and inspect coverage gaps.", "PLAN"],
               ["/compare-pokemon", "Compare Pokémon", "Compare stats, types, abilities, and matchups side by side.", "VS"],
             ].map(([href, title, copy, mark]) => <Link href={href} className="tool-card" key={href}><span>{mark}</span><h3>{title}</h3><p>{copy}</p><strong>Open tool →</strong></Link>)}
+          </div>
+        </section>
+        <section className="content-section" id="generators">
+          <div className="content-heading"><span className="eyebrow">POPULAR GENERATORS</span><h2>Start with a focused Pokémon pool</h2><p>Use one of four established presets without turning every filter combination into a separate page.</p></div>
+          <div className="use-grid related-generator-grid">
+            {[
+              ["/random-shiny-pokemon-generator", "Shiny Pokémon Generator", "Choose from all 1,025 species with Shiny artwork enabled."],
+              ["/random-pokemon-legendary-generator", "Legendary Pokémon Generator", "Roll one Legendary or expand the count into a full team."],
+              ["/random-pokemon-starter-generator", "Starter Pokémon Generator", "Pick a traditional Grass, Fire, or Water first partner."],
+              ["/random-nuzlocke-pokemon-generator", "Nuzlocke Pokémon Generator", "Create a reproducible encounter for custom challenge rules."],
+            ].map(([href, title, copy]) => <article key={href}><h3><Link href={href}>{title}</Link></h3><p>{copy}</p></article>)}
+          </div>
+        </section>
+        <section className="content-section region-discovery" id="regions">
+          <div className="content-heading"><span className="eyebrow">GENERATE BY REGION</span><h2>Choose a regional Pokémon pool</h2><p>Each compact shortcut opens an existing generator with its own starters, Legendary Pokémon, games, and regional preset.</p></div>
+          <nav className="region-chip-list" aria-label="Pokémon generators by region">
+            {REGION_GUIDES.map((region) => <Link href={`/${region.slug}-pokemon-generator`} key={region.slug}>{region.name}<small>Gen {region.generation}</small></Link>)}
+          </nav>
+        </section>
+        <section className="content-section">
+          <div className="content-heading"><span className="eyebrow">EXPLORE POKÉMON</span><h2>Browse the Pokémon behind each roll</h2><p>Move from the main Pokédex hub into type collections or focused Shiny, Legendary, and starter lists.</p></div>
+          <div className="explore-link-list">
+            {[
+              ["/pokemon", "Pokédex", "Search all 1,025 Pokémon"],
+              ["/pokemon#pokemon-by-type", "Pokémon by Type", "Open one of 18 type collections"],
+              ["/shiny-pokemon", "Shiny Pokémon", "Compare normal and Shiny artwork"],
+              ["/legendary-pokemon", "Legendary Pokémon", "Browse the complete Gen 1–9 list"],
+              ["/starter-pokemon", "Starter Pokémon", "Explore every first-partner trio"],
+            ].map(([href, title, copy]) => <Link href={href} key={href}><strong>{title}</strong><span>{copy}</span></Link>)}
           </div>
         </section>
         <section className="content-section">
@@ -116,32 +146,6 @@ export default function Home() {
               ["Monotype challenges", "Pick one shared type while keeping the rest of the team surprising."],
               ["Creative prompts", "Roll a mascot, drawing subject, story character, or trivia pick."],
             ].map(([title, copy]) => <article key={title}><h3>{title}</h3><p>{copy}</p></article>)}
-          </div>
-        </section>
-        <section className="content-section">
-          <div className="content-heading"><span className="eyebrow">SPECIALIZED GENERATORS</span><h2>Start with a focused Pokémon pool</h2><p>Each page opens with purpose-built defaults and a static, shareable first result.</p></div>
-          <div className="use-grid related-generator-grid">
-            {[
-              ["/random-pokemon-legendary-generator", "Legendary Pokémon Generator", "Roll one Legendary or expand the count into a full team."],
-              ["/random-shiny-pokemon-generator", "Shiny Pokémon Generator", "Choose from all 1,025 species with shiny artwork enabled."],
-              ["/random-nuzlocke-pokemon-generator", "Nuzlocke Pokémon Generator", "Create a reproducible encounter for custom challenge rules."],
-              ["/random-pokemon-starter-generator", "Starter Generator", "Pick a traditional Grass, Fire, or Water first partner."],
-              ["/kanto-pokemon-generator", "Kanto Generator", "Build from Pokédex #001–151 and Generation 1."],
-              ["/johto-pokemon-generator", "Johto Generator", "Build from Generation 2 and the Johto Pokédex."],
-              ["/hoenn-pokemon-generator", "Hoenn Generator", "Build from Generation 3 and the Hoenn Pokédex."],
-              ["/paldea-pokemon-generator", "Paldea Generator", "Build from Generation 9 species #906–1025."],
-            ].map(([href, title, copy]) => <article key={href}><h3><Link href={href}>{title}</Link></h3><p>{copy}</p></article>)}
-          </div>
-        </section>
-        <section className="content-section">
-          <div className="content-heading"><span className="eyebrow">BROWSE &amp; COMPARE</span><h2>Explore the Pokémon behind each roll</h2><p>Search the full Pokédex, compare Shiny artwork, or browse focused Legendary and starter collections.</p></div>
-          <div className="use-grid related-generator-grid">
-            {[
-              ["/pokemon", "Pokémon Pokédex", "Search by name or generation and open detailed species profiles."],
-              ["/shiny-pokemon", "Shiny Pokémon Pokédex", "Compare standard and Shiny artwork across all 1,025 species."],
-              ["/legendary-pokemon", "Legendary Pokémon List", "Browse the complete Legendary collection from Generations 1–9."],
-              ["/starter-pokemon", "Starter Pokémon List", "Explore all 27 traditional first partners and their evolution families."],
-            ].map(([href, title, copy]) => <article key={href}><h3><Link href={href}>{title}</Link></h3><p>{copy}</p></article>)}
           </div>
         </section>
         <Faq items={faq} />

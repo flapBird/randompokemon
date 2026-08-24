@@ -4,23 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const generatorLinks = [
-  { href: "/", title: "Random Pokémon Generator", copy: "Build one pick or a complete team" },
-  { href: "/random-shiny-pokemon-generator", title: "Shiny Generator", copy: "Choose a random Shiny hunt target" },
-  { href: "/random-pokemon-legendary-generator", title: "Legendary Generator", copy: "Roll from the Legendary pool" },
-  { href: "/random-pokemon-starter-generator", title: "Starter Generator", copy: "Pick a first partner by generation" },
-  { href: "/random-nuzlocke-pokemon-generator", title: "Nuzlocke Generator", copy: "Create a reproducible encounter" },
-  { href: "/kanto-pokemon-generator", title: "Kanto Generator", copy: "Generate from the original 151" },
-  { href: "/johto-pokemon-generator", title: "Johto Generator", copy: "Generate from Generation 2" },
-  { href: "/hoenn-pokemon-generator", title: "Hoenn Generator", copy: "Generate from Generation 3" },
-  { href: "/sinnoh-pokemon-generator", title: "Sinnoh Generator", copy: "Generate from Generation 4" },
-  { href: "/unova-pokemon-generator", title: "Unova Generator", copy: "Generate from Generation 5" },
-  { href: "/kalos-pokemon-generator", title: "Kalos Generator", copy: "Generate from Generation 6" },
-  { href: "/alola-pokemon-generator", title: "Alola Generator", copy: "Generate from Generation 7" },
-  { href: "/galar-pokemon-generator", title: "Galar Generator", copy: "Generate from Generation 8" },
-  { href: "/paldea-pokemon-generator", title: "Paldea Generator", copy: "Generate from Generation 9" },
-] as const;
-
 const toolLinks = [
   { href: "/favorite-pokemon-picker", title: "Favorite Pokémon Picker", copy: "Find and share your Top 10" },
   { href: "/pokemon-type-wheel", title: "Pokémon Type Wheel", copy: "Spin all 18 types" },
@@ -28,13 +11,34 @@ const toolLinks = [
   { href: "/compare-pokemon", title: "Compare Pokémon", copy: "Compare stats and matchups" },
 ] as const;
 
-const collectionLinks = [
-  { href: "/shiny-pokemon", title: "Shiny Pokédex", copy: "Compare normal and Shiny artwork" },
+const generatorLinks = [
+  { href: "/random-shiny-pokemon-generator", title: "Shiny Generator", copy: "Choose a random Shiny hunt target" },
+  { href: "/random-pokemon-legendary-generator", title: "Legendary Generator", copy: "Roll from the Legendary pool" },
+  { href: "/random-pokemon-starter-generator", title: "Starter Generator", copy: "Pick a first partner by generation" },
+  { href: "/random-nuzlocke-pokemon-generator", title: "Nuzlocke Generator", copy: "Create a reproducible encounter" },
+] as const;
+
+const regionLinks = [
+  ["/kanto-pokemon-generator", "Kanto"],
+  ["/johto-pokemon-generator", "Johto"],
+  ["/hoenn-pokemon-generator", "Hoenn"],
+  ["/sinnoh-pokemon-generator", "Sinnoh"],
+  ["/unova-pokemon-generator", "Unova"],
+  ["/kalos-pokemon-generator", "Kalos"],
+  ["/alola-pokemon-generator", "Alola"],
+  ["/galar-pokemon-generator", "Galar"],
+  ["/paldea-pokemon-generator", "Paldea"],
+] as const;
+
+const pokedexLinks = [
+  { href: "/pokemon", title: "All Pokémon", copy: "Search the complete National Pokédex" },
+  { href: "/pokemon#pokemon-by-type", title: "Pokémon by Type", copy: "Browse all 18 type collections" },
+  { href: "/shiny-pokemon", title: "Shiny Pokémon", copy: "Compare normal and Shiny artwork" },
   { href: "/legendary-pokemon", title: "Legendary Pokémon", copy: "Browse the complete Gen 1–9 list" },
   { href: "/starter-pokemon", title: "Starter Pokémon", copy: "Explore every first-partner trio" },
 ] as const;
 
-type DesktopMenu = "tools" | "generators" | "collections" | null;
+type DesktopMenu = "tools" | "generators" | "pokedex" | null;
 
 function NavChevron() {
   return (
@@ -62,26 +66,42 @@ export function Header() {
   const mobileButtonRef = useRef<HTMLButtonElement>(null);
   const generatorButtonRef = useRef<HTMLButtonElement>(null);
   const toolButtonRef = useRef<HTMLButtonElement>(null);
-  const collectionButtonRef = useRef<HTMLButtonElement>(null);
+  const pokedexButtonRef = useRef<HTMLButtonElement>(null);
+  const hoverOpenTimer = useRef<number | null>(null);
   const hoverCloseTimer = useRef<number | null>(null);
 
-  const isActive = (href: string) => href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
-  const generatorActive = generatorLinks.some((item) => isActive(item.href));
+  const isActive = (href: string) => {
+    const route = href.split("#")[0];
+    return route === "/" ? pathname === "/" : pathname === route || pathname.startsWith(`${route}/`);
+  };
+  const generatorActive = generatorLinks.some((item) => isActive(item.href)) || regionLinks.some(([href]) => isActive(href));
   const toolActive = toolLinks.some((item) => isActive(item.href));
-  const collectionActive = collectionLinks.some((item) => isActive(item.href));
+  const pokedexActive = pokedexLinks.some((item) => isActive(item.href));
   const cancelHoverClose = useCallback(() => {
     if (hoverCloseTimer.current) window.clearTimeout(hoverCloseTimer.current);
     hoverCloseTimer.current = null;
   }, []);
-  const closeMenus = useCallback(() => { cancelHoverClose(); setDesktopMenu(null); setMobileOpen(false); }, [cancelHoverClose]);
+  const cancelHoverOpen = useCallback(() => {
+    if (hoverOpenTimer.current) window.clearTimeout(hoverOpenTimer.current);
+    hoverOpenTimer.current = null;
+  }, []);
+  const closeMenus = useCallback(() => { cancelHoverOpen(); cancelHoverClose(); setDesktopMenu(null); setMobileOpen(false); }, [cancelHoverClose, cancelHoverOpen]);
   const openDesktopMenu = useCallback((menu: Exclude<DesktopMenu, null>) => {
+    cancelHoverOpen();
     cancelHoverClose();
     setDesktopMenu(menu);
-  }, [cancelHoverClose]);
+  }, [cancelHoverClose, cancelHoverOpen]);
+  const scheduleDesktopOpen = useCallback((menu: Exclude<DesktopMenu, null>) => {
+    cancelHoverOpen();
+    cancelHoverClose();
+    setDesktopMenu((current) => current === menu ? current : null);
+    hoverOpenTimer.current = window.setTimeout(() => setDesktopMenu(menu), 180);
+  }, [cancelHoverClose, cancelHoverOpen]);
   const scheduleDesktopClose = useCallback(() => {
+    cancelHoverOpen();
     cancelHoverClose();
     hoverCloseTimer.current = window.setTimeout(() => setDesktopMenu(null), 160);
-  }, [cancelHoverClose]);
+  }, [cancelHoverClose, cancelHoverOpen]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -102,7 +122,7 @@ export function Header() {
       if (event.key !== "Escape") return;
       if (desktopMenu === "tools") toolButtonRef.current?.focus();
       else if (desktopMenu === "generators") generatorButtonRef.current?.focus();
-      else if (desktopMenu === "collections") collectionButtonRef.current?.focus();
+      else if (desktopMenu === "pokedex") pokedexButtonRef.current?.focus();
       else mobileButtonRef.current?.focus();
       closeMenus();
     };
@@ -114,7 +134,7 @@ export function Header() {
     };
   }, [closeMenus, desktopMenu, mobileOpen]);
 
-  useEffect(() => () => cancelHoverClose(), [cancelHoverClose]);
+  useEffect(() => () => { cancelHoverOpen(); cancelHoverClose(); }, [cancelHoverClose, cancelHoverOpen]);
 
   const toggleTheme = () => {
     const next = !dark;
@@ -132,27 +152,27 @@ export function Header() {
         </Link>
 
         <nav className="desktop-nav" aria-label="Main navigation">
-          <div className="desktop-nav-item" onMouseEnter={() => openDesktopMenu("tools")} onMouseLeave={scheduleDesktopClose} onFocus={() => openDesktopMenu("tools")} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) scheduleDesktopClose(); }}>
+          <Link href="/" aria-current={pathname === "/" ? "page" : undefined} onClick={closeMenus}>Random Generator</Link>
+          <div className="desktop-nav-item" onMouseEnter={() => scheduleDesktopOpen("tools")} onMouseLeave={scheduleDesktopClose} onFocus={() => openDesktopMenu("tools")} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) scheduleDesktopClose(); }}>
             <button ref={toolButtonRef} className={toolActive ? "nav-trigger active" : "nav-trigger"} onClick={() => openDesktopMenu("tools")} aria-expanded={desktopMenu === "tools"} aria-controls="tools-menu"><span className="nav-trigger-label">Tools</span><NavChevron /></button>
             <div id="tools-menu" className={`nav-mega-menu collection-nav-menu t-dropdown ${desktopMenu === "tools" ? "is-open" : ""}`} data-origin="top-center" aria-hidden={desktopMenu !== "tools"} inert={desktopMenu !== "tools" ? true : undefined}><div className="nav-menu-heading"><span>INTERACTIVE TOOLS</span></div><div className="nav-menu-list">{toolLinks.map((item) => <MenuLink {...item} active={isActive(item.href)} onClick={closeMenus} key={item.href} />)}</div></div>
           </div>
-          <div className="desktop-nav-item" onMouseEnter={() => openDesktopMenu("generators")} onMouseLeave={scheduleDesktopClose} onFocus={() => openDesktopMenu("generators")} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) scheduleDesktopClose(); }}>
+          <div className="desktop-nav-item" onMouseEnter={() => scheduleDesktopOpen("generators")} onMouseLeave={scheduleDesktopClose} onFocus={() => openDesktopMenu("generators")} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) scheduleDesktopClose(); }}>
             <button ref={generatorButtonRef} className={generatorActive ? "nav-trigger active" : "nav-trigger"} onClick={() => openDesktopMenu("generators")} aria-expanded={desktopMenu === "generators"} aria-controls="generator-menu"><span className="nav-trigger-label">Generators</span><NavChevron /></button>
             <div id="generator-menu" className={`nav-mega-menu generator-nav-menu t-dropdown ${desktopMenu === "generators" ? "is-open" : ""}`} data-origin="top-center" aria-hidden={desktopMenu !== "generators"} inert={desktopMenu !== "generators" ? true : undefined}>
-              <div className="nav-menu-heading"><span>GENERATORS</span></div>
+              <div className="nav-menu-heading"><span>POPULAR GENERATORS</span></div>
               <div className="nav-menu-grid">{generatorLinks.map((item) => <MenuLink {...item} active={isActive(item.href)} onClick={closeMenus} key={item.href} />)}</div>
+              <div className="nav-region-cluster"><span>BY REGION</span><div>{regionLinks.map(([href, title]) => <Link href={href} aria-current={isActive(href) ? "page" : undefined} onClick={closeMenus} key={href}>{title}</Link>)}</div></div>
             </div>
           </div>
-          <Link href="/pokemon" aria-current={isActive("/pokemon") ? "page" : undefined} onClick={closeMenus}>Pokédex</Link>
-          <div className="desktop-nav-item" onMouseEnter={() => openDesktopMenu("collections")} onMouseLeave={scheduleDesktopClose} onFocus={() => openDesktopMenu("collections")} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) scheduleDesktopClose(); }}>
-            <button ref={collectionButtonRef} className={collectionActive ? "nav-trigger active" : "nav-trigger"} onClick={() => openDesktopMenu("collections")} aria-expanded={desktopMenu === "collections"} aria-controls="collection-menu"><span className="nav-trigger-label">Explore</span><NavChevron /></button>
-            <div id="collection-menu" className={`nav-mega-menu collection-nav-menu t-dropdown ${desktopMenu === "collections" ? "is-open" : ""}`} data-origin="top-center" aria-hidden={desktopMenu !== "collections"} inert={desktopMenu !== "collections" ? true : undefined}>
-              <div className="nav-menu-heading"><span>COLLECTIONS</span></div>
-              <div className="nav-menu-list">{collectionLinks.map((item) => <MenuLink {...item} active={isActive(item.href)} onClick={closeMenus} key={item.href} />)}</div>
+          <div className="desktop-nav-item" onMouseEnter={() => scheduleDesktopOpen("pokedex")} onMouseLeave={scheduleDesktopClose} onFocus={() => openDesktopMenu("pokedex")} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) scheduleDesktopClose(); }}>
+            <button ref={pokedexButtonRef} className={pokedexActive ? "nav-trigger active" : "nav-trigger"} onClick={() => openDesktopMenu("pokedex")} aria-expanded={desktopMenu === "pokedex"} aria-controls="pokedex-menu"><span className="nav-trigger-label">Pokédex</span><NavChevron /></button>
+            <div id="pokedex-menu" className={`nav-mega-menu collection-nav-menu t-dropdown ${desktopMenu === "pokedex" ? "is-open" : ""}`} data-origin="top-center" aria-hidden={desktopMenu !== "pokedex"} inert={desktopMenu !== "pokedex" ? true : undefined}>
+              <div className="nav-menu-heading"><span>EXPLORE POKÉMON</span></div>
+              <div className="nav-menu-list">{pokedexLinks.map((item) => <MenuLink {...item} active={item.href.includes("#") ? false : item.href === "/pokemon" ? pathname === "/pokemon" : isActive(item.href)} onClick={closeMenus} key={item.href} />)}</div>
             </div>
           </div>
-          <Link href="/blog" aria-current={isActive("/blog") ? "page" : undefined} onClick={closeMenus}>Blog</Link>
-          <Link href="/about" aria-current={pathname === "/about" ? "page" : undefined} onClick={closeMenus}>About</Link>
+          <Link href="/blog" aria-current={isActive("/blog") ? "page" : undefined} onClick={closeMenus}>Guides</Link>
         </nav>
 
         <div className="nav-actions">
@@ -162,16 +182,19 @@ export function Header() {
       </div>
 
       <nav id="mobile-menu" className={`mobile-nav t-dropdown ${mobileOpen ? "is-open" : ""}`} data-origin="top-right" aria-label="Mobile navigation" aria-hidden={!mobileOpen} inert={!mobileOpen ? true : undefined}>
+        <Link href="/" aria-current={pathname === "/" ? "page" : undefined} onClick={closeMenus}>Random Generator</Link>
         <span className="mobile-nav-label">Tools</span>
         {toolLinks.map((item) => <Link href={item.href} key={item.href} aria-current={isActive(item.href) ? "page" : undefined} onClick={closeMenus}>{item.title}</Link>)}
         <span className="mobile-nav-label">Generators</span>
         {generatorLinks.map((item) => <Link href={item.href} key={item.href} aria-current={isActive(item.href) ? "page" : undefined} onClick={closeMenus}>{item.title}</Link>)}
-        <span className="mobile-nav-label">Browse</span>
-        <Link href="/pokemon" aria-current={isActive("/pokemon") ? "page" : undefined} onClick={closeMenus}>Pokédex</Link>
-        {collectionLinks.map((item) => <Link href={item.href} key={item.href} aria-current={isActive(item.href) ? "page" : undefined} onClick={closeMenus}>{item.title}</Link>)}
-        <span className="mobile-nav-label">Site</span>
-        <Link href="/blog" aria-current={isActive("/blog") ? "page" : undefined} onClick={closeMenus}>Blog</Link>
-        <Link href="/about" aria-current={pathname === "/about" ? "page" : undefined} onClick={closeMenus}>About</Link>
+        <details className="mobile-region-group">
+          <summary>By Region <NavChevron /></summary>
+          <div>{regionLinks.map(([href, title]) => <Link href={href} key={href} aria-current={isActive(href) ? "page" : undefined} onClick={closeMenus}>{title}</Link>)}</div>
+        </details>
+        <span className="mobile-nav-label">Pokédex</span>
+        {pokedexLinks.map((item) => <Link href={item.href} key={item.href} aria-current={item.href.includes("#") ? undefined : item.href === "/pokemon" ? pathname === "/pokemon" ? "page" : undefined : isActive(item.href) ? "page" : undefined} onClick={closeMenus}>{item.title}</Link>)}
+        <span className="mobile-nav-label">Guides</span>
+        <Link href="/blog" aria-current={isActive("/blog") ? "page" : undefined} onClick={closeMenus}>Pokémon Tool Guides</Link>
       </nav>
     </header>
   );
