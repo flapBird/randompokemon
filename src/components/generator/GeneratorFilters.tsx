@@ -133,6 +133,13 @@ export function GeneratorFilters({
     };
   }, [beginClose, openMenu]);
 
+  useEffect(() => {
+    if (!openMenu || !window.matchMedia("(max-width: 740px)").matches) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = previousOverflow; };
+  }, [openMenu]);
+
   useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current); }, []);
 
   const toggleNumber = (value: number) => update("generations", filters.generations.includes(value) ? filters.generations.filter((item) => item !== value) : [...filters.generations, value].sort());

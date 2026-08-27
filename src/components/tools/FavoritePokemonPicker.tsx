@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { PokemonRecord, PokemonType } from "@/types/pokemon";
 import { POKEMON_TYPES } from "@/types/pokemon";
 import { usePokemonDataset } from "@/lib/use-pokemon-dataset";
@@ -37,6 +37,7 @@ export function FavoritePokemonPicker() {
   const [result, setResult] = useState<PokemonRecord[]>([]);
   const [roundNumber, setRoundNumber] = useState(1);
   const [message, setMessage] = useState("");
+  const battleRef = useRef<HTMLDivElement>(null);
 
   const available = useMemo(() => entries.filter((entry) =>
     (generation === "all" || entry.generation === Number(generation)) &&
@@ -51,6 +52,11 @@ export function FavoritePokemonPicker() {
   const first = round[pairIndex];
   const second = round[pairIndex + 1];
   const totalDecisions = Math.max(0, round.length - 1);
+
+  useEffect(() => {
+    if (!active || !window.matchMedia("(max-width: 740px)").matches) return;
+    battleRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [active, roundNumber]);
 
   const start = () => {
     if (available.length < 2) return setMessage("Choose broader filters so at least two Pokémon can enter the tournament.");
@@ -129,7 +135,7 @@ export function FavoritePokemonPicker() {
         <div className="picker-start"><p>{loading ? "Loading the tournament pool…" : <><strong>{available.length}</strong> Pokémon match · {Math.min(available.length, MODE_SIZE[mode])} will enter</>}</p><button className="generate-button" onClick={start} disabled={loading || Boolean(error)}>Start Favorite Picker</button></div>
       </div>}
 
-      {active && first && <div className="picker-battle">
+      {active && first && <div className="picker-battle" ref={battleRef}>
         <div className="picker-progress"><span>Round {roundNumber}</span><strong>{Math.floor(pairIndex / 2) + 1} of {Math.ceil(round.length / 2)}</strong><small>{totalDecisions} decision{totalDecisions === 1 ? "" : "s"} remain in this bracket</small></div>
         <div className="versus-grid">
           {[first, second].filter(Boolean).map((entry) => <button type="button" onClick={() => choose(entry!, entry === first ? second : first)} key={entry!.slug}>{ }<img src={entry!.sprite} alt={entry!.name} /><span>Choose</span><strong>{entry!.name}</strong><small>Gen {entry!.generation} · {entry!.types.join(" / ")}</small></button>)}
