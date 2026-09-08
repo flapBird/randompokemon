@@ -61,6 +61,10 @@ export function createShareUrl(seed: string, filters: GeneratorFilters, results:
   const params = new URLSearchParams();
   params.set("seed", seed);
   params.set("count", String(filters.count));
+  // Explicit false values must override specialized page defaults on restore.
+  for (const [parameter, enabled] of Object.entries({ legendary: filters.includeLegendaries, legendaryOnly: filters.legendaryOnly, mythical: filters.includeMythicals, forms: filters.includeForms, evolved: filters.fullyEvolvedOnly, dupes: filters.allowDuplicates, starter: filters.starterOnly, pikachu: filters.includePikachu, eevee: filters.includeEevee })) {
+    params.set(parameter, enabled ? "1" : "0");
+  }
   if (filters.generations.length) params.set("gen", filters.generations.join(","));
   if (filters.types.length) params.set("type", filters.types.join(","));
   if (filters.typeMatch === "all") params.set("match", "all");

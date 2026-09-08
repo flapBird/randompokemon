@@ -99,6 +99,17 @@ export function rerollUnlocked(
   return current.map((entry) => (entry.locked ? entry : next[replacementIndex++]));
 }
 
+/** Keep locked members in their slots, including their artwork and build. */
+export function generateWithLocks(current: GeneratedPokemon[], pool: PokemonRecord[], filters: GeneratorFilters, seed: string) {
+  if (current.some((entry, index) => entry.locked && index >= filters.count)) {
+    throw new Error("Unlock the Pokémon in the extra slots before reducing the team size.");
+  }
+  const locked = current.filter((entry) => entry.locked);
+  const additions = generatePokemon(pool, filters, seed, locked);
+  let index = 0;
+  return Array.from({ length: filters.count }, (_, slot) => current[slot]?.locked ? current[slot] : additions[index++]);
+}
+
 export function rerollAt(
   current: GeneratedPokemon[],
   index: number,

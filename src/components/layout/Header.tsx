@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const toolLinks = [
-  { href: "/favorite-pokemon-picker", title: "Favorite Pokémon Picker", copy: "Find and share your Top 10" },
+  { href: "/favorite-pokemon-picker", title: "Favorite Pokémon Picker", copy: "Choose and share your favorites" },
   { href: "/pokemon-type-wheel", title: "Pokémon Type Wheel", copy: "Spin all 18 types" },
   { href: "/team-planner", title: "Team Planner", copy: "Check coverage and team gaps" },
   { href: "/compare-pokemon", title: "Compare Pokémon", copy: "Compare stats and matchups" },

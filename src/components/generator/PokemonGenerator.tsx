@@ -1,10 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { NATURES } from "@/data/natures";
 import { calculateDefensiveMultiplier } from "@/data/type-chart";
 import { filterPokemon, generationRegionConflictMessage } from "@/lib/filters";
-import { generatePokemon, rerollAt, rerollUnlocked } from "@/lib/random";
+import { generatePokemon, generateWithLocks, rerollAt } from "@/lib/random";
 import { createReadableSeed, createSeededRandom, isValidSeed, pickOne, randomInt } from "@/lib/seeded-random";
 import { storage } from "@/lib/storage";
 import { createShareUrl, readUrlState } from "@/lib/url-state";
@@ -116,6 +117,12 @@ export function PokemonGenerator({
   defaultShiny?: boolean;
 }) {
   const [filters, setFilters] = useState(initialFilters);
+  const [appliedFilters, setAppliedFilters] = useState(initialFilters);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [removedTeam, setRemovedTeam] = useState<GeneratedPokemon[] | null>(null);
+  const pendingFilters = JSON.stringify(filters) !== JSON.stringify(appliedFilters);
   const [dataset, setDataset] = useState<PokemonRecord[]>([]);
   const [results, setResults] = useState<GeneratedPokemon[]>(initialResults);
   const [seed, setSeed] = useState(initialSeed);
@@ -135,16 +142,21 @@ export function PokemonGenerator({
   const [confirmClearRecent, setConfirmClearRecent] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pool = useMemo(() => filterPokemon(dataset, filters), [dataset, filters]);
+  const resultPool = useMemo(() => filterPokemon(dataset, appliedFilters), [dataset, appliedFilters]);
+  const lockedCount = results.filter((entry) => entry.locked).length;
   const filterIssue = useMemo(() => {
     if (loadingData || !dataset.length) return "";
     if (filters.minBst < 100 || filters.maxBst > 800) return "Base stat totals must stay between 100 and 800.";
     if (filters.minBst > filters.maxBst) return "Minimum BST cannot be greater than maximum BST.";
     const conflict = generationRegionConflictMessage(filters);
     if (conflict) return conflict;
-    if (!pool.length) return "No Pokémon match these filters. Remove a restriction or reset the filters.";
-    if (!filters.allowDuplicates && pool.length < filters.count) return `Only ${pool.length} unique Pokémon match. Reduce the team size or allow duplicates.`;
+    if (results.some((entry, index) => entry.locked && index >= filters.count)) return "Unlock the Pokémon in the extra slots before reducing the team size.";
+    const needed = filters.count - lockedCount;
+    const available = filters.allowDuplicates ? pool : pool.filter((entry) => !results.some((member) => member.locked && member.pokemon.slug === entry.slug));
+    if (needed > 0 && !pool.length) return "No Pokémon match these filters. Remove a restriction or reset the filters.";
+    if (!filters.allowDuplicates && available.length < needed) return `Only ${pool.length} unique Pokémon match. Reduce the team size or allow duplicates.`;
     return "";
-  }, [dataset.length, filters, loadingData, pool.length]);
+  }, [dataset.length, filters, loadingData, pool, results, lockedCount]);
 
   const showToast = useCallback((message: string, keepUndo = false) => {
     setToast(message);
@@ -176,7 +188,7 @@ export function PokemonGenerator({
     if (saved) setRecent(savedForPage(saved, pageMode));
   }, [pageMode]);
 
-  const generateFrom = useCallback((source: PokemonRecord[], nextFilters: GeneratorFilters, requestedSeed?: string, save = true) => {
+  const generateFrom = useCallback((source: PokemonRecord[], nextFilters: GeneratorFilters, requestedSeed?: string, save = true, current: GeneratedPokemon[] = []) => {
     setLoading(true);
     setError("");
     window.setTimeout(() => {
@@ -186,16 +198,19 @@ export function PokemonGenerator({
         const generationRegionConflict = generationRegionConflictMessage(nextFilters);
         if (generationRegionConflict) throw new Error(generationRegionConflict);
         const nextPool = filterPokemon(source, nextFilters);
-        if (!nextPool.length) throw new Error("No Pokémon match these filters. Try selecting more generations or removing some restrictions.");
+        if (!nextPool.length && current.filter((entry) => entry.locked).length < nextFilters.count) throw new Error("No Pokémon match these filters. Try selecting more generations or removing some restrictions.");
         const nextSeed = requestedSeed?.trim().toUpperCase() || makeSeed();
         if (!isValidSeed(nextSeed)) throw new Error("Use a seed with 3–32 letters, numbers, or hyphens.");
-        const generated = generatePokemon(nextPool, nextFilters, nextSeed);
-        const nextResults = defaultShiny ? generated.map((entry) => ({ ...entry, shiny: true })) : generated;
+        const generated = generateWithLocks(current, nextPool, nextFilters, nextSeed);
+        const nextResults = defaultShiny ? generated.map((entry) => entry.locked ? entry : ({ ...entry, shiny: true })) : generated;
         setSeed(nextSeed);
         setSeedInput(nextSeed);
         setResults(nextResults);
         setHighlightedWeakness(null);
         setFilters(nextFilters);
+        setAppliedFilters(nextFilters);
+        setFiltersOpen(false);
+        setRemovedTeam(null);
         setActiveSavedKey(null);
         clearUrlState();
         if (save) addRecent(nextSeed, nextFilters, nextResults);
@@ -208,8 +223,8 @@ export function PokemonGenerator({
   }, [addRecent, clearUrlState, defaultShiny]);
 
   const runGeneration = useCallback((nextFilters = filters, requestedSeed?: string, save = true) => {
-    generateFrom(dataset, nextFilters, requestedSeed, save);
-  }, [dataset, filters, generateFrom]);
+    generateFrom(dataset, nextFilters, requestedSeed, save, results);
+  }, [dataset, filters, generateFrom, results]);
 
   useEffect(() => {
     let cancelled = false;
@@ -225,8 +240,12 @@ export function PokemonGenerator({
         setLoadingData(false);
         setRecent(savedForPage(storage.recent(), pageMode));
         setFavorites(savedForPage(storage.favorites(), pageMode));
-        const parsed = readUrlState(window.location.search, initialFilters);
-        if (window.location.search) setActiveQuickMode(null);
+        let search = window.location.search;
+        if (!search) {
+          try { search = localStorage.getItem(`pokemon-generator-draft:${window.location.pathname}`) ?? ""; } catch { /* The generator also works without browser storage. */ }
+        }
+        const parsed = readUrlState(search, initialFilters);
+        if (search) setActiveQuickMode(null);
         const restored = parsed.ids.map((slug) => loaded.find((entry) => entry.slug === slug)).filter(Boolean) as PokemonRecord[];
         const anchorPokemon = parsed.anchor ? loaded.find((entry) => entry.slug === parsed.anchor && entry.isDefaultForm) : undefined;
         if (parsed.anchor && !anchorPokemon) {
@@ -238,6 +257,7 @@ export function PokemonGenerator({
           const nextPool = filterPokemon(loaded, nextFilters);
           const companions = generatePokemon(nextPool, nextFilters, nextSeed, [anchor]);
           setFilters(nextFilters);
+          setAppliedFilters(nextFilters);
           setSeed(nextSeed);
           setSeedInput(nextSeed);
           setResults([anchor, ...companions]);
@@ -249,10 +269,11 @@ export function PokemonGenerator({
         } else if (parsed.seed && isValidSeed(parsed.seed) && restored.length) {
           const hydrated = hydratePokemon(restored, parsed.seed, parsed.members);
           setFilters({ ...parsed.filters, count: hydrated.length });
+          setAppliedFilters({ ...parsed.filters, count: hydrated.length });
           setSeed(parsed.seed.toUpperCase());
           setSeedInput(parsed.seed.toUpperCase());
           setResults(hydrated);
-        } else if (!initialResults.length) {
+        } else if (!initialResults.length || window.location.search) {
           generateFrom(loaded, parsed.filters, parsed.seed && isValidSeed(parsed.seed) ? parsed.seed : undefined, false);
         }
       })
@@ -268,8 +289,19 @@ export function PokemonGenerator({
 
   useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
 
+  useEffect(() => {
+    if (loadingData || !dataset.length) return;
+    try {
+      const key = `pokemon-generator-draft:${window.location.pathname}`;
+      if (!results.length) localStorage.removeItem(key);
+      else localStorage.setItem(key, new URL(createShareUrl(seed, { ...appliedFilters, count: results.length }, results)).search);
+    } catch { /* Explicit Save reports a storage error when persistence is required. */ }
+  }, [loadingData, dataset.length, results, seed, appliedFilters]);
+
   const mutateResults = (next: GeneratedPokemon[], nextSeed = seed) => {
     setResults(next);
+    setFilters((value) => ({ ...value, count: Math.max(1, next.length) }));
+    setAppliedFilters((value) => ({ ...value, count: Math.max(1, next.length) }));
     setSeed(nextSeed);
     setSeedInput(nextSeed);
     setActiveSavedKey(null);
@@ -279,31 +311,13 @@ export function PokemonGenerator({
   const onSingleReroll = (index: number) => {
     try {
       const nextSeed = makeSeed();
-      const next = rerollAt(results, index, pool, filters, nextSeed);
+      const next = rerollAt(results, index, resultPool, appliedFilters, nextSeed);
       if (defaultShiny) next[index] = { ...next[index], shiny: true };
       mutateResults(next, nextSeed);
       setHighlightedWeakness(null);
-      addRecent(nextSeed, { ...filters, count: next.length }, next);
+      addRecent(nextSeed, { ...appliedFilters, count: next.length }, next);
     } catch (rerollError) {
       setError(rerollError instanceof Error ? rerollError.message : "This slot could not be rerolled.");
-    }
-  };
-
-  const onRerollUnlocked = () => {
-    if (results.every((entry) => entry.locked)) return;
-    try {
-      const nextSeed = makeSeed();
-      const next = rerollUnlocked(results, pool, { ...filters, count: results.length }, nextSeed);
-      if (defaultShiny) {
-        next.forEach((entry, index) => {
-          if (!results[index].locked) next[index] = { ...entry, shiny: true };
-        });
-      }
-      mutateResults(next, nextSeed);
-      setHighlightedWeakness(null);
-      addRecent(nextSeed, { ...filters, count: next.length }, next);
-    } catch (rerollError) {
-      setError(rerollError instanceof Error ? rerollError.message : "The unlocked slots could not be rerolled.");
     }
   };
 
@@ -311,15 +325,15 @@ export function PokemonGenerator({
     if (results.length >= 6) return;
     try {
       const occupied = new Set(results.map((entry) => entry.pokemon.slug));
-      const available = filters.allowDuplicates ? pool : pool.filter((entry) => !occupied.has(entry.slug));
+      const available = appliedFilters.allowDuplicates ? resultPool : resultPool.filter((entry) => !occupied.has(entry.slug));
       if (!available.length) throw new Error("No additional unique Pokémon match these filters.");
       const nextSeed = makeSeed();
-      const generated = generatePokemon(available, { ...filters, count: 1, teamMode: "random" }, nextSeed);
+      const generated = generatePokemon(available, { ...appliedFilters, count: 1, teamMode: "random" }, nextSeed);
       const added = defaultShiny ? generated.map((entry) => ({ ...entry, shiny: true })) : generated;
       const next = [...results, ...added];
       mutateResults(next, nextSeed);
       setHighlightedWeakness(null);
-      addRecent(nextSeed, { ...filters, count: next.length }, next);
+      addRecent(nextSeed, { ...appliedFilters, count: next.length }, next);
     } catch (addError) {
       setError(addError instanceof Error ? addError.message : "A Pokémon could not be added.");
     }
@@ -330,10 +344,10 @@ export function PokemonGenerator({
     if (!affected.length) return setError(`No unlocked team members are weak to ${displayToken(type)}.`);
     try {
       const nextSeed = makeSeed();
-      const next = affected.reduce((team, index) => rerollAt(team, index, pool, filters, `${nextSeed}-${index}`), results);
+      const next = affected.reduce((team, index) => rerollAt(team, index, resultPool, appliedFilters, `${nextSeed}-${index}`), results);
       if (defaultShiny) affected.forEach((index) => { next[index] = { ...next[index], shiny: true }; });
       mutateResults(next, nextSeed);
-      addRecent(nextSeed, { ...filters, count: next.length }, next);
+      addRecent(nextSeed, { ...appliedFilters, count: next.length }, next);
       setHighlightedWeakness(null);
       showToast(`${affected.length} weak slot${affected.length > 1 ? "s" : ""} rerolled.`);
     } catch (rerollError) {
@@ -351,12 +365,12 @@ export function PokemonGenerator({
   };
 
   const shareResults = async () => {
-    const url = createShareUrl(seed, { ...filters, count: results.length }, results);
+    const url = createShareUrl(seed, { ...appliedFilters, count: results.length }, results);
     if (navigator.share) {
       try {
         await navigator.share({
           title: results.length > 1 ? "My Random Pokémon Team" : "My Random Pokémon Pick",
-          text: teamText(results, seed, filters),
+          text: teamText(results, seed, appliedFilters),
           url,
         });
         showToast("Share sheet opened.");
@@ -378,12 +392,13 @@ export function PokemonGenerator({
       members: snapshotResults(results),
       createdAt: new Date().toISOString(),
       pageMode,
-      filters: { ...filters, count: results.length },
+      filters: { ...appliedFilters, count: results.length },
     };
     const saved = storage.saveFavorite(item);
     if (!saved) return setError("Favorite teams could not be saved because browser storage is unavailable.");
     setFavorites(savedForPage(saved, pageMode));
     setFavoriteName("");
+    setSaveOpen(false);
     showToast(`${pageMode === "starter" ? "Starter" : results.length > 1 ? "Team" : "Pokémon"} saved to favorites.`);
   };
 
@@ -394,6 +409,7 @@ export function PokemonGenerator({
     if (!restored.length || restored.length !== item.pokemonIds.length) return setError("This saved roll is incomplete with the current data version and was not restored.");
     const hydrated = hydratePokemon(restored, item.seed, item.members);
     setFilters({ ...item.filters, count: hydrated.length });
+    setAppliedFilters({ ...item.filters, count: hydrated.length });
     setSeed(item.seed);
     setSeedInput(item.seed);
     setResults(hydrated);
@@ -446,8 +462,16 @@ export function PokemonGenerator({
 
   return (
     <section className={`generator-shell${pageMode === "starter" ? " starter-generator-shell" : ""}`} aria-label="Random Pokémon generator">
-      <div className="instant-generator">
-        <FilterControls
+      <div className="instant-generator simple-generator-controls">
+        <div className="generator-task-row">
+          {pageMode !== "starter" && <div className="segmented task-switch" aria-label="Choose what to generate">
+            <button aria-pressed={filters.count === 1} className={filters.count === 1 ? "selected" : ""} onClick={() => { setFilters({ ...filters, count: 1 }); setActiveQuickMode(null); }}>One Pokémon</button>
+            <button aria-pressed={filters.count > 1} className={filters.count > 1 ? "selected" : ""} onClick={() => { setFilters({ ...filters, count: 6 }); setActiveQuickMode(null); }}>A team</button>
+          </div>}
+          <button className="secondary-button filter-disclosure" aria-expanded={filtersOpen} aria-controls="generator-options" onClick={() => setFiltersOpen(!filtersOpen)}>Filters{pendingFilters ? " · changed" : ""}</button>
+          <button className="text-button" aria-expanded={libraryOpen} aria-controls="saved-rolls" onClick={() => { setLibraryOpen(!libraryOpen); setLibraryTab("favorites"); if (!libraryOpen) requestAnimationFrame(() => document.getElementById("saved-rolls")?.scrollIntoView({ behavior: "smooth", block: "start" })); }}>Saved ({favorites.length})</button>
+        </div>
+        {filtersOpen && <div id="generator-options" className="generator-options"><FilterControls
           filters={filters}
           onChange={(next) => { setFilters(next); setActiveQuickMode(null); setActiveSavedKey(null); setError(""); }}
           pageMode={pageMode}
@@ -455,16 +479,17 @@ export function PokemonGenerator({
           onSeedInputChange={(value) => { setSeedInput(value.toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 32)); setActiveSavedKey(null); }}
           activeQuickMode={activeQuickMode}
           onQuickSelect={quickSelect}
-        />
+        /><p className="filter-help">Choose your options, then generate to apply them. Locked Pokémon stay in your team.</p></div>}
         <div className="generator-primary-actions">
-          <button type="button" className="reset-filters-button" onClick={resetFilters}>Reset</button>
+          {filtersOpen && <button type="button" className="reset-filters-button" onClick={resetFilters}>Reset filters</button>}
           <button
             className="generate-button primary-generate"
             onClick={() => runGeneration(filters, seedInput && seedInput !== seed ? seedInput : undefined)}
-            disabled={loading || loadingData || Boolean(filterIssue)}
+            disabled={loading || loadingData || Boolean(filterIssue) || (lockedCount === filters.count && results.length === filters.count)}
           >
             {loading
               ? "Generating…"
+              : lockedCount ? `Keep ${lockedCount} · Reroll the rest`
               : filters.starterOnly
                 ? "Pick Random Starter"
                 : filters.count > 1
@@ -472,6 +497,8 @@ export function PokemonGenerator({
                   : "Generate Pokémon"}
           </button>
         </div>
+        {pendingFilters && !filterIssue && <p className="filter-help" role="status">Options changed. Generate to update your result.</p>}
+        {lockedCount > 0 && <p className="filter-help">{lockedCount} locked · {lockedCount === filters.count ? "Unlock a Pokémon to roll again." : "Kept even when filters change."}</p>}
         {filterIssue && (
           <div className="filter-feedback invalid" role="status" aria-live="polite">
             <span aria-hidden="true">!</span>
@@ -489,37 +516,36 @@ export function PokemonGenerator({
         </div>
       )}
 
-      {results.length > 0 && (
+      {removedTeam && <div className="removed-notice" role="status">Pokémon removed. <button onClick={() => { mutateResults(removedTeam); setRemovedTeam(null); }}>Undo</button></div>}
+      {(
         <div id="generator-results" className={`results-section${pageMode === "starter" ? " starter-results" : ""}`} aria-busy={loading}>
           <p key={seed} className="sr-only" role="status" aria-live="polite">Generated {results.length} Pokémon with seed {seed}.</p>
-          <div className="results-actions">
-            <div className="generator-toolbar" aria-label="Result actions">
-              <button onClick={onRerollUnlocked} disabled={results.every((entry) => entry.locked)}><span aria-hidden="true">↻</span>{results.length > 1 ? "Reroll Unlocked" : "Reroll"}</button>
-              {pageMode !== "starter" && results.length < 6 && <button onClick={addRandom}><span aria-hidden="true">＋</span>Add Pokémon</button>}
-              <button onClick={() => copyText(teamText(results, seed, filters), `${results.length > 1 ? "Team" : "Pokémon"} copied to clipboard.`)}><span aria-hidden="true">▣</span>Copy {results.length > 1 ? "Team" : "Pick"}</button>
-              <button onClick={shareResults}><span aria-hidden="true">↗</span>Share</button>
-            </div>
-            <div className="favorite-save">
-              <label>Favorite name <input value={favoriteName} onChange={(event) => setFavoriteName(event.target.value.slice(0, 40))} placeholder="Optional name" /></label>
-              <button onClick={saveFavorite}>♡ Save {pageMode === "starter" ? "Starter" : results.length > 1 ? "Team" : "Pokémon"}</button>
-            </div>
-          </div>
+          <div className="result-summary"><h2>{results.length === 1 ? "Your Pokémon" : `Your team · ${results.length}/6`}</h2><span>{appliedFilters.teamMode === "smart" && results.length > 1 ? "Smart Team" : "Pure Random"}</span></div>
           <div className={`pokemon-grid${pageMode === "starter" ? " starter-result-grid" : ""}`}>
             {results.map((result, index) => (
               <PokemonCard
                 key={`${result.pokemon.slug}-${index}`}
                 result={result}
                 index={index}
+                busy={loading || loadingData}
                 onLock={() => mutateResults(results.map((entry, slot) => slot === index ? { ...entry, locked: !entry.locked } : entry))}
                 onReroll={() => onSingleReroll(index)}
                 onShiny={() => mutateResults(results.map((entry, slot) => slot === index ? { ...entry, shiny: !entry.shiny } : entry))}
-                onRemove={() => mutateResults(results.filter((_, slot) => slot !== index))}
+                onRemove={() => { setRemovedTeam(results); mutateResults(results.filter((_, slot) => slot !== index)); }}
                 highlighted={highlightedWeakness ? calculateDefensiveMultiplier(result.pokemon.types, highlightedWeakness) > 1 : false}
               />
             ))}
           </div>
-          {results.length > 1 && <TeamAnalysis team={results} selectedWeakness={highlightedWeakness} onSelectWeakness={setHighlightedWeakness} onRerollWeakness={rerollWeakness} />}
-          <div className="library">
+          {results.length > 0 && <div className="result-utilities">
+            <button className="secondary-button" onClick={() => setSaveOpen(!saveOpen)} aria-expanded={saveOpen}>Save {results.length > 1 ? "team" : "pick"}</button>
+            <button className="secondary-button" onClick={shareResults}>Share</button>
+            <Link className="secondary-button" href={`/team-planner?team=${results.map((entry) => entry.pokemon.slug).join(",")}`}>Edit team</Link>
+            {pageMode !== "starter" && results.length < 6 && <button className="text-button" onClick={addRandom} disabled={loadingData}>Add Pokémon</button>}
+            <button className="text-button" onClick={() => copyText(teamText(results, seed, appliedFilters), "Copied to clipboard.")}>Copy text</button>
+          </div>}
+          {saveOpen && results.length > 0 && <form className="favorite-save" onSubmit={(event) => { event.preventDefault(); saveFavorite(); }}><label>Team name (optional)<input value={favoriteName} onChange={(event) => setFavoriteName(event.target.value.slice(0, 40))} placeholder="My next adventure" /></label><button type="submit">Save to favorites</button></form>}
+          {results.length > 1 && <details className="analysis-disclosure"><summary>Team strengths &amp; weaknesses</summary><TeamAnalysis team={results} selectedWeakness={highlightedWeakness} onSelectWeakness={setHighlightedWeakness} onRerollWeakness={rerollWeakness} /></details>}
+          <div id="saved-rolls" className="library" hidden={!libraryOpen}>
             <div className="library-header">
               <div><h2>Your saved rolls</h2><p>Stored only in this browser.</p></div>
               <div className="mini-segmented" role="tablist" aria-label="Saved roll type">

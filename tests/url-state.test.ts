@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { STANDARD_FILTERS } from "../src/lib/defaults";
+import { LEGENDARY_FILTERS, STANDARD_FILTERS } from "../src/lib/defaults";
 import { createShareUrl, readUrlState } from "../src/lib/url-state";
 import { generated, pokemon } from "./fixtures";
 
@@ -12,6 +12,15 @@ describe("URL state", () => {
 
   it("honors an explicit Pure Random mode", () => {
     expect(readUrlState("?mode=random", STANDARD_FILTERS).filters.teamMode).toBe("random");
+  });
+
+  it("restores disabled categories even when the page defaults enable them", () => {
+    vi.stubGlobal("window", { location: { origin: "https://randompokemon.xyz", pathname: "/random-pokemon-legendary-generator" } });
+    const changed = { ...LEGENDARY_FILTERS, includeLegendaries: false, legendaryOnly: false };
+    const url = createShareUrl("CUSTOM-TEAM", changed, [generated(pokemon(25, "Pikachu", ["electric"]))]);
+    const parsed = readUrlState(new URL(url).search, LEGENDARY_FILTERS);
+    expect(parsed.filters.includeLegendaries).toBe(false);
+    expect(parsed.filters.legendaryOnly).toBe(false);
   });
 
   it("round-trips the complete generated snapshot", () => {

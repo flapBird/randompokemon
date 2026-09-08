@@ -14,6 +14,7 @@ export function PokemonCard({
   onShiny,
   onRemove,
   highlighted = false,
+  busy = false,
 }: {
   result: GeneratedPokemon;
   index: number;
@@ -22,6 +23,7 @@ export function PokemonCard({
   onShiny: () => void;
   onRemove: () => void;
   highlighted?: boolean;
+  busy?: boolean;
 }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -48,9 +50,16 @@ export function PokemonCard({
         {result.shiny && <span className="shiny-flag">✦ Shiny</span>}
       </div>
       <div className="card-copy">
-        <h3>{pokemon.name}</h3>
+        <h3><button className="pokemon-name-button" onClick={() => setDetailsOpen(true)} aria-label={`View details for ${pokemon.name}`}>{pokemon.name}</button></h3>
         <div className="type-row">{pokemon.types.map((type) => <TypeBadge type={type} key={type} />)}</div>
-        <div className="pokemon-facts">
+      </div>
+      <div className="card-actions">
+        <button disabled={busy} onClick={onLock} className={result.locked ? "active" : ""} aria-label={`${result.locked ? "Unlock" : "Lock"} ${pokemon.name}`} title={`${result.locked ? "Unlock" : "Lock"} this Pokémon`}>
+          <span aria-hidden="true">{result.locked ? "●" : "○"}</span>{result.locked ? "Unlock" : "Lock"}
+        </button>
+        <button onClick={onReroll} disabled={result.locked || busy} aria-label={`Reroll ${pokemon.name}`} title={result.locked ? "Unlock before rerolling" : "Reroll this slot"}><span aria-hidden="true">↻</span>Reroll</button>
+      </div>
+      <details className="card-more"><summary>More options</summary><div className="card-extra">        <div className="pokemon-facts">
           <span>Gen {pokemon.generation} · {pokemon.region}</span>
           <span>BST <strong>{pokemon.bst}</strong></span>
         </div>
@@ -65,17 +74,10 @@ export function PokemonCard({
           {pokemon.isUltraBeast && <span>Ultra Beast</span>}
           {pokemon.isRegionalForm && <span>Regional</span>}
         </div>
-      </div>
-      <div className="card-actions">
-        <button onClick={onLock} className={result.locked ? "active" : ""} aria-label={`${result.locked ? "Unlock" : "Lock"} ${pokemon.name}`} title={`${result.locked ? "Unlock" : "Lock"} this Pokémon`}>
-          <span aria-hidden="true">{result.locked ? "●" : "○"}</span>{result.locked ? "Unlock" : "Lock"}
-        </button>
-        <button onClick={onReroll} disabled={result.locked} aria-label={`Reroll ${pokemon.name}`} title={result.locked ? "Unlock before rerolling" : "Reroll this slot"}><span aria-hidden="true">↻</span>Reroll</button>
-        <button onClick={onShiny} aria-label={`Show ${result.shiny ? "normal" : "shiny"} ${pokemon.name}`} title="Toggle normal or shiny artwork"><span aria-hidden="true">✦</span>{result.shiny ? "Normal" : "Shiny"}</button>
-        <button onClick={onRemove} aria-label={`Remove ${pokemon.name}`} title="Remove this Pokémon"><span aria-hidden="true">−</span>Remove</button>
-        <button onClick={() => setDetailsOpen(true)} aria-label={`View details for ${pokemon.name}`} title="View base stats and details"><span aria-hidden="true">i</span>Details</button>
+<div className="card-secondary-actions">        <button disabled={busy} onClick={onShiny} aria-label={`Show ${result.shiny ? "normal" : "shiny"} ${pokemon.name}`} title="Toggle normal or shiny artwork"><span aria-hidden="true">✦</span>{result.shiny ? "Normal" : "Shiny"}</button>
+        <button disabled={busy} onClick={onRemove} aria-label={`Remove ${pokemon.name}`} title="Remove this Pokémon"><span aria-hidden="true">−</span>Remove</button>
         {pokemon.isDefaultForm && <Link href={`/pokemon/${pokemon.slug}`} aria-label={`Open ${pokemon.name} Pokédex page`} title={`Open ${pokemon.name} Pokédex page`}><span aria-hidden="true">↗</span>Pokédex</Link>}
-      </div>
+</div></div></details>
       <PokemonDetails result={result} open={detailsOpen} onClose={() => setDetailsOpen(false)} />
     </article>
   );
