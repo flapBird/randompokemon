@@ -66,13 +66,14 @@ All active filters are applied before scoring. Smart Team is intended to produce
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Vitest](https://vitest.dev/)
 - [`@pkmn/dex`](https://github.com/pkmn/ps) and PokéAPI-derived metadata
-- Vercel deployment
+- Cloudflare Workers deployment with vinext, Vite, and prerendered static assets
+- The original Next.js / Vercel build remains available
 
 ## Getting Started
 
 ### Requirements
 
-- Node.js 24.x
+- Node.js 24.22.0 or later within Node 24 (`nvm use` reads `.nvmrc`)
 - npm
 
 ### Installation
@@ -80,7 +81,7 @@ All active filters are applied before scoring. Smart Team is intended to produce
 ```bash
 git clone <your-repository-url>
 cd randompokemon
-npm install
+npm ci
 cp .env.example .env.local
 npm run dev
 ```
@@ -102,6 +103,13 @@ The environment file is optional for local development. The app works without Go
 | `npm run dev` | Start the Next.js development server. |
 | `npm run build` | Create an optimized production build. |
 | `npm run start` | Run the production build locally. |
+| `npm run dev:cf` | Develop with vinext in the Workers runtime on port 3001. |
+| `npm run build:cf` | Build the Worker and prerender eligible routes into Cloudflare static assets. |
+| `npm run preview:cf` | Preview the Cloudflare production build locally on port 4173. |
+| `npm run test:cf` | Smoke-test a running Cloudflare preview (default: `http://localhost:4173`). |
+| `npm run deploy:check` | Validate an existing Cloudflare build with a deployment dry run; uploads nothing. |
+| `npm run deploy` | Build and deploy to Cloudflare Workers using the official vinext adapter and cf CLI. |
+| `npm run typecheck` | Regenerate Next.js route types, then check TypeScript (safe after switching build tools). |
 | `npm run lint` | Run ESLint across the project. |
 | `npm test` | Run the complete Vitest suite once. |
 | `npm run test:watch` | Run Vitest in watch mode. |
@@ -152,13 +160,59 @@ Run the standard checks before submitting a change:
 npm run lint
 npm test
 npm run build
+npm run typecheck
+npm run build:cf
+npm run deploy:check
 ```
 
 The test suite covers dataset quality, page defaults, filters, deterministic random generation, URL-state round trips, type calculations, team analysis, static generation, canonical rules, and sitemap output.
 
 ## Deployment
 
-The repository includes `vercel.json` and can be deployed directly to Vercel. For another Node.js host, install dependencies, run `npm run build`, and serve the result with `npm run start`. Add `NEXT_PUBLIC_GA_MEASUREMENT_ID` in the deployment environment only if GA4 tracking is wanted.
+### Cloudflare Workers
+
+This is a Workers application, not a Pages static export. `vite.config.ts` runs the App Router through vinext and the Cloudflare Vite plugin. Eligible pages (including the Pokédex) are prerendered; the Worker handles dynamic Team Planner parameters, redirects, 404s, and the `proxy.ts` query-string indexation policy. No D1, KV, R2, or other storage resources are required.
+
+The project pins its adapter and CLI versions, including the cf CLI and Cloudflare Vite plugin beta releases. Upgrade these together and repeat the checks below.
+
+```bash
+nvm use
+npm ci
+npm run build:cf
+npm run deploy:check
+npm run preview:cf
+```
+
+In a second terminal, run `npm run test:cf` to check the preview. To use another origin, run `npm run test:cf -- http://localhost:4174`.
+
+When ready to publish:
+
+```bash
+npx cf auth login
+npm run deploy
+```
+
+The Worker name is `random-pokemon-generator` in `cloudflare.config.ts`. For CI, provide `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` through the build service's secret settings. Never commit credentials.
+
+For Cloudflare Workers Builds connected to Git, use:
+
+| Setting | Value |
+| --- | --- |
+| Root directory | Repository root |
+| Worker name | `random-pokemon-generator` |
+| Build command | `npm run build:cf` |
+| Deploy command | `npx cf deploy --prebuilt --mode production` |
+| Build variable `NODE_VERSION` | `24.22.0` |
+
+The deploy command consumes `.cloudflare/output/v0/` from that build; it is not a Pages output-directory setting. Set optional `NEXT_PUBLIC_GA_MEASUREMENT_ID` **before building** because it is embedded in browser code. Changing it requires a rebuild.
+
+After verifying the Worker URL, attach `randompokemon.xyz` in the Worker's **Settings → Domains & Routes**. Canonicals, sitemaps, and social metadata intentionally use this production domain. Source configuration does not attach a domain automatically.
+
+Keep requests routed through the configured Worker so redirects and `X-Robots-Tag: noindex, follow` remain effective for parameterized pages. Do not apply a blanket HTML cache rule that ignores query strings. Static cache files under `/_vinext/static-cache/` are private to the adapter and must not bypass the Worker. Logs and sampled traces are enabled, with query strings redacted from platform logs.
+
+### Existing Node.js / Vercel workflow
+
+The repository retains `vercel.json`. For Vercel or another Node.js host, install dependencies, run `npm run build`, and serve the result with `npm run start` where needed. The `*:cf` commands are specific to Workers.
 
 ## Data and Browser Behavior
 
