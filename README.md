@@ -187,19 +187,22 @@ npx cf auth login
 npm run deploy
 ```
 
-The Worker name is `random-pokemon-generator` in `cloudflare.config.ts`. For CI, provide `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` through the build service's secret settings. Never commit credentials.
+The Worker name is `randompokemon` in `cloudflare.config.ts` and must match the existing Cloudflare Worker connected to this repository. For CI, provide `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` through the build service's secret settings. Never commit credentials.
 
 For Cloudflare Workers Builds connected to Git, use:
 
 | Setting | Value |
 | --- | --- |
 | Root directory | Repository root |
-| Worker name | `random-pokemon-generator` |
+| Worker name | `randompokemon` |
 | Build command | `npm run build:cf` |
 | Deploy command | `npx cf deploy --prebuilt --mode production` |
+| Non-production version upload command | `npx cf workers versions create --prebuilt --mode production` |
 | Build variable `NODE_VERSION` | `24.22.0` |
 
 The deploy command consumes `.cloudflare/output/v0/` from that build; it is not a Pages output-directory setting. GA4 is included automatically with the fixed measurement ID above; no analytics environment variable is needed.
+
+In **Settings → Build**, update the **production deploy command** for `main`; changing only the non-production command leaves production builds using the default `npx wrangler deploy`. Wrangler cannot deploy this project's cf Build Output. Do not delete `.cloudflare/output` to work around that error: use the cf command above and retry after the corrected configuration is pushed. The non-production command uploads a version without promoting it to production. Worker Previews are currently disabled; enabling that separate workflow requires a preview build and `cf previews deploy` instead.
 
 After verifying the Worker URL, attach `randompokemon.xyz` in the Worker's **Settings → Domains & Routes**. Canonicals, sitemaps, and social metadata intentionally use this production domain. Source configuration does not attach a domain automatically.
 
