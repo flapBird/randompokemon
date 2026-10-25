@@ -11,10 +11,7 @@ declare global {
   }
 }
 
-const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim();
-const validMeasurementId = measurementId && /^G-[A-Z0-9]+$/i.test(measurementId)
-  ? measurementId.toUpperCase()
-  : null;
+const measurementId = "G-7X3S8XR68Z";
 
 function PageViewTracker({ id }: { id: string }) {
   const pathname = usePathname();
@@ -47,12 +44,10 @@ function PageViewTracker({ id }: { id: string }) {
 }
 
 export function GoogleAnalytics() {
-  if (!validMeasurementId) return null;
-
   return (
     <>
       <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(validMeasurementId)}`}
+        src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
         strategy="afterInteractive"
       />
       <Script id="google-analytics" strategy="afterInteractive">
@@ -61,10 +56,10 @@ export function GoogleAnalytics() {
           function gtag(){dataLayer.push(arguments);}
           window.gtag = gtag;
           gtag('js', new Date());
-          gtag('config', '${validMeasurementId}', { send_page_view: false });
+          gtag('config', '${measurementId}', { send_page_view: false });
         `}
       </Script>
-      <PageViewTracker id={validMeasurementId} />
+      <PageViewTracker id={measurementId} />
     </>
   );
 }

@@ -82,19 +82,14 @@ All active filters are applied before scoring. Smart Team is intended to produce
 git clone <your-repository-url>
 cd randompokemon
 npm ci
-cp .env.example .env.local
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-The environment file is optional for local development. The app works without Google Analytics configured.
+### Analytics
 
-### Environment variables
-
-| Variable | Required | Description |
-| --- | --- | --- |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | No | GA4 measurement ID such as `G-XXXXXXXXXX`. Analytics is not loaded when the value is empty or invalid. |
+GA4 uses the fixed measurement ID `G-7X3S8XR68Z` in `src/components/analytics/GoogleAnalytics.tsx`. No application environment variables are required. Page views are tracked on route changes without including query-string state.
 
 ## Available Scripts
 
@@ -204,7 +199,7 @@ For Cloudflare Workers Builds connected to Git, use:
 | Deploy command | `npx cf deploy --prebuilt --mode production` |
 | Build variable `NODE_VERSION` | `24.22.0` |
 
-The deploy command consumes `.cloudflare/output/v0/` from that build; it is not a Pages output-directory setting. Set optional `NEXT_PUBLIC_GA_MEASUREMENT_ID` **before building** because it is embedded in browser code. Changing it requires a rebuild.
+The deploy command consumes `.cloudflare/output/v0/` from that build; it is not a Pages output-directory setting. GA4 is included automatically with the fixed measurement ID above; no analytics environment variable is needed.
 
 After verifying the Worker URL, attach `randompokemon.xyz` in the Worker's **Settings → Domains & Routes**. Canonicals, sitemaps, and social metadata intentionally use this production domain. Source configuration does not attach a domain automatically.
 
