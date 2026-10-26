@@ -10,6 +10,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Dex } from "@pkmn/dex";
+import { buildFormLookup, resolveFormId } from "./lib-form-sprites";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const outputPath = resolve(root, "src/data/pokemon.json");
@@ -32,12 +33,13 @@ type ApiMeta = { height: number; category: string };
 
 async function fetchPokeApiMetadata() {
   const query = `query GeneratorData {
-    pokemon_v2_pokemon(where: {id: {_lte: 1025}, is_default: {_eq: true}}) {
+    defaults: pokemon_v2_pokemon(where: {id: {_lte: 1025}, is_default: {_eq: true}}) {
       id height
       pokemon_v2_pokemonspecy {
         pokemon_v2_pokemonspeciesnames(where: {language_id: {_eq: 9}}) { genus }
       }
     }
+    forms: pokemon_v2_pokemon(where: {id: {_gte: 10001}}) { id name }
   }`;
   const response = await fetch("https://beta.pokeapi.co/graphql/v1beta", {
     method: "POST",
@@ -47,20 +49,33 @@ async function fetchPokeApiMetadata() {
   });
   if (!response.ok) throw new Error(`PokéAPI returned ${response.status}`);
   const body = await response.json() as {
-    data?: { pokemon_v2_pokemon?: Array<{
-      id: number;
-      height: number;
-      pokemon_v2_pokemonspecy?: { pokemon_v2_pokemonspeciesnames?: Array<{ genus: string }> };
-    }> };
+    data?: {
+      defaults?: Array<{
+        id: number;
+        height: number;
+        pokemon_v2_pokemonspecy?: { pokemon_v2_pokemonspeciesnames?: Array<{ genus: string }> };
+      }>;
+      forms?: Array<{ id: number; name: string }>;
+    };
   };
   const result = new Map<number, ApiMeta>();
-  for (const item of body.data?.pokemon_v2_pokemon ?? []) {
+  for (const item of body.data?.defaults ?? []) {
     result.set(item.id, {
       height: item.height / 10,
       category: item.pokemon_v2_pokemonspecy?.pokemon_v2_pokemonspeciesnames?.[0]?.genus ?? "Pokémon",
     });
   }
+  formLookup = buildFormLookup(body.data?.forms ?? []);
   return result;
+}
+
+let formLookup: ReturnType<typeof buildFormLookup> | null = null;
+
+function spriteFor(slug: string, num: number, isDefaultForm: boolean) {
+  if (isDefaultForm) return { sprite: `/sprites/${num}.png`, shinySprite: `/sprites/shiny/${num}.png` };
+  const formId = formLookup ? resolveFormId(slug, formLookup.byExact, formLookup.all) : null;
+  const id = formId ?? num;
+  return { sprite: `/sprites/${id}.png`, shinySprite: `/sprites/shiny/${id}.png` };
 }
 
 function assertMetadataQuality(metadata: Map<number, ApiMeta>) {
@@ -135,8 +150,8 @@ const records = Dex.species.all()
     const region = /hisui/i.test(species.forme) || hisuiNativeSpecies.has(slug) ? "Hisui" : regions[species.gen] ?? "Unknown";
     const stats = species.baseStats;
     // 图片经 /sprites Worker 路由回源并边缘缓存，浏览器不直连第三方图床
-    const baseSprite = `/sprites/${species.num}.png`;
-    const baseShiny = `/sprites/shiny/${species.num}.png`;
+    const baseSprite = spriteFor(slug, species.num, isDefaultForm).sprite;
+    const baseShiny = spriteFor(slug, species.num, isDefaultForm).shinySprite;
     return {
       id: species.num,
       slug,
@@ -172,8 +187,8 @@ const records = Dex.species.all()
       isGigantamax,
       isDefaultForm,
       category: meta?.category ?? "Pokémon",
-      sprite: isDefaultForm ? baseSprite : `/sprites/forms/${slug}.png`,
-      shinySprite: isDefaultForm ? baseShiny : `/sprites/forms/shiny/${slug}.png`,
+      sprite: baseSprite,
+      shinySprite: baseShiny,
     };
   })
   .sort((a, b) => a.id - b.id || Number(b.isDefaultForm) - Number(a.isDefaultForm) || a.slug.localeCompare(b.slug));

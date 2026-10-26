@@ -25,7 +25,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ path
   if (!upstream) return new Response("Not found", { status: 404 });
 
   // 用 Cache API 做边缘缓存：vinext 的 fetch 包装不支持 cf.cacheTtl 选项
-  const cache = caches.default;
+  const cache = (caches as CacheStorage & { default: Cache }).default;
   const cacheKey = new Request(request.url, { method: "GET" });
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
