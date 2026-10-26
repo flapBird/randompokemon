@@ -10,8 +10,10 @@ const toolLinks = [
   { href: "/team-planner", title: "Team Planner", copy: "Check coverage and team gaps" },
   { href: "/compare-pokemon", title: "Compare Pokémon", copy: "Compare stats and matchups" },
   { href: "/whos-that-pokemon", title: "Who's That Pokémon?", copy: "Guess the silhouette game" },
+  { href: "/pokemon-wordle", title: "Pokémon Wordle", copy: "Daily mystery species puzzle" },
   { href: "/pokemon-nickname-generator", title: "Nickname Generator", copy: "Nicknames by type and style" },
   { href: "/pokemon-type-chart", title: "Pokémon Type Chart", copy: "All 18 type matchups" },
+  { href: "/pokemon-iv-calculator", title: "IV Calculator", copy: "Hidden values from shown stats" },
 ] as const;
 
 const generatorLinks = [
