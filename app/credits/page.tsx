@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Credits & Data Sources",
   description: "See the Pokémon data, artwork, software, update process, and fan-project attribution used by RandomPokemon.xyz.",
   alternates: { canonical: "/credits" },
+  openGraph: { title: "Credits & Data Sources", description: "See the Pokémon data, artwork, software, update process, and fan-project attribution used by RandomPokemon.xyz.", url: "/credits" },
 };
 
 export default function CreditsPage() {

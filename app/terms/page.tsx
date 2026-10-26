@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Terms of Use",
   description: "Terms of use for the Random Pokémon Generator.",
   alternates: { canonical: "/terms" },
+  openGraph: { title: "Terms of Use", description: "Terms of use for the Random Pokémon Generator.", url: "/terms" },
 };
 
 export default function TermsPage() {

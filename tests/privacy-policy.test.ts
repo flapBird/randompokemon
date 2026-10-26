@@ -8,20 +8,22 @@ const policySource = readFileSync(
 );
 
 describe("privacy policy disclosures", () => {
-  it("does not deny advertising-cookie use while AdSense code is present", () => {
-    expect(policySource).not.toContain("does not use account cookies or advertising cookies of its own");
+  it("does not claim active ad serving while no advertising code ships", () => {
+    expect(policySource).toContain("does not currently include Google AdSense");
+    expect(layoutSource()).not.toContain("adsbygoogle");
   });
 
-  it("discloses AdSense data collection and third-party advertising technologies", () => {
-    expect(policySource).toContain("Google AdSense");
-    expect(policySource).toContain("third-party vendors or ad networks");
-    expect(policySource).toContain("web beacons, IP addresses, and other identifiers");
-    expect(policySource).toContain("personalized ads");
+  it("discloses Google Analytics collection", () => {
+    expect(policySource).toContain("Google Analytics");
+    expect(policySource).toContain("_ga");
   });
 
-  it("links to Google data-use information and advertising controls", () => {
-    expect(policySource).toContain("https://policies.google.com/technologies/partner-sites");
-    expect(policySource).toContain("https://myadcenter.google.com/");
-    expect(policySource).toContain("https://optout.aboutads.info/");
+  it("links to Google data-use information and opt-out controls", () => {
+    expect(policySource).toContain("https://policies.google.com/privacy");
+    expect(policySource).toContain("https://tools.google.com/dlpage/gaoptout");
   });
 });
+
+function layoutSource() {
+  return readFileSync(fileURLToPath(new URL("../app/layout.tsx", import.meta.url)), "utf8");
+}

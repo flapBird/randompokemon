@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Contact",
   description: "Contact RandomPokemon.xyz about generator bugs, data corrections, privacy, or accessibility.",
   alternates: { canonical: "/contact" },
+  openGraph: { title: "Contact RandomPokemon.xyz", description: "Contact RandomPokemon.xyz about generator bugs, data corrections, privacy, or accessibility.", url: "/contact" },
 };
 
 export default function ContactPage() {

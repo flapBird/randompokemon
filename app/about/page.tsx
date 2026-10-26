@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "About",
   description: "Learn how RandomPokemon.xyz creates reproducible random Pokémon picks and teams.",
   alternates: { canonical: "/about" },
+  openGraph: { title: "About RandomPokemon.xyz", description: "Learn how RandomPokemon.xyz creates reproducible random Pokémon picks and teams.", url: "/about" },
 };
 
 export default function AboutPage() {

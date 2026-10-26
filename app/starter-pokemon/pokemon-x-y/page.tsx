@@ -4,7 +4,7 @@ import { defaultPokemon } from "@/lib/pokemon-catalog";
 
 const entries = defaultPokemon.filter((entry) => ["chespin", "fennekin", "froakie"].includes(entry.slug));
 const description = "Compare the Pokémon X and Y starter Pokémon Chespin, Fennekin, and Froakie, including types, Shiny forms, stats, and complete Kalos evolution chains.";
-export const metadata: Metadata = { title: "Pokémon X & Y Starters – Chespin, Fennekin & Froakie", description, alternates: { canonical: "/starter-pokemon/pokemon-x-y" } };
+export const metadata: Metadata = { title: "Pokémon X & Y Starters – Chespin, Fennekin & Froakie", description, alternates: { canonical: "/starter-pokemon/pokemon-x-y" }, openGraph: { title: "Pokémon X & Y Starters", description, url: "/starter-pokemon/pokemon-x-y" } };
 
 export default function PokemonXYStarterPage() {
   return <StarterCollectionPage name="Pokémon X and Y Starters" path="/starter-pokemon/pokemon-x-y" title="Pokémon X & Y" emphasis="Starters" lead={description} entries={entries} overview={[

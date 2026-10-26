@@ -52,12 +52,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
           })(window, document, "clarity", "script", "yoqdns3m5x");`}
         </Script>
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4183802444188513"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );

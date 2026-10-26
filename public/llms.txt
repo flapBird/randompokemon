@@ -12,6 +12,9 @@
 - [Pokémon Type Wheel](https://randompokemon.xyz/pokemon-type-wheel): Spin any selected pool of the 18 Pokémon types and immediately receive a random Pokémon from the winning type on the same page.
 - [Pokémon Team Planner](https://randompokemon.xyz/team-planner): Build a team of up to six Pokémon and review type coverage, shared weaknesses, resistances, immunities, and broad gaps.
 - [Compare Pokémon](https://randompokemon.xyz/compare-pokemon): Compare Pokémon stats, types, abilities, and defensive matchups side by side.
+- [Who's That Pokémon?](https://randompokemon.xyz/whos-that-pokemon): Free silhouette guessing game covering all 1,025 species; pick one of four names, keep a streak alive, and share your score.
+- [Pokémon Nickname Generator](https://randompokemon.xyz/pokemon-nickname-generator): Generate nickname ideas by type and style (cute, cool, funny, fierce); one click copies each suggestion.
+- [Pokémon Type Chart](https://randompokemon.xyz/pokemon-type-chart): Full 18×18 attacking/defending matchup table with super-effective, resisted, and immune cells for Generations 6–9.
 
 ## Focused generators
 
@@ -56,6 +59,10 @@ All 1,025 default-form Pokémon detail pages are indexable, use self-canonical U
 
 - [Pokémon Tool Guides](https://randompokemon.xyz/blog): Index of published supporting content. Drafts, planned topics, and editorial roadmaps are not public pages.
 - [Random Pokémon Generator vs Pokémon Randomizer](https://randompokemon.xyz/blog/random-pokemon-generator-vs-randomizer): Explains the difference between a browser-based Pokémon picker and software that changes a game or ROM.
+- [Pokémon Type Chart Explained](https://randompokemon.xyz/blog/pokemon-type-chart-explained): How multipliers, dual-type math, and immunities work, and which matchups to memorize.
+- [Nuzlocke Challenge Rules Guide](https://randompokemon.xyz/blog/nuzlocke-rules-guide): The two core rules, popular optional rules, and how to roll reproducible encounters.
+- [Monotype Run Guide](https://randompokemon.xyz/blog/monotype-run-guide): Choosing a type, planning around its weaknesses, and assembling a six-slot team.
+- [Pokémon Nickname Ideas](https://randompokemon.xyz/blog/pokemon-nickname-ideas): 150+ nickname ideas by type and style, plus the games' 12-character naming rules.
 
 ## Sitemaps and indexation
 
