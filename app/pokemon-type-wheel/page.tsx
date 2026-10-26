@@ -6,7 +6,7 @@ import { PokemonTypeWheel } from "@/components/tools/PokemonTypeWheel";
 import { breadcrumbSchema, faqSchema, organizationSchema, webApplicationSchema } from "@/lib/seo";
 
 const path = "/pokemon-type-wheel";
-const description = "Spin a Pokémon Type Wheel with all 18 types and instantly get a random Pokémon from the winning type for teams, challenges, or creative prompts.";
+const description = "Spin the Pokémon type wheel with all 18 types—this random Pokémon type generator instantly picks a matching Pokémon for teams, challenges, or prompts.";
 const faq = [
   { question: "How many Pokémon types are on the wheel?", answer: "The wheel includes all 18 current Pokémon types, from Normal and Fire through Steel and Fairy." },
   { question: "Can I remove types from the wheel?", answer: "Yes. Tap any type to exclude or restore it, use Clear to build a smaller pool, or Select all to reset the wheel." },
@@ -15,7 +15,7 @@ const faq = [
 ];
 
 export const metadata: Metadata = {
-  title: { absolute: "Pokémon Type Wheel – Spin All 18 Types" },
+  title: { absolute: "Pokémon Type Wheel – Random Pokémon Type Generator" },
   description,
   alternates: { canonical: path },
   openGraph: { title: "Pokémon Type Wheel", description, url: path },
@@ -28,7 +28,7 @@ export default function Page() {
       <section className="subpage-hero">
         <nav className="breadcrumbs" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span><span>Pokémon Type Wheel</span></nav>
         <h1>Pokémon Type <em>Wheel</em></h1>
-        <p>Spin all 18 types—or make your own smaller pool—and get a matching random Pokémon directly on this page.</p>
+        <p>Spin all 18 types—or make your own smaller pool—and this random Pokémon type generator picks a matching Pokémon directly on this page.</p>
       </section>
       <PokemonTypeWheel />
       <div className="content-wrap">

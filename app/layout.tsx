@@ -23,8 +23,6 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Random Pokémon Generator",
-    description: "Build, lock, reroll, analyze, and share your next random Pokémon team.",
     images: ["/og.png"],
   },
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg", apple: "/favicon.svg" },

@@ -79,7 +79,9 @@ export function titleToken(value: string) {
 
 export function pokemonSummary(entry: PokemonRecord) {
   const role = entry.isLegendary ? "Legendary " : entry.isMythical ? "Mythical " : entry.isStarter ? "starter " : "";
-  return `${entry.name} is a ${entry.types.map(titleToken).join("/ ")}-type ${role}Pokémon introduced in Generation ${entry.generation}. View its normal and Shiny forms, base stats, abilities, and evolution details.`;
+  const typeWord = titleToken(entry.types[0]);
+  const article = /^[AEIOU]/.test(typeWord) ? "an" : "a";
+  return `${entry.name} is ${article} ${entry.types.map(titleToken).join("/ ")}-type ${role}Pokémon introduced in Generation ${entry.generation}. View its normal and Shiny forms, base stats, abilities, and evolution details.`;
 }
 
 export function evolutionFamily(entry: PokemonRecord) {
