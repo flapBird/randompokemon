@@ -5,6 +5,9 @@ const coreLinks = [
   ["/favorite-pokemon-picker", "Favorite Picker"],
   ["/pokemon-type-wheel", "Type Wheel"],
   ["/team-planner", "Team Planner"],
+  ["/whos-that-pokemon", "Who's That Pokémon?"],
+  ["/pokemon-nickname-generator", "Nickname Generator"],
+  ["/pokemon-type-chart", "Type Chart"],
   ["/pokemon", "Pokédex"],
 ] as const;
 

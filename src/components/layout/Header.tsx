@@ -9,6 +9,9 @@ const toolLinks = [
   { href: "/pokemon-type-wheel", title: "Pokémon Type Wheel", copy: "Spin all 18 types" },
   { href: "/team-planner", title: "Team Planner", copy: "Check coverage and team gaps" },
   { href: "/compare-pokemon", title: "Compare Pokémon", copy: "Compare stats and matchups" },
+  { href: "/whos-that-pokemon", title: "Who's That Pokémon?", copy: "Guess the silhouette game" },
+  { href: "/pokemon-nickname-generator", title: "Nickname Generator", copy: "Nicknames by type and style" },
+  { href: "/pokemon-type-chart", title: "Pokémon Type Chart", copy: "All 18 type matchups" },
 ] as const;
 
 const generatorLinks = [

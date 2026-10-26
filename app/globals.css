@@ -1654,3 +1654,62 @@ html[data-theme="dark"] .catalog-callout a, html[data-theme="dark"] .directory-m
   .generator-options { grid-column: 1 / -1; grid-row: 2; }
   .simple-generator-controls > .filter-help, .simple-generator-controls > .filter-feedback { grid-column: 1 / -1; }
 }
+
+/* Who's That Pokémon quiz */
+.quiz-shell { display: grid; justify-items: center; }
+.quiz-stage { width: min(680px, 100%); display: grid; gap: 18px; justify-items: center; padding: 28px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+.quiz-scorebar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; width: 100%; color: var(--ink-soft); font-size: 13px; font-weight: 700; }
+.quiz-scorebar strong { color: var(--ink); }
+.quiz-gen select { padding: 8px 10px; border: 1px solid var(--border); border-radius: 99px; background: var(--surface-soft); color: var(--ink); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.quiz-figure { display: grid; justify-items: center; gap: 12px; width: min(320px, 80%); }
+.quiz-figure img { width: 100%; aspect-ratio: 1; object-fit: contain; filter: brightness(0); transition: filter .35s ease; }
+.quiz-figure.revealed img { filter: none; }
+.quiz-answer { display: grid; justify-items: center; gap: 6px; text-align: center; }
+.quiz-answer h2 { margin: 0; font: 500 30px Georgia, serif; }
+.quiz-answer h2.correct { color: #2e7d32; }
+.quiz-answer h2.missed { color: var(--accent-text); }
+.quiz-answer-types { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+.quiz-answer a { font-size: 12px; font-weight: 750; color: var(--accent-text); }
+.quiz-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; width: 100%; }
+.quiz-options button { min-height: 52px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-raised); color: var(--ink); font: inherit; font-size: 15px; font-weight: 750; cursor: pointer; transition: border-color .15s, background .15s, transform .15s; }
+.quiz-options button:hover:not(:disabled) { border-color: var(--border-strong); transform: translateY(-1px); }
+.quiz-options button[data-state="correct"] { border-color: #2e7d32; background: color-mix(in srgb, #2e7d32 14%, var(--surface)); }
+.quiz-options button[data-state="wrong"] { border-color: var(--accent-text); background: var(--accent-soft); text-decoration: line-through; }
+.quiz-actions { display: flex; flex-wrap: wrap; gap: 9px; justify-content: center; }
+.quiz-actions button { padding: 10px 18px; border: 1px solid var(--border); border-radius: 99px; background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; font-weight: 750; cursor: pointer; }
+.quiz-actions .generate-button { border: none; }
+
+/* Pokémon Nickname Generator */
+.nickname-tool { display: grid; grid-template-columns: minmax(340px, .9fr) 1.1fr; gap: 48px; align-items: start; }
+.nickname-controls h2 { margin: 8px 0; font: 500 33px Georgia, serif; }
+.nickname-controls > p { color: var(--ink-soft); }
+.nickname-style-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.nickname-style-row button { padding: 9px 18px; border: 1px solid var(--border); border-radius: 99px; background: var(--surface); color: var(--ink-soft); font: inherit; font-size: 13px; font-weight: 750; cursor: pointer; }
+.nickname-style-row button.selected { border-color: var(--accent); color: var(--accent-text); background: var(--accent-soft); }
+.nickname-results { padding: 24px; border: 1px solid var(--type-color); border-radius: var(--radius); background: color-mix(in srgb, var(--type-color) 10%, var(--surface)); }
+.nickname-results-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.nickname-results-head .generate-button { padding: 9px 16px; font-size: 12px; }
+.nickname-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+.nickname-grid button { width: 100%; min-height: 74px; display: grid; gap: 2px; place-content: center; text-align: center; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--ink); font: inherit; font-size: 15px; font-weight: 750; cursor: pointer; }
+.nickname-grid button:hover { border-color: var(--type-color); }
+.nickname-grid small { font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); }
+.nickname-note { margin: 12px 0 0; font-size: 11px; color: var(--ink-soft); }
+@media (max-width: 900px) {
+  .nickname-tool { grid-template-columns: 1fr; gap: 24px; }
+  .nickname-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Pokémon Type Chart */
+.type-chart-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.type-chart { border-collapse: separate; border-spacing: 2px; width: 100%; min-width: 880px; font-size: 12px; }
+.type-chart thead th { padding: 10px 4px; background: var(--surface-raised); }
+.type-chart thead .type-dot { display: block; margin: 0 auto 4px; }
+.type-chart .tc-code { font-size: 10px; font-weight: 800; letter-spacing: .02em; }
+.type-chart tbody th { padding: 8px 10px; background: var(--surface-raised); white-space: nowrap; }
+.tc-row-link { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); }
+.tc-row-link:hover { color: var(--accent-text); }
+.type-chart td { min-width: 34px; padding: 10px 4px; border-radius: 6px; background: var(--surface-soft); color: var(--ink-soft); font-weight: 800; text-align: center; }
+.type-chart td[data-m="super"] { background: color-mix(in srgb, #2e7d32 22%, var(--surface)); color: #1d5c25; }
+.type-chart td[data-m="resist"] { background: color-mix(in srgb, var(--accent) 16%, var(--surface)); color: var(--accent-text); }
+.type-chart td[data-m="immune"] { background: color-mix(in srgb, var(--ink) 88%, var(--surface)); color: var(--surface); }
+.type-chart-legend { display: flex; flex-wrap: wrap; gap: 16px; list-style: none; margin: 14px 0 0; padding: 0; font-size: 12px; color: var(--ink-soft); }
