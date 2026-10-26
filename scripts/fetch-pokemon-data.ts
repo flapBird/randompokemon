@@ -134,8 +134,9 @@ const records = Dex.species.all()
     const isRegionalForm = /(alola|galar|hisui|paldea)/i.test(species.forme);
     const region = /hisui/i.test(species.forme) || hisuiNativeSpecies.has(slug) ? "Hisui" : regions[species.gen] ?? "Unknown";
     const stats = species.baseStats;
-    const baseSprite = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${species.num}.png`;
-    const baseShiny = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/${species.num}.png`;
+    // 图片经 /sprites Worker 路由回源并边缘缓存，浏览器不直连第三方图床
+    const baseSprite = `/sprites/${species.num}.png`;
+    const baseShiny = `/sprites/shiny/${species.num}.png`;
     return {
       id: species.num,
       slug,
@@ -171,8 +172,8 @@ const records = Dex.species.all()
       isGigantamax,
       isDefaultForm,
       category: meta?.category ?? "Pokémon",
-      sprite: isDefaultForm ? baseSprite : `https://play.pokemonshowdown.com/sprites/gen5/${slug}.png`,
-      shinySprite: isDefaultForm ? baseShiny : `https://play.pokemonshowdown.com/sprites/gen5-shiny/${slug}.png`,
+      sprite: isDefaultForm ? baseSprite : `/sprites/forms/${slug}.png`,
+      shinySprite: isDefaultForm ? baseShiny : `/sprites/forms/shiny/${slug}.png`,
     };
   })
   .sort((a, b) => a.id - b.id || Number(b.isDefaultForm) - Number(a.isDefaultForm) || a.slug.localeCompare(b.slug));

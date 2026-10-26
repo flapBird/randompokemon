@@ -33,7 +33,7 @@ export default function PrivacyPage() {
       <p>You can block or delete cookies and local storage through your browser settings. Blocking storage may affect saved preferences or some site features. To prevent Google Analytics from using your browser, you may install the <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener noreferrer">Google Analytics Opt-out Browser Add-on</a>. More detail is available in the <a href="https://policies.google.com/technologies/cookies" rel="noopener noreferrer">Google cookies overview</a> and the <a href="https://policies.google.com/privacy" rel="noopener noreferrer">Google Privacy Policy</a>.</p>
 
       <h2>External images and links</h2>
-      <p>Pokémon artwork is loaded from public sprite hosts. Those providers may receive standard request information, including your IP address, browser information, and the referring page, when your browser loads an image. Links to other websites are governed by those sites&apos; own privacy policies.</p>
+      <p>Pokémon artwork is served from this site&apos;s own domain: our server fetches it from public sprite repositories and caches it, so your browser does not connect to those third-party hosts directly. Links to other websites are governed by those sites&apos; own privacy policies.</p>
 
       <h2>How information is used and shared</h2>
       <p>We use information to operate and secure the site, remember your on-device preferences, understand aggregate site usage, respond to messages, and prevent fraud or abuse. Information may be processed by service providers that perform hosting, analytics, security, and content delivery functions. We do not maintain an account database and do not sell a list of registered users.</p>
