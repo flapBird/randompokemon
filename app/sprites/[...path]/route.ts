@@ -8,7 +8,7 @@ const UPSTREAM = {
 const NUM_FILE = /^\d+\.png$/;
 const SLUG_FILE = /^[a-z0-9-]+\.png$/;
 
-export async function GET(_request: Request, { params }: { params: Promise<{ path?: string[] }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ path?: string[] }> }) {
   const { path = [] } = await params;
   let upstream: string | null = null;
 
@@ -24,15 +24,21 @@ export async function GET(_request: Request, { params }: { params: Promise<{ pat
 
   if (!upstream) return new Response("Not found", { status: 404 });
 
-  // cf 缓存选项仅 Cloudflare 运行时识别，Next 的 RequestInit 类型里没有
-  const init = { cf: { cacheEverything: true, cacheTtl: 31536000 } } as unknown as RequestInit;
-  const upstreamResponse = await fetch(upstream, init);
+  // 用 Cache API 做边缘缓存：vinext 的 fetch 包装不支持 cf.cacheTtl 选项
+  const cache = caches.default;
+  const cacheKey = new Request(request.url, { method: "GET" });
+  const cached = await cache.match(cacheKey);
+  if (cached) return cached;
+
+  const upstreamResponse = await fetch(upstream);
   if (!upstreamResponse.ok) return new Response("Not found", { status: 404 });
 
-  return new Response(upstreamResponse.body, {
+  const response = new Response(upstreamResponse.body, {
     headers: {
       "content-type": upstreamResponse.headers.get("content-type") ?? "image/png",
       "cache-control": "public, max-age=31536000, immutable",
     },
   });
+  await cache.put(cacheKey, response.clone());
+  return response;
 }
