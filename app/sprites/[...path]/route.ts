@@ -24,13 +24,25 @@ export async function GET(request: Request, { params }: { params: Promise<{ path
 
   if (!upstream) return new Response("Not found", { status: 404 });
 
-  // 用 Cache API 做边缘缓存：vinext 的 fetch 包装不支持 cf.cacheTtl 选项
-  const cache = (caches as CacheStorage & { default: Cache }).default;
-  const cacheKey = new Request(request.url, { method: "GET" });
-  const cached = await cache.match(cacheKey);
-  if (cached) return cached;
+  // Cache API 仅存在于 Cloudflare Workers 运行时；本地 next dev（Node）没有
+  // caches 全局，此时跳过边缘缓存直接回源，浏览器仍会按 cache-control 缓存
+  const cacheStore = (globalThis as { caches?: CacheStorage & { default?: Cache } }).caches?.default;
+  const cacheKey = cacheStore ? new Request(request.url, { method: "GET" }) : null;
+  if (cacheStore && cacheKey) {
+    const cached = await cacheStore.match(cacheKey);
+    if (cached) return cached;
+  }
 
-  const upstreamResponse = await fetch(upstream);
+  let upstreamResponse: Response;
+  try {
+    upstreamResponse = await fetch(upstream, { signal: AbortSignal.timeout(10_000) });
+  } catch {
+    // 回源失败（超时/断网）：返回不缓存的 503，浏览器下次会重试
+    return new Response("Upstream unavailable", {
+      status: 503,
+      headers: { "cache-control": "no-store" },
+    });
+  }
   if (!upstreamResponse.ok) return new Response("Not found", { status: 404 });
 
   const response = new Response(upstreamResponse.body, {
@@ -39,6 +51,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ path
       "cache-control": "public, max-age=31536000, immutable",
     },
   });
-  await cache.put(cacheKey, response.clone());
+  if (cacheStore && cacheKey) await cacheStore.put(cacheKey, response.clone());
   return response;
 }
