@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { POKEMON_TYPES, type PokemonType } from "@/types/pokemon";
-import { titleToken } from "@/lib/pokemon-catalog";
+import { titleToken } from "@/lib/pokemon-format";
 
 function randomNumber() {
   const value = new Uint32Array(1);

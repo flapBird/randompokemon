@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { TypeBadge } from "@/components/pokemon/TypeBadge";
-import { titleToken } from "@/lib/pokemon-catalog";
+import { titleToken } from "@/lib/pokemon-format";
 import { usePokemonDataset } from "@/lib/use-pokemon-dataset";
 import { POKEMON_TYPES, type PokemonType } from "@/types/pokemon";
 

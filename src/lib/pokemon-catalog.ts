@@ -73,9 +73,9 @@ export function getAdjacentPokemon(entry: PokemonRecord) {
   };
 }
 
-export function titleToken(value: string) {
-  return value.replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
+import { titleToken } from "./pokemon-format";
+
+export { titleToken };
 
 export function pokemonSummary(entry: PokemonRecord) {
   const role = entry.isLegendary ? "Legendary " : entry.isMythical ? "Mythical " : entry.isStarter ? "starter " : "";

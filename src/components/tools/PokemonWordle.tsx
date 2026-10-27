@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { PokemonRecord } from "@/types/pokemon";
 import { usePokemonDataset } from "@/lib/use-pokemon-dataset";
-import { titleToken } from "@/lib/pokemon-catalog";
+import { titleToken } from "@/lib/pokemon-format";
 
 const MAX_GUESSES = 8;
 const DAILY_KEY_PREFIX = "pokemon-wordle-daily-";
