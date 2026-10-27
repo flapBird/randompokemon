@@ -20,7 +20,8 @@
     "test:cf": "node scripts/smoke-cloudflare.mjs",
     "deploy": "vinext-cloudflare deploy",
     "deploy:check": "cf deploy --prebuilt --mode production --dry-run",
-    "typecheck": "next typegen && tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit",
+    "deploy:cf": "cf deploy --prebuilt --mode production"
   },
   "dependencies": {
     "next": "16.2.6",
@@ -38,7 +39,7 @@
     "@vinext/cloudflare": "1.2.0",
     "@vitejs/plugin-react": "6.1.2",
     "@vitejs/plugin-rsc": "0.5.38",
-    "cf": "1.0.0-beta.21",
+    "cf": "^1.0.0-beta.21",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "4.2.1",
