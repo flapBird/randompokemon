@@ -242,7 +242,16 @@ export function PokemonGenerator({
         setFavorites(savedForPage(storage.favorites(), pageMode));
         let search = window.location.search;
         if (!search) {
-          try { search = localStorage.getItem(`pokemon-generator-draft:${window.location.pathname}`) ?? ""; } catch { /* The generator also works without browser storage. */ }
+          // The draft restores the last team and filters, but never lock states:
+          // a stale lock otherwise looks like a fresh page locked a slot by default.
+          try {
+            const draft = localStorage.getItem(`pokemon-generator-draft:${window.location.pathname}`);
+            if (draft) {
+              const draftParams = new URLSearchParams(draft);
+              draftParams.delete("locked");
+              search = draftParams.toString();
+            }
+          } catch { /* The generator also works without browser storage. */ }
         }
         const parsed = readUrlState(search, initialFilters);
         if (search) setActiveQuickMode(null);
@@ -294,7 +303,12 @@ export function PokemonGenerator({
     try {
       const key = `pokemon-generator-draft:${window.location.pathname}`;
       if (!results.length) localStorage.removeItem(key);
-      else localStorage.setItem(key, new URL(createShareUrl(seed, { ...appliedFilters, count: results.length }, results)).search);
+      else {
+        // Locks stay in share links only; the automatic draft reopens unlocked.
+        const draft = new URL(createShareUrl(seed, { ...appliedFilters, count: results.length }, results));
+        draft.searchParams.delete("locked");
+        localStorage.setItem(key, draft.search);
+      }
     } catch { /* Explicit Save reports a storage error when persistence is required. */ }
   }, [loadingData, dataset.length, results, seed, appliedFilters]);
 
