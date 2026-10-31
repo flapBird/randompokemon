@@ -1,0 +1,19 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-10-31T11:50:00Z" },
+  "title": "首页改版：Hero 与内容模块",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "HeroA.dc.html": { "x": 0, "y": 0, "w": 1440, "h": 720, "title": "Hero 方向 A · 精灵阅兵" },
+    "HeroB.dc.html": { "x": 0, "y": 840, "w": 1440, "h": 720, "title": "Hero 方向 B · 产品预览" },
+    "HeroC.dc.html": { "x": 0, "y": 1680, "w": 1440, "h": 720, "title": "Hero 方向 C · 类型色场" },
+    "Modules.dc.html": { "x": 0, "y": 2520, "w": 1440, "h": 2520, "title": "首页内容模块改版", "expand": "fill" }
+  },
+  "order": ["HeroA.dc.html", "HeroB.dc.html", "HeroC.dc.html", "Modules.dc.html"],
+  "notes": {
+    "hero-row-title": { "x": 0, "y": -300, "text": "首页 Hero 三个方向 — 挑一个再细化", "kind": "title1", "maxW": 1440 },
+    "modules-row-title": { "x": 0, "y": 2220, "text": "首页内容模块改版（承接所选 Hero）", "kind": "title1", "maxW": 1440 }
+  },
+  "designSystems": []
+}

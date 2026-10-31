@@ -43,3 +43,7 @@ next-env.d.ts
 *.tsbuildinfo
 /outputs/
 /work/
+
+# claude-design editor runtime files
+designs/**/.artifact-server.json
+designs/**/.artifact-server.log

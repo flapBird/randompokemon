@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Modules — Homepage Redesign</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+a { color: #526057; text-decoration: none; }
+a:hover { color: #172019; }
+</style>
+</helmet>
+
+<div style="min-height: 100%; background: #f6f7f3; display: flex; flex-direction: column;">
+
+  <!-- S1 · Tools -->
+  <section style="box-sizing: border-box; width: 100%; padding: 64px 0 58px; border-bottom: 1px solid #e2e7e0;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 0 28px;">
+      <div style="max-width: 640px; margin-bottom: 30px;">
+        <span style="color: #c94731; font-size: 12px; font-weight: 800; letter-spacing: 0.16em;">EXPLORE POKÉMON TOOLS</span>
+        <h2 style="margin: 10px 0 12px; font-family: Georgia, 'Times New Roman', serif; font-weight: 500; font-size: 42px; line-height: 1.05; letter-spacing: -0.04em; color: #172019;">Keep exploring after the roll</h2>
+        <p style="margin: 0; color: #526057; font-size: 15px; line-height: 1.6;">Rank your favorites, spin a type, plan a team, or compare two Pokémon without leaving the shared Pokédex.</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px;">
+        <a href="#" style="display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 22px; border: 1px solid #dce1da; border-radius: 18px; background: #ffffff; box-sizing: border-box;">
+          <span style="width: 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; background: #f9ecec;">
+            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16.5 C4.5 12.8 2.4 9.8 3.4 6.9 C4.1 4.9 6.4 4 8.1 5 C9 5.5 9.6 6.3 10 7 C10.4 6.3 11 5.5 11.9 5 C13.6 4 15.9 4.9 16.6 6.9 C17.6 9.8 15.5 12.8 10 16.5 Z" fill="none" stroke="#b43f42" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </span>
+          <span style="font-size: 16px; font-weight: 750; color: #172019;">Favorite Pokémon Picker</span>
+          <span style="color: #526057; font-size: 13px; line-height: 1.5;">Choose head-to-head and build a shareable shortlist.</span>
+          <span style="margin-top: auto; color: #c94731; font-size: 13px; font-weight: 800;">Open tool →</span>
+        </a>
+        <a href="#" style="display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 22px; border: 1px solid #dce1da; border-radius: 18px; background: #ffffff; box-sizing: border-box;">
+          <span style="width: 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; background: #faf3dd;">
+            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.4" fill="none" stroke="#c69000" stroke-width="1.6"/><path d="M10 2.6 V6.2 M17.4 10 H13.8 M10 17.4 V13.8 M2.6 10 H6.2" stroke="#c69000" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <span style="font-size: 16px; font-weight: 750; color: #172019;">Pokémon Type Wheel</span>
+          <span style="color: #526057; font-size: 13px; line-height: 1.5;">Spin all 18 types, then generate a matching Pokémon or team.</span>
+          <span style="margin-top: auto; color: #c94731; font-size: 13px; font-weight: 800;">Open tool →</span>
+        </a>
+        <a href="#" style="display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 22px; border: 1px solid #dce1da; border-radius: 18px; background: #ffffff; box-sizing: border-box;">
+          <span style="width: 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; background: #e9f2e9;">
+            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect x="2.8" y="2.8" width="5.6" height="5.6" rx="1.4" fill="none" stroke="#4d8e4e" stroke-width="1.6"/><rect x="11.6" y="2.8" width="5.6" height="5.6" rx="1.4" fill="none" stroke="#4d8e4e" stroke-width="1.6"/><rect x="2.8" y="11.6" width="5.6" height="5.6" rx="1.4" fill="none" stroke="#4d8e4e" stroke-width="1.6"/><path d="M11.6 14.4 h5.6 M14.4 11.6 v5.6" stroke="#4d8e4e" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <span style="font-size: 16px; font-weight: 750; color: #172019;">Team Planner</span>
+          <span style="color: #526057; font-size: 13px; line-height: 1.5;">Choose up to six Pokémon and inspect coverage gaps.</span>
+          <span style="margin-top: auto; color: #c94731; font-size: 13px; font-weight: 800;">Open tool →</span>
+        </a>
+        <a href="#" style="display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 22px; border: 1px solid #dce1da; border-radius: 18px; background: #ffffff; box-sizing: border-box;">
+          <span style="width: 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; background: #eceef4;">
+            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.4 3.4 L8.4 8.4 M16.6 3.4 L11.6 8.4 M3.4 16.6 L8.4 11.6 M16.6 16.6 L11.6 11.6" stroke="#5e55ad" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="10" r="2.4" fill="none" stroke="#5e55ad" stroke-width="1.6"/></svg>
+          </span>
+          <span style="font-size: 16px; font-weight: 750; color: #172019;">Compare Pokémon</span>
+          <span style="color: #526057; font-size: 13px; line-height: 1.5;">Compare stats, types, abilities, and matchups side by side.</span>
+          <span style="margin-top: auto; color: #c94731; font-size: 13px; font-weight: 800;">Open tool →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- S2 · Popular generators -->
+  <section style="box-sizing: border-box; width: 100%; padding: 58px 0; border-bottom: 1px solid #e2e7e0;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 0 28px;">
+      <div style="max-width: 640px; margin-bottom: 30px;">
+        <span style="color: #c94731; font-size: 12px; font-weight: 800; letter-spacing: 0.16em;">POPULAR GENERATORS</span>
+        <h2 style="margin: 10px 0 12px; font-family: Georgia, 'Times New Roman', serif; font-weight: 500; font-size: 42px; line-height: 1.05; letter-spacing: -0.04em; color: #172019;">Start with a focused Pokémon pool</h2>
+        <p style="margin: 0; color: #526057; font-size: 15px; line-height: 1.6;">Pick a Shiny hunt target, a starter, or a challenge encounter.</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;">
+        <a href="#" style="display: flex; align-items: center; gap: 18px; padding: 18px 20px; border: 1px solid #dce1da; border-radius: 18px; background: #ffffff; box-sizing: border-box;">
+          <span style="flex: 0 0 auto; width: 76px; height: 76px; display: grid; place-items: center; border: 1px solid #e3d9a1; border-radius: 50%; background: #fbf7e6;">
+            <img src="/_blob/122f738329ee5d2e770aa6f313ccf2c5" alt="" style="width: 62px; height: 62px; object-fit: contain;">
+          </span>
+          <span style="min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-size: 16px; font-weight: 750; color: #172019;">Shiny Pokémon Generator</span>
+            <span style="color: #526057; font-size: 13px; line-height: 1.5;">Choose from all 1,025 species with Shiny artwork enabled.</span>
+            <span style="color: #c94731; font-size: 12px; font-weight: 800; margin-top: 2px;">Open →</span>
+          </span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 18px; padding: 18px 20px; border: 1px solid #dce1da; border-radius: 18px; background: #ffffff; box-sizing: border-box;">
+          <span style="flex: 0 0 auto; width: 76px; height: 76px; display: grid; place-items: center; border: 1px solid #cfd4ee; border-radius: 50%; background: #eef0fa;">
+            <img src="/_blob/e9dc9acae7c82b705fb06460b0a51c7c" alt="" style="width: 62px; height: 62px; object-fit: contain;">
+          </span>
+          <span style="min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-size: 16px; font-weight: 750; color: #172019;">Legendary Pokémon Generator</span>
+            <span style="color: #526057; font-size: 13px; line-height: 1.5;">Roll one Legendary or expand the count into a full team.</span>
+            <span style="color: #c94731; font-size: 12px; font-weight: 800; margin-top: 2px;">Open →</span>
+          </span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 18px; padding: 18px 20px; border: 1px solid #dce1da; border-radius: 18px; background: #ffffff; box-sizing: border-box;">
+          <span style="flex: 0 0 auto; width: 76px; height: 76px; display: grid; place-items: center; border: 1px solid #f0cdc2; border-radius: 50%; background: #fbeee8;">
+            <img src="/_blob/c6d932596f03ef73dec2ba27f728e085" alt="" style="width: 62px; height: 62px; object-fit: contain;">
+          </span>
+          <span style="min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-size: 16px; font-weight: 750; color: #172019;">Starter Pokémon Generator</span>
+            <span style="color: #526057; font-size: 13px; line-height: 1.5;">Pick a traditional Grass, Fire, or Water first partner.</span>
+            <span style="color: #c94731; font-size: 12px; font-weight: 800; margin-top: 2px;">Open →</span>
+          </span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 18px; padding: 18px 20px; border: 1px solid #dce1da; border-radius: 18px; background: #ffffff; box-sizing: border-box;">
+          <span style="flex: 0 0 auto; width: 76px; height: 76px; display: grid; place-items: center; border: 1px solid #d6d2e6; border-radius: 50%; background: #efedf6;">
+            <img src="/_blob/33c68a1f380d80d89c4ea1505a7d6d2a" alt="" style="width: 62px; height: 62px; object-fit: contain;">
+          </span>
+          <span style="min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-size: 16px; font-weight: 750; color: #172019;">Nuzlocke Pokémon Generator</span>
+            <span style="color: #526057; font-size: 13px; line-height: 1.5;">Create a reproducible encounter for custom challenge rules.</span>
+            <span style="color: #c94731; font-size: 12px; font-weight: 800; margin-top: 2px;">Open →</span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- S3 · Regions -->
+  <section style="box-sizing: border-box; width: 100%; padding: 58px 0; border-bottom: 1px solid #e2e7e0;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 0 28px;">
+      <div style="max-width: 640px; margin-bottom: 30px;">
+        <span style="color: #c94731; font-size: 12px; font-weight: 800; letter-spacing: 0.16em;">GENERATE BY REGION</span>
+        <h2 style="margin: 10px 0 12px; font-family: Georgia, 'Times New Roman', serif; font-weight: 500; font-size: 42px; line-height: 1.05; letter-spacing: -0.04em; color: #172019;">Choose a regional Pokémon pool</h2>
+        <p style="margin: 0; color: #526057; font-size: 15px; line-height: 1.6;">Each shortcut opens the regional generator with its own starters, Legendary Pokémon, and games.</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px;">
+        <a href="#" style="display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid #dce1da; border-radius: 16px; background: #ffffff; box-sizing: border-box;">
+          <img src="/_blob/6a9305fbd6f02345153567f4142faf01" alt="" style="flex: 0 0 auto; width: 46px; height: 46px; object-fit: contain;">
+          <span style="min-width: 0; display: flex; flex-direction: column;">
+            <span style="font-size: 14px; font-weight: 800; color: #172019;">Kanto</span>
+            <span style="color: #526057; font-size: 10px; font-weight: 750; letter-spacing: 0.06em;">GEN 1 · #001–151</span>
+          </span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid #dce1da; border-radius: 16px; background: #ffffff; box-sizing: border-box;">
+          <img src="/_blob/3c747221af108c098495d26d0e3755f6" alt="" style="flex: 0 0 auto; width: 46px; height: 46px; object-fit: contain;">
+          <span style="min-width: 0; display: flex; flex-direction: column;">
+            <span style="font-size: 14px; font-weight: 800; color: #172019;">Johto</span>
+            <span style="color: #526057; font-size: 10px; font-weight: 750; letter-spacing: 0.06em;">GEN 2 · #152–251</span>
+          </span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid #dce1da; border-radius: 16px; background: #ffffff; box-sizing: border-box;">
+          <img src="/_blob/c212e26aae817f7ee0a1a138906729c7" alt="" style="flex: 0 0 auto; width: 46px; height: 46px; object-fit: contain;">
+          <span style="min-width: 0; display: flex; flex-direction: column;">
+            <span style="font-size: 14px; font-weight: 800; color: #172019;">Hoenn</span>
+            <span style="color: #526057; font-size: 10px; font-weight: 750; letter-spacing: 0.06em;">GEN 3 · #252–386</span>
+          </span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid #dce1da; border-radius: 16px; background: #ffffff; box-sizing: border-box;">
+          <img src="/_blob/eb77c6380a6730fe1073dc33f4f39ce6" alt="" style="flex: 0 0 auto; width: 46px; height: 46px; object-fit: contain;">
+          <span style="min-width: 0; display: flex; flex-direction: column;">
+            <span style="font-size: 14px; font-weight: 800; color: #172019;">Sinnoh</span>
+            <span style="color: #526057; font-size: 10px; font-weight: 750; letter-spacing: 0.06em;">GEN 4 · #387–493</span>
+          </span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid #dce1da; border-radius: 16px; background: #ffffff; box-sizing: border-box;">
+          <img src="/_blob/0c1002d91ca4d25f584f75e908ed3ead" alt="" style="flex: 0 0 auto; width: 46px; height: 46px; object-fit: contain;">
+          <span style="min-width: 0; display: flex; flex-direction: column;">
+            <span style="font-size: 14px; font-weight: 800; color: #172019;">Unova</span>
+            <span style="color: #526057; font-size: 10px; font-weight: 750; letter-spacing: 0.06em;">GEN 5 · #494–649</span>
+          </span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid #dce1da; border-radius: 16px; background: #ffffff; box-sizing: border-box;">
+          <img src="/_blob/1f0d5e4808523e75e9ec84ad8858a346" alt="" style="flex: 0 0 auto; width: 46px; height: 46px; object-fit: contain;">
+          <span style="min-width: 0; display: flex; flex-direction: column;">
+            <span style="font-size: 14px; font-weight: 800; color: #172019;">Kalos</span>
+            <span style="color: #526057; font-size: 10px; font-weight: 750; letter-spacing: 0.06em;">GEN 6 · #650–721</span>
+          </span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid #dce1da; border-radius: 16px; background: #ffffff; box-sizing: border-box;">
+          <img src="/_blob/2fc7065cdcb6308c7886673d5a36ce8f" alt="" style="flex: 0 0 auto; width: 46px; height: 46px; object-fit: contain;">
+          <span style="min-width: 0; display: flex; flex-direction: column;">
+            <span style="font-size: 14px; font-weight: 800; color: #172019;">Alola</span>
+            <span style="color: #526057; font-size: 10px; font-weight: 750; letter-spacing: 0.06em;">GEN 7 · #722–809</span>
+          </span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid #dce1da; border-radius: 16px; background: #ffffff; box-sizing: border-box;">
+          <img src="/_blob/2a1fb51dd9d25deb0eeffac45c6c8c9a" alt="" style="flex: 0 0 auto; width: 46px; height: 46px; object-fit: contain;">
+          <span style="min-width: 0; display: flex; flex-direction: column;">
+            <span style="font-size: 14px; font-weight: 800; color: #172019;">Galar</span>
+            <span style="color: #526057; font-size: 10px; font-weight: 750; letter-spacing: 0.06em;">GEN 8 · #810–905</span>
+          </span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid #dce1da; border-radius: 16px; background: #ffffff; box-sizing: border-box;">
+          <img src="/_blob/e766c82cda3fe64dac131c1a11f1e82e" alt="" style="flex: 0 0 auto; width: 46px; height: 46px; object-fit: contain;">
+          <span style="min-width: 0; display: flex; flex-direction: column;">
+            <span style="font-size: 14px; font-weight: 800; color: #172019;">Paldea</span>
+            <span style="color: #526057; font-size: 10px; font-weight: 750; letter-spacing: 0.06em;">GEN 9 · #906–1025</span>
+          </span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; justify-content: center; padding: 12px 14px; border: 1px dashed #bdc7bd; border-radius: 16px; background: transparent; box-sizing: border-box;">
+          <span style="font-size: 13px; font-weight: 800; color: #c94731;">All generators →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4 · Explore -->
+  <section style="box-sizing: border-box; width: 100%; padding: 58px 0; border-bottom: 1px solid #e2e7e0;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 0 28px;">
+      <div style="max-width: 640px; margin-bottom: 30px;">
+        <span style="color: #c94731; font-size: 12px; font-weight: 800; letter-spacing: 0.16em;">EXPLORE POKÉMON</span>
+        <h2 style="margin: 10px 0 12px; font-family: Georgia, 'Times New Roman', serif; font-weight: 500; font-size: 42px; line-height: 1.05; letter-spacing: -0.04em; color: #172019;">Browse the Pokémon behind each roll</h2>
+        <p style="margin: 0; color: #526057; font-size: 15px; line-height: 1.6;">Move from the main Pokédex hub into type collections or focused Shiny, Legendary, and starter lists.</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+        <a href="#" style="display: flex; align-items: center; gap: 14px; padding: 18px 20px; border: 1px solid #dce1da; border-radius: 16px; background: #ffffff; box-sizing: border-box;">
+          <span style="flex: 0 0 auto; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: #223c2c; color: #d8ef75; font-family: Georgia, serif; font-size: 15px; font-weight: 500;">Px</span>
+          <span style="min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 15px; font-weight: 800; color: #172019;">Pokédex</span>
+            <span style="color: #526057; font-size: 12px;">Search all 1,025 Pokémon</span>
+          </span>
+          <span style="margin-left: auto; color: #bdc7bd; font-size: 18px;">→</span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 14px; padding: 18px 20px; border: 1px solid #dce1da; border-radius: 16px; background: #ffffff; box-sizing: border-box;">
+          <span style="flex: 0 0 auto; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: #e3edf8; color: #397cc1;">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="5" cy="5" r="2.2" fill="#397cc1"/><circle cx="11" cy="5" r="2.2" fill="#d44d78"/><circle cx="5" cy="11" r="2.2" fill="#c69000"/><circle cx="11" cy="11" r="2.2" fill="#4d8e4e"/></svg>
+          </span>
+          <span style="min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 15px; font-weight: 800; color: #172019;">Pokémon by Type</span>
+            <span style="color: #526057; font-size: 12px;">Open one of 18 type collections</span>
+          </span>
+          <span style="margin-left: auto; color: #bdc7bd; font-size: 18px;">→</span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 14px; padding: 18px 20px; border: 1px solid #dce1da; border-radius: 16px; background: #ffffff; box-sizing: border-box;">
+          <span style="flex: 0 0 auto; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: #fbf7e6; color: #a77b00;">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8 L9.9 5.7 L14.2 6.3 L11.1 9.3 L11.8 13.6 L8 11.6 L4.2 13.6 L4.9 9.3 L1.8 6.3 L6.1 5.7 Z" fill="none" stroke="#a77b00" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          </span>
+          <span style="min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 15px; font-weight: 800; color: #172019;">Shiny Pokémon</span>
+            <span style="color: #526057; font-size: 12px;">Compare normal and Shiny artwork</span>
+          </span>
+          <span style="margin-left: auto; color: #bdc7bd; font-size: 18px;">→</span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 14px; padding: 18px 20px; border: 1px solid #dce1da; border-radius: 16px; background: #ffffff; box-sizing: border-box;">
+          <span style="flex: 0 0 auto; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: #eef0fa; color: #5e55ad;">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2 L9.3 5.4 L13 5.6 L10.1 7.9 L11.1 11.5 L8 9.4 L4.9 11.5 L5.9 7.9 L3 5.6 L6.7 5.4 Z" fill="none" stroke="#5e55ad" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8" cy="8" r="6.6" fill="none" stroke="#5e55ad" stroke-width="1.1" stroke-dasharray="2 2.4"/></svg>
+          </span>
+          <span style="min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 15px; font-weight: 800; color: #172019;">Legendary Pokémon</span>
+            <span style="color: #526057; font-size: 12px;">Browse the complete Gen 1–9 list</span>
+          </span>
+          <span style="margin-left: auto; color: #bdc7bd; font-size: 18px;">→</span>
+        </a>
+        <a href="#" style="grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; padding: 18px 20px; border: 1px solid #dce1da; border-radius: 16px; background: #ffffff; box-sizing: border-box;">
+          <span style="flex: 0 0 auto; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: #e9f2e9; color: #4d8e4e;">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13 C3 8.5 6 5.5 10.5 5.5 M10.5 5.5 C10.5 3.8 9.4 2.6 7.8 2.6 C8.2 4 8.9 4.8 10.5 5.5 Z M10.5 5.5 C12.2 5.5 13.4 6.6 13.4 8.2 C12 7.8 11.2 7.1 10.5 5.5 Z" fill="none" stroke="#4d8e4e" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span style="min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 15px; font-weight: 800; color: #172019;">Starter Pokémon</span>
+            <span style="color: #526057; font-size: 12px;">Explore every first-partner trio from Gen 1 to Gen 9</span>
+          </span>
+          <span style="margin-left: auto; color: #bdc7bd; font-size: 18px;">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- S5 · FAQ -->
+  <section style="box-sizing: border-box; width: 100%; padding: 58px 0 64px; border-bottom: 1px solid #e2e7e0;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 0 28px;">
+      <div style="max-width: 640px; margin-bottom: 26px;">
+        <span style="color: #c94731; font-size: 12px; font-weight: 800; letter-spacing: 0.16em;">COMMON QUESTIONS</span>
+        <h2 style="margin: 10px 0 0; font-family: Georgia, 'Times New Roman', serif; font-weight: 500; font-size: 42px; line-height: 1.05; letter-spacing: -0.04em; color: #172019;">Frequently asked questions</h2>
+      </div>
+      <div style="border-top: 1px solid #dce1da;">
+        <button type="button" style="width: 100%; min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border: 0; border-bottom: 1px solid #dce1da; background: transparent; cursor: pointer; text-align: left; font-size: 15px; font-weight: 750; color: #172019;">
+          How does the random Pokémon generator work?
+          <span style="color: #c94731; font-size: 20px;">×</span>
+        </button>
+        <div style="padding: 0 0 22px; border-bottom: 1px solid #dce1da;">
+          <p style="max-width: 760px; margin: 0; color: #526057; font-size: 14px; line-height: 1.7;">Pure Random gives each eligible Pokémon an equal chance. Smart Team compares random teams for type variety and fewer shared weaknesses. Both use your filters and a reproducible seed.</p>
+        </div>
+        <button type="button" style="width: 100%; min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border: 0; border-bottom: 1px solid #dce1da; background: transparent; cursor: pointer; text-align: left; font-size: 15px; font-weight: 750; color: #172019;">
+          Does the generator create a full team of six?
+          <span style="color: #c94731; font-size: 20px;">+</span>
+        </button>
+        <button type="button" style="width: 100%; min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border: 0; border-bottom: 1px solid #dce1da; background: transparent; cursor: pointer; text-align: left; font-size: 15px; font-weight: 750; color: #172019;">
+          Can I choose a specific generation or type?
+          <span style="color: #c94731; font-size: 20px;">+</span>
+        </button>
+        <button type="button" style="width: 100%; min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border: 0; border-bottom: 1px solid #dce1da; background: transparent; cursor: pointer; text-align: left; font-size: 15px; font-weight: 750; color: #172019;">
+          Can I share the same random team with a friend?
+          <span style="color: #c94731; font-size: 20px;">+</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- S6 · CTA band -->
+  <section style="box-sizing: border-box; width: 100%; padding: 58px 0;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 0 28px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 40px; padding: 40px 44px; border-radius: 22px; background: #223c2c;">
+        <div style="max-width: 620px;">
+          <h2 style="margin: 0 0 10px; font-family: Georgia, 'Times New Roman', serif; font-weight: 500; font-size: 38px; line-height: 1.08; letter-spacing: -0.035em; color: #f4f8f2;">Can't decide? Roll a surprise team.</h2>
+          <p style="margin: 0; color: #b9c9ba; font-size: 15px; line-height: 1.6;">Six random slots, Smart Team balancing, and a share link for the exact result.</p>
+        </div>
+        <button type="button" style="flex: 0 0 auto; min-height: 56px; padding: 14px 30px; border: 0; border-radius: 13px; background: #d8ef75; color: #142018; font-size: 16px; font-weight: 800; cursor: pointer;">Generate a team</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- S7 · Footer -->
+  <footer style="box-sizing: border-box; width: 100%; padding: 44px 0 36px; border-top: 1px solid #e2e7e0; background: #fbfcfa;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 0 28px; display: grid; grid-template-columns: minmax(240px, 320px) 1fr; gap: 56px;">
+      <div>
+        <a href="#" style="display: inline-flex; align-items: center; gap: 10px; font-weight: 800; font-size: 16px; letter-spacing: -0.03em; color: #172019;">
+          <svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true">
+            <circle cx="14" cy="14" r="12.5" fill="#fff" stroke="#172019" stroke-width="2.4"/>
+            <path d="M1.5 14 h9 M17.5 14 h9" stroke="#172019" stroke-width="2.4"/>
+            <path d="M1.8 12.6 A12.5 12.5 0 0 1 26.2 12.6 L17.6 13.4 A4.4 4.4 0 0 0 10.4 13.4 Z" fill="#e85d43" stroke="#172019" stroke-width="1.6"/>
+            <circle cx="14" cy="14" r="3.4" fill="#fff" stroke="#172019" stroke-width="2"/>
+          </svg>
+          Random<span style="color: #c94731;">Pokémon</span>
+        </a>
+        <p style="margin: 12px 0 0; color: #526057; font-size: 13px; line-height: 1.6;">Build a surprising team, keep the picks you love, and share the exact result.</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(120px, 180px)); gap: 40px; justify-content: start;">
+        <div style="display: flex; flex-direction: column; gap: 9px;">
+          <span style="color: #172019; font-size: 11px; font-weight: 900; letter-spacing: 0.1em;">EXPLORE</span>
+          <a href="#" style="color: #526057; font-size: 12px; font-weight: 650;">Generator</a>
+          <a href="#" style="color: #526057; font-size: 12px; font-weight: 650;">Favorite Picker</a>
+          <a href="#" style="color: #526057; font-size: 12px; font-weight: 650;">Type Wheel</a>
+          <a href="#" style="color: #526057; font-size: 12px; font-weight: 650;">Team Planner</a>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 9px;">
+          <span style="color: #172019; font-size: 11px; font-weight: 900; letter-spacing: 0.1em;">GENERATORS</span>
+          <a href="#" style="color: #526057; font-size: 12px; font-weight: 650;">Shiny Generator</a>
+          <a href="#" style="color: #526057; font-size: 12px; font-weight: 650;">Legendary Generator</a>
+          <a href="#" style="color: #526057; font-size: 12px; font-weight: 650;">Starter Generator</a>
+          <a href="#" style="color: #526057; font-size: 12px; font-weight: 650;">All Regions</a>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 9px;">
+          <span style="color: #172019; font-size: 11px; font-weight: 900; letter-spacing: 0.1em;">SITE</span>
+          <a href="#" style="color: #526057; font-size: 12px; font-weight: 650;">Guides</a>
+          <a href="#" style="color: #526057; font-size: 12px; font-weight: 650;">About</a>
+          <a href="#" style="color: #526057; font-size: 12px; font-weight: 650;">Privacy</a>
+          <a href="#" style="color: #526057; font-size: 12px; font-weight: 650;">Terms</a>
+        </div>
+      </div>
+    </div>
+    <div style="max-width: 1120px; margin: 30px auto 0; padding: 20px 28px 0; border-top: 1px solid #e2e7e0;">
+      <p style="margin: 0; color: #8a968c; font-size: 11px; line-height: 1.6;">RandomPokemon.xyz is an unofficial fan-made tool and is not affiliated with Nintendo, Game Freak, Creatures Inc., or The Pokémon Company.</p>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2520}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
