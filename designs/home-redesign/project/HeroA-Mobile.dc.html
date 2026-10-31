@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hero A Mobile — Sprite Parade</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+a { color: #526057; text-decoration: none; }
+a:hover { color: #172019; }
+</style>
+</helmet>
+
+<div style="min-height: 844px; box-sizing: border-box; background: #f6f7f3; display: flex; flex-direction: column;">
+
+  <!-- Header -->
+  <header style="flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 64px; padding: 0 18px; border-bottom: 1px solid #e2e7e0;">
+    <a href="#" style="display: inline-flex; align-items: center; gap: 9px; font-weight: 800; font-size: 16px; letter-spacing: -0.03em; color: #172019;">
+      <svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true">
+        <circle cx="14" cy="14" r="12.5" fill="#fff" stroke="#172019" stroke-width="2.4"/>
+        <path d="M1.5 14 h9 M17.5 14 h9" stroke="#172019" stroke-width="2.4"/>
+        <path d="M1.8 12.6 A12.5 12.5 0 0 1 26.2 12.6 L17.6 13.4 A4.4 4.4 0 0 0 10.4 13.4 Z" fill="#e85d43" stroke="#172019" stroke-width="1.6"/>
+        <circle cx="14" cy="14" r="3.4" fill="#fff" stroke="#172019" stroke-width="2"/>
+      </svg>
+      Random<span style="color: #c94731;">Pokémon</span>
+    </a>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button type="button" aria-label="Toggle dark mode" style="width: 40px; height: 40px; display: inline-grid; place-items: center; border: 1px solid #dce1da; border-radius: 12px; background: #ffffff; cursor: pointer;">
+        <svg width="17" height="17" viewBox="0 0 18 18" aria-hidden="true"><path d="M15.5 11.2 A7 7 0 1 1 6.8 2.5 A5.6 5.6 0 0 0 15.5 11.2 Z" fill="none" stroke="#172019" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </button>
+      <button type="button" aria-label="Open menu" style="width: 40px; height: 40px; display: inline-grid; place-items: center; border: 1px solid #dce1da; border-radius: 12px; background: #ffffff; cursor: pointer;">
+        <svg width="17" height="17" viewBox="0 0 17 17" aria-hidden="true"><path d="M2.5 4.5 h12 M2.5 8.5 h12 M2.5 12.5 h12" stroke="#172019" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main style="flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 22px 20px 26px;">
+    <span style="color: #c94731; font-size: 11px; font-weight: 800; letter-spacing: 0.16em;">GEN 1–9 · 1,025 POKÉMON</span>
+    <h1 style="margin: 12px 0 10px; font-family: Georgia, 'Times New Roman', serif; font-weight: 500; font-size: 56px; line-height: 0.98; letter-spacing: -0.045em; color: #172019;">
+      Random Pokémon<br><em style="color: #e85d43; font-weight: 500;">Generator</em>
+    </h1>
+    <p style="margin: 0; color: #526057; font-size: 15.5px; line-height: 1.5; max-width: 320px;">
+      Roll one Pokémon or a full team of six. Lock your favorites, reroll the rest.
+    </p>
+
+    <!-- Sprite parade -->
+    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin: 26px 0 24px;" aria-hidden="true">
+      <span style="width: 60px; height: 60px; display: grid; place-items: center; border: 1px solid #dce1da; border-radius: 50%; background: #ffffff; box-shadow: 0 8px 18px rgba(28,50,36,0.10); transform: translateY(8px);"><img src="/_blob/c6d932596f03ef73dec2ba27f728e085" alt="" style="width: 48px; height: 48px; object-fit: contain;"></span>
+      <span style="position: relative; width: 68px; height: 68px; display: grid; place-items: center; border: 2px solid #a77b00; border-radius: 50%; background: #ffffff; box-shadow: 0 10px 22px rgba(167,123,0,0.22); transform: translateY(-4px);">
+        <img src="/_blob/6a9305fbd6f02345153567f4142faf01" alt="" style="width: 54px; height: 54px; object-fit: contain;">
+        <span style="position: absolute; top: -8px; right: -16px; padding: 3px 6px; border-radius: 99px; background: #a77b00; color: #ffffff; font-size: 8px; font-weight: 900; letter-spacing: 0.08em;">+SHINY</span>
+      </span>
+      <span style="width: 60px; height: 60px; display: grid; place-items: center; border: 1px solid #dce1da; border-radius: 50%; background: #ffffff; box-shadow: 0 8px 18px rgba(28,50,36,0.10); transform: translateY(6px);"><img src="/_blob/78febefb2aba3614b96528455e9c9024" alt="" style="width: 48px; height: 48px; object-fit: contain;"></span>
+      <span style="width: 60px; height: 60px; display: grid; place-items: center; border: 1px solid #dce1da; border-radius: 50%; background: #ffffff; box-shadow: 0 8px 18px rgba(28,50,36,0.10); transform: translateY(-6px);"><img src="/_blob/d63efd7617e6fba9d2c9505c69891da6" alt="" style="width: 48px; height: 48px; object-fit: contain;"></span>
+      <span style="width: 60px; height: 60px; display: grid; place-items: center; border: 1px solid #dce1da; border-radius: 50%; background: #ffffff; box-shadow: 0 8px 18px rgba(28,50,36,0.10); transform: translateY(4px);"><img src="/_blob/c7cb8e9545e13ab399506fb5fb1f6811" alt="" style="width: 48px; height: 48px; object-fit: contain;"></span>
+    </div>
+
+    <!-- CTAs -->
+    <div style="display: flex; flex-direction: column; align-items: stretch; gap: 10px; width: 100%; max-width: 330px;">
+      <button type="button" style="min-height: 54px; padding: 14px 24px; border: 0; border-radius: 13px; background: #e85d43; color: #172019; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 22px rgba(232,93,67,0.28);">Generate a team</button>
+      <button type="button" style="min-height: 54px; padding: 14px 24px; border: 1px solid #dce1da; border-radius: 13px; background: #ffffff; color: #172019; font-size: 15px; font-weight: 750; cursor: pointer;">Browse the Pokédex</button>
+    </div>
+    <span style="margin-top: 16px; color: #526057; font-size: 11px; font-weight: 650;">Reproducible seeds · Share links · Free forever</span>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
