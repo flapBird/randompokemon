@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Faq } from "@/components/content/Faq";
 import { JsonLd } from "@/components/content/JsonLd";
 import { PokemonGenerator } from "@/components/generator/PokemonGenerator";
+import { SpriteImage } from "@/components/pokemon/SpriteImage";
 import { TypeBadge } from "@/components/pokemon/TypeBadge";
 import { REGION_GUIDES, type RegionGuide } from "@/data/regions";
 import { STANDARD_FILTERS } from "@/lib/defaults";
@@ -19,7 +20,7 @@ export function RegionGeneratorPage({ region }: { region: RegionGuide }) {
   const description = `Generate a random ${region.name} Pokémon team from Generation ${region.generation} (${region.dexRange}) with filters, locks, rerolls, seeds, and team analysis.`;
   const filters = { ...STANDARD_FILTERS, generations: [region.generation], regions: [region.slug] };
   const initial = createStaticGeneration(filters, `WELCOME-${region.name.toUpperCase()}`);
-  const starters = region.starters.map(getPokemon).filter(Boolean);
+  const starters = region.starters.map(getPokemon).filter((entry): entry is NonNullable<ReturnType<typeof getPokemon>> => Boolean(entry));
   const legendaries = region.legendaries.map(getPokemon).filter(Boolean);
   const representatives = region.representatives.map(getPokemon).filter(Boolean);
   const faq = [
@@ -32,10 +33,23 @@ export function RegionGeneratorPage({ region }: { region: RegionGuide }) {
   return (
     <>
       <JsonLd data={[organizationSchema(), webApplicationSchema(`${region.name} Pokémon Generator`, path, description), faqSchema(faq), breadcrumbSchema([["Home", "/"], [`${region.name} Generator`, path]])]} />
-      <section className="subpage-hero specialized-hero">
+      <section className="subpage-hero subpage-hero--gen">
         <nav className="breadcrumbs" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span><span>{region.name} Generator</span></nav>
-        <h1>{region.name} Pokémon <em>Generator</em></h1>
-        <p>Build a real Generation {region.generation} team from {region.dexRange}, then lock favorites, reroll slots, and inspect its defensive profile.</p>
+        <div className="subhero-copy">
+          <span className="eyebrow">REGIONAL GENERATOR · GEN {region.generation}</span>
+          <h1>{region.name} Pokémon <em>Generator</em></h1>
+          <p>Build a real Generation {region.generation} team from {region.dexRange}, then lock favorites, reroll slots, and inspect its defensive profile.</p>
+          <span className="gen-hero-range">{region.name} · {region.dexRange} · {region.games[0]}</span>
+        </div>
+        {starters.length > 0 && (
+          <div className="gen-hero-trio" aria-hidden="true">
+            {starters.slice(0, 3).map((starter) => (
+              <span className="trio-item" key={starter.slug}>
+                <SpriteImage src={starter.sprite} alt="" width={122} height={122} loading="eager" initial={starter.name[0]} />
+              </span>
+            ))}
+          </div>
+        )}
       </section>
       <PokemonGenerator initialFilters={filters} initialResults={initial.results} initialSeed={initial.seed} initialQuickMode={null} />
       <div className="content-wrap">

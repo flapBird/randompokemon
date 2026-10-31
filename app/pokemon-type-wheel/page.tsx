@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Faq } from "@/components/content/Faq";
 import { JsonLd } from "@/components/content/JsonLd";
 import { PokemonTypeWheel } from "@/components/tools/PokemonTypeWheel";
+import { POKEMON_TYPES } from "@/types/pokemon";
+import { titleToken } from "@/lib/pokemon-catalog";
 import { breadcrumbSchema, faqSchema, organizationSchema, webApplicationSchema } from "@/lib/seo";
 
 const path = "/pokemon-type-wheel";
@@ -25,10 +27,15 @@ export default function Page() {
   return (
     <>
       <JsonLd data={[organizationSchema(), webApplicationSchema("Pokémon Type Wheel", path, description), faqSchema(faq), breadcrumbSchema([["Home", "/"], ["Pokémon Type Wheel", path]])]} />
-      <section className="subpage-hero">
+      <section className="subpage-hero subpage-hero--tool">
         <nav className="breadcrumbs" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span><span>Pokémon Type Wheel</span></nav>
-        <h1>Pokémon Type <em>Wheel</em></h1>
-        <p>Spin all 18 types—or make your own smaller pool—and this random Pokémon type generator picks a matching Pokémon directly on this page.</p>
+        <div className="subhero-copy">
+          <h1>Pokémon Type <em>Wheel</em></h1>
+          <p>Spin all 18 types—or make your own smaller pool—and this random Pokémon type generator picks a matching Pokémon directly on this page.</p>
+        </div>
+        <div className="subpage-hero-visual" aria-hidden="true">
+          {POKEMON_TYPES.map((type) => <span className="type-pill" data-type={type} key={type}><span className="type-dot" />{titleToken(type)}</span>)}
+        </div>
       </section>
       <PokemonTypeWheel />
       <div className="content-wrap">

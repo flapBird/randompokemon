@@ -190,7 +190,7 @@ export default function Home() {
         <section className="home-cta-band">
           <div className="home-cta-panel">
             <div>
-              <h2>Can't decide? Roll a surprise team.</h2>
+              <h2>Can&apos;t decide? Roll a surprise team.</h2>
               <p>Six random slots, Smart Team balancing, and a share link for the exact result.</p>
             </div>
             <Link className="lime-button" href="/?count=6&mode=smart">Generate a team</Link>

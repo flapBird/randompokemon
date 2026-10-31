@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { PokemonType } from "@/types/pokemon";
+import { SpriteImage } from "./SpriteImage";
 import { TypeBadge } from "./TypeBadge";
 
 export type DirectoryPokemon = {
@@ -65,14 +66,11 @@ export function PokemonDirectory({
                 <div className="directory-art">
                   {mode === "compare" ? (
                     <>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={entry.sprite} alt={`${entry.name} normal form`} loading="lazy" />
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={entry.shinySprite} alt={`Shiny ${entry.name}`} loading="lazy" />
+                      <SpriteImage src={entry.sprite} alt={`${entry.name} normal form`} width={145} height={145} loading="lazy" initial={entry.name[0]} />
+                      <SpriteImage src={entry.shinySprite} alt={`Shiny ${entry.name}`} width={145} height={145} loading="lazy" initial={entry.name[0]} />
                     </>
                   ) : (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={mode === "shiny" ? entry.shinySprite : entry.sprite} alt={mode === "shiny" ? `Shiny ${entry.name}` : entry.name} loading="lazy" />
+                    <SpriteImage src={mode === "shiny" ? entry.shinySprite : entry.sprite} alt={mode === "shiny" ? `Shiny ${entry.name}` : entry.name} width={145} height={145} loading="lazy" initial={entry.name[0]} />
                   )}
                 </div>
                 <div className="directory-copy">
