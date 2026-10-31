@@ -10,12 +10,16 @@
     "HeroA-Mobile.dc.html": { "x": 3120, "y": 0, "w": 390, "h": 844, "title": "Hero A · 移动端 390" },
     "HeroB.dc.html": { "x": 0, "y": 840, "w": 1440, "h": 720, "title": "Hero 方向 B · 产品预览（备选存档）" },
     "HeroC.dc.html": { "x": 0, "y": 1680, "w": 1440, "h": 720, "title": "Hero 方向 C · 类型色场（备选存档）" },
-    "Modules.dc.html": { "x": 0, "y": 2520, "w": 1440, "h": 2740, "title": "首页完整改版（Hero A + 内容模块）", "expand": "fill" }
+    "Modules.dc.html": { "x": 0, "y": 2520, "w": 1440, "h": 2740, "title": "首页完整改版（Hero A + 内容模块）", "expand": "fill" },
+    "Detail.dc.html": { "x": 0, "y": 5380, "w": 1440, "h": 2160, "title": "宝可梦详情页重构（以 Pikachu 为例）", "expand": "fill" },
+    "Subheroes.dc.html": { "x": 0, "y": 7900, "w": 1440, "h": 2080, "title": "子页 Hero 差异化模板系统", "expand": "fill" }
   },
-  "order": ["HeroA.dc.html", "HeroA-Dark.dc.html", "HeroA-Mobile.dc.html", "HeroB.dc.html", "HeroC.dc.html", "Modules.dc.html"],
+  "order": ["HeroA.dc.html", "HeroA-Dark.dc.html", "HeroA-Mobile.dc.html", "HeroB.dc.html", "HeroC.dc.html", "Modules.dc.html", "Detail.dc.html", "Subheroes.dc.html"],
   "notes": {
     "hero-row-title": { "x": 0, "y": -300, "text": "Hero 方向 A 已选定 — 桌面亮色 / 暗色 / 移动端", "kind": "title1", "maxW": 3510 },
-    "modules-row-title": { "x": 0, "y": 2220, "text": "首页完整改版（Hero A + 内容模块）", "kind": "title1", "maxW": 1440 }
+    "modules-row-title": { "x": 0, "y": 2220, "text": "首页完整改版（Hero A + 内容模块）", "kind": "title1", "maxW": 1440 },
+    "detail-row-title": { "x": 0, "y": 5080, "text": "宝可梦详情页重构 — 密度与信息层级", "kind": "title1", "maxW": 1440 },
+    "subheroes-row-title": { "x": 0, "y": 7600, "text": "子页 Hero 差异化 — 一套骨架，四种皮", "kind": "title1", "maxW": 1440 }
   },
   "designSystems": []
 }
